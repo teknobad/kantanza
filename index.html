@@ -47,6 +47,7 @@
     .topic-id{font-weight:700;color:var(--muted);margin-right:8px}
     .topic-head{font-weight:700}
     .topic-desc{color:var(--muted);font-size:14px;margin-top:4px}
+    .topic-user{color:var(--muted);font-size:12px;margin-top:4px}
 
     /* Sol yan: film & yemek */
     .sidebar h3{margin:0 0 8px}
@@ -108,10 +109,12 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      background: white; /* BEYAZ ARKA PLAN */
+      color: #0f1115; /* KOYU YAZI RENGİ */
     }
-    .day.period{background:#3a1f2f}
-    .day.predicted{background:#1f2f3a}
-    .day.special{background:#2f3a1f}
+    .day.period{background:#3a1f2f; color: white;}
+    .day.predicted{background:#1f2f3a; color: white;}
+    .day.special{background:#2f3a1f; color: white;}
 
     .link{color:var(--accent)}
     
@@ -147,11 +150,11 @@
   <header class="card pad">
     <div class="between">
       <div>
-        <div class="brand" id="brandTitle">KArdeşlik</div>
+        <div class="brand" id="brandTitle">KANTANZA</div>
         <div class="brand-underline"></div>
       </div>
       <div class="row auth-actions">
-        <button id="btnLogin">Giriş yapmama</button>
+        <button id="btnLogin">Giriş yap</button>
         <button class="ghost" id="btnSignup">Üye ol</button>
       </div>
     </div>
@@ -229,6 +232,7 @@
         </div>
         <div class="profile-center">
           <div class="profile-username" id="profileUsername">Kullanıcı Adı</div>
+          <div class="profile-userid" id="profileUserId" style="color:var(--muted);margin-top:4px;"></div>
         </div>
         <div class="profile-actions">
           <button id="btnProfileSettings" class="ghost small-button">Profil ayarları</button>
@@ -387,10 +391,11 @@
         <input id="suUser" placeholder="Kullanıcı adı" />
         <div class="line" style="margin:8px 0"></div>
         <label class="label-12-calibri-normal">Şifre</label>
-        <input id="suPass" type="password" placeholder="Şifre" />
+        <input id="suPass" type="password" placeholder="Şifre (min 5 karakter, 1 büyük harf, 1 sayı)" />
         <label class="label-12-calibri-normal" style="margin-top:10px">Şifre onay</label>
         <input id="suPass2" type="password" placeholder="Şifre tekrar" />
         <div class="line" style="margin:8px 0"></div>
+        <small style="color:var(--muted)">* Şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.</small>
       </div>
       <div class="foot">
         <button class="ghost" data-close="#modalSignup">Kapat</button>
@@ -420,7 +425,7 @@
         <input id="settingsUsername" placeholder="Yeni kullanıcı adı" />
         <div class="line" style="margin:8px 0"></div>
         <label class="label-12-calibri-normal">Yeni Şifre</label>
-        <input id="settingsPassword" type="password" placeholder="Yeni şifre" />
+        <input id="settingsPassword" type="password" placeholder="Yeni şifre (min 5 karakter, 1 büyük harf, 1 sayı)" />
         <div class="line" style="margin:8px 0"></div>
         <label class="label-12-calibri-normal">Şifre Onay</label>
         <input id="settingsPasswordConfirm" type="password" placeholder="Şifre tekrar" />
@@ -523,16 +528,16 @@
     // --- KONU YÖNETİMİ ---
     // Örnek iki konu (sadece ilk kez)
     if(topics.length===0){
-      addTopic({title:'Merhaba Dünya', body:'Bu forumda ilk mesajımı bırakıyorum. Herkese selamlar!'});
-      addTopic({title:'Kurallar', body:'Lütfen saygılı olun ve özel karakter kullanmayın. Keyifli forumlar!'});
+      addTopic({title:'Merhaba Dünya', body:'Bu forumda ilk mesajımı bırakıyorum. Herkese selamlar!', userId: '00001', username: 'Admin'});
+      addTopic({title:'Kurallar', body:'Lütfen saygılı olun ve özel karakter kullanmayın. Keyifli forumlar!', userId: '00001', username: 'Admin'});
     }
 
     function saveTopics(){ localStorage.setItem('topics', JSON.stringify(topics)); }
     const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
 
-    function addTopic({title, body}){
+    function addTopic({title, body, userId, username}){
       const id = (topics[0]?.id || 0) + 1;
-      const t = {id, title, body, comments:[], createdAt: Date.now()};
+      const t = {id, title, body, comments:[], createdAt: Date.now(), userId, username};
       topics.unshift(t);
       saveTopics();
       renderTopics();
@@ -552,6 +557,7 @@
             <span class="topic-head">${escapeHTML(t.title)}</span>
           </div>
           <div class="topic-desc">${(t.body || '').slice(0,20)}</div>
+          <div class="topic-user">${t.username} (#${t.userId})</div>
         `;
         list.appendChild(wrap);
       });
@@ -568,6 +574,12 @@
       const h = document.createElement('div');
       h.className='topic-view-title';
       h.textContent = t.title;
+      
+      const userInfo = document.createElement('div');
+      userInfo.className = 'topic-user';
+      userInfo.textContent = `${t.username} (#${t.userId})`;
+      userInfo.style.marginBottom = '8px';
+      
       const thick = document.createElement('div'); 
       thick.className='thick-line'; 
       thick.style.margin='8px 0';
@@ -590,7 +602,7 @@
         t.comments.forEach(c=>{
           const it = document.createElement('div');
           it.className = 'comment-item';
-          it.textContent = c.text;
+          it.innerHTML = `<div><strong>${c.username} (#${c.userId})</strong>: ${c.text}</div>`;
           commentsWrap.appendChild(it);
         });
       } else {
@@ -601,7 +613,7 @@
         commentsWrap.appendChild(noComment);
       }
       
-      box.append(h, p, thick, actions, commentsWrap);
+      box.append(h, userInfo, p, thick, actions, commentsWrap);
     }
 
     // --- ROUTER ---
@@ -632,6 +644,23 @@
         if(profileView) profileView.style.display = 'grid';
         loadProfileData();
       }
+    }
+
+    // --- VALIDASYON FONKSİYONLARI ---
+    function validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    function validatePassword(password) {
+      if (password.length < 5) return false;
+      if (!/[A-Z]/.test(password)) return false;
+      if (!/\d/.test(password)) return false;
+      return true;
+    }
+
+    function formatUserId(id) {
+      return String(id).padStart(5, '0');
     }
 
     // --- PROFİL FONKSİYONLARI ---
@@ -858,6 +887,7 @@
       img.src = prof?.pfp || '';
       img.style.background = prof?.pfp ? 'none' : '#0c0f14';
       el('#profileUsername').textContent = prof?.user || '';
+      el('#profileUserId').textContent = prof?.userId ? `#${prof.userId}` : '';
     }
 
     // --- EVENT HANDLERS ---
@@ -900,9 +930,25 @@
       el('#btnLogin').onclick=()=>openModal('#modalLogin');
       el('#btnSignup').onclick=()=>openModal('#modalSignup');
 
-      // Konu Aç Modalı
-      el('#btnNewTopic').onclick=()=>openModal('#modalTopic');
+      // Konu Aç Modalı - GİRİŞ KONTROLÜ
+      el('#btnNewTopic').onclick=()=>{
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Konu açmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+        openModal('#modalTopic');
+      };
+
       el('#btnSaveTopic').onclick=()=>{
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Konu açmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+
         const title = el('#inpTopicTitle').value.trim();
         const body = el('#inpTopicBody').value.trim();
         if(title.length===0 || body.length===0){ alert('Başlık ve konu metni gerekli.'); return; }
@@ -912,7 +958,12 @@
           alert('Özel karakterlere izin verilmez. Sadece harf, rakam ve boşluk kullanın.');
           return;
         }
-        addTopic({title, body});
+        addTopic({
+          title, 
+          body, 
+          userId: session.userId, 
+          username: session.user
+        });
         closeModal('#modalTopic');
         el('#inpTopicTitle').value='';
         el('#inpTopicBody').value='';
@@ -920,6 +971,13 @@
 
       // Yorum gönderme
       el('#btnSendComment').onclick=()=>{
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Yorum yapmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+
         const txt = el('#inpComment').value.trim();
         if(txt.length===0){ alert('Yorum boş olamaz'); return; }
         if(txt.length>250){ alert('Yorum 250 karakteri geçemez'); return; }
@@ -931,7 +989,12 @@
         const idx = topics.findIndex(x=>x.id===activeTopicForComment.id);
         if(idx>-1){ 
           if (!topics[idx].comments) topics[idx].comments = [];
-          topics[idx].comments.push({text:txt, at:Date.now()}); 
+          topics[idx].comments.push({
+            text:txt, 
+            at:Date.now(),
+            userId: session.userId,
+            username: session.user
+          }); 
           saveTopics(); 
         }
         el('#inpComment').value='';
@@ -946,13 +1009,13 @@
         if(!u || !p){ alert('Kullanıcı adı ve şifre gerekli.'); return; }
         const acc = JSON.parse(localStorage.getItem('account')||'null');
         if(acc && acc.user===u && acc.pass===p){
-          localStorage.setItem('session', JSON.stringify({user:u}));
+          localStorage.setItem('session', JSON.stringify({user:u, userId: acc.userId}));
           closeModal('#modalLogin');
           alert('Giriş başarılı.');
           location.hash = '#profile';
           route();
         } else {
-          alert('Hesap bulunamadı. Üye olmayı deneyin.');
+          alert('Kullanıcı adı veya şifre hatalı.');
         }
       };
 
@@ -962,13 +1025,32 @@
         const pass=el('#suPass').value.trim();
         const pass2=el('#suPass2').value.trim();
         if(!mail || !user || !pass || !pass2){ alert('Tüm alanlar gerekli.'); return; }
+        
+        if (!validateEmail(mail)) {
+          alert('Geçerli bir mail adresi giriniz.');
+          return;
+        }
+        
+        if (!validatePassword(pass)) {
+          alert('Şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.');
+          return;
+        }
+        
         if(pass!==pass2){ alert('Şifreler eşleşmiyor.'); return; }
-        localStorage.setItem('account', JSON.stringify({mail,user,pass}));
-        localStorage.setItem('session', JSON.stringify({user}));
+        
+        // Yeni kullanıcı ID'si oluştur
+        const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
+        const userId = formatUserId(nextUserId);
+        
+        localStorage.setItem('account', JSON.stringify({mail,user,pass, userId}));
+        localStorage.setItem('nextUserId', (nextUserId + 1).toString());
+        localStorage.setItem('session', JSON.stringify({user, userId}));
         closeModal('#modalSignup');
+        
         if(!localStorage.getItem('profile')){
           localStorage.setItem('profile', JSON.stringify({
             user, 
+            userId,
             pfp:null, 
             savedLoc:null,
             parkingNo: null,
@@ -976,7 +1058,14 @@
             habits: [],
             specialDays: []
           }));
+        } else {
+          // Mevcut profili güncelle
+          const prof = JSON.parse(localStorage.getItem('profile'));
+          prof.user = user;
+          prof.userId = userId;
+          localStorage.setItem('profile', JSON.stringify(prof));
         }
+        
         location.hash = '#profile';
         route();
       };
@@ -1013,12 +1102,17 @@
         const prof = JSON.parse(localStorage.getItem('profile')||'{}');
         const acc = JSON.parse(localStorage.getItem('account')||'{}');
         
+        if (newPassword && !validatePassword(newPassword)) {
+          alert('Yeni şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.');
+          return;
+        }
+        
         if(newUsername && newUsername !== prof.user) {
           prof.user = newUsername;
           acc.user = newUsername;
           localStorage.setItem('profile', JSON.stringify(prof));
           localStorage.setItem('account', JSON.stringify(acc));
-          localStorage.setItem('session', JSON.stringify({user: newUsername}));
+          localStorage.setItem('session', JSON.stringify({user: newUsername, userId: prof.userId}));
           el('#profileUsername').textContent = newUsername;
         }
         
