@@ -64,6 +64,13 @@
     /* Sağ yan: kombin */
     .outfit li{margin-bottom:6px}
 
+    /* Günün İngilizce Kelimesi */
+    .word-of-the-day {margin-top: 16px;}
+    .english-word {font-size: 24px; font-weight: bold; color: var(--accent); margin: 8px 0;}
+    .word-pronunciation {color: var(--muted); font-style: italic; margin-bottom: 8px;}
+    .word-meaning {margin-bottom: 8px;}
+    .word-example {border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); font-style: italic;}
+
     /* Modallar */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
     .modal.show{display:flex}
@@ -206,21 +213,33 @@
       <div id="topicsList" style="margin-top:8px"></div>
     </section>
 
-    <!-- Sağ: Kombin -->
-    <aside class="card pad">
-      <h3>Günlük Kombin Tavsiyesi</h3>
-      <ul class="outfit">
-        <li><strong>Saç şekli:</strong> Topuz</li>
-        <li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li>
-        <li><strong>Küpe:</strong> Halka küpe</li>
-        <li><strong>Kolye:</strong> Mini taşlı kolye</li>
-        <li><strong>Üst:</strong> Yaka detaylı crop ekru gömlek</li>
-        <li><strong>Pantolon:</strong> Indigo mavisi jean gömlek</li>
-        <li><strong>Ayakkabı:</strong> Lumberjack ROMINA 5FX siyah koşu ayakkabısı</li>
-        <li><strong>Oje:</strong> Pastel oje</li>
-        <li><strong>Yüzük:</strong> Eklem yüzüğü</li>
-      </ul>
-    </aside>
+    <!-- Sağ: Kombin ve Günün İngilizce Kelimesi -->
+    <div>
+      <aside class="card pad">
+        <h3>Günlük Kombin Tavsiyesi</h3>
+        <ul class="outfit">
+          <li><strong>Saç şekli:</strong> Topuz</li>
+          <li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li>
+          <li><strong>Küpe:</strong> Halka küpe</li>
+          <li><strong>Kolye:</strong> Mini taşlı kolye</li>
+          <li><strong>Üst:</strong> Yaka detaylı crop ekru gömlek</li>
+          <li><strong>Pantolon:</strong> Indigo mavisi jean gömlek</li>
+          <li><strong>Ayakkabı:</strong> Lumberjack ROMINA 5FX siyah koşu ayakkabısı</li>
+          <li><strong>Oje:</strong> Pastel oje</li>
+          <li><strong>Yüzük:</strong> Eklem yüzüğü</li>
+        </ul>
+      </aside>
+
+      <!-- GÜNÜN İNGİLİZCE KELİMESİ BÖLÜMÜ -->
+      <aside class="card pad word-of-the-day">
+        <h3>Günün İngilizce Kelimesi</h3>
+        <div class="line" style="margin:8px 0"></div>
+        <div class="english-word" id="englishWord">Serendipity</div>
+        <div class="word-pronunciation" id="wordPronunciation">/ˌser.ənˈdɪp.ə.ti/</div>
+        <div class="word-meaning" id="wordMeaning">Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma</div>
+        <div class="word-example" id="wordExample">"Finding this beautiful cafe was a real serendipity." (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)</div>
+      </aside>
+    </div>
   </main>
 
   <!-- Konu Detay Görünümü (SPA) -->
@@ -476,6 +495,53 @@
     let currentPlaylist = [];
     let currentPlaylistIndex = 0;
     const defaultVideoId = 't_H0qL1z2Jc';
+
+    // --- Günün İngilizce Kelimesi Verisi ---
+    const englishWords = [
+      {
+        word: "Serendipity",
+        pronunciation: "/ˌser.ənˈdɪp.ə.ti/",
+        meaning: "Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma",
+        example: "\"Finding this beautiful cafe was a real serendipity.\" (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)"
+      },
+      {
+        word: "Ephemeral",
+        pronunciation: "/ɪˈfem.ər.əl/",
+        meaning: "Kısa ömürlü, geçici",
+        example: "\"The beauty of cherry blossoms is ephemeral.\" (Kiraz çiçeklerinin güzelliği geçicidir.)"
+      },
+      {
+        word: "Resilience",
+        pronunciation: "/rɪˈzɪl.i.əns/",
+        meaning: "Dayanıklılık, zorluklardan sonra toparlanabilme yeteneği",
+        example: "\"Her resilience helped her overcome many challenges.\" (Dayanıklılığı, birçok zorluğun üstesinden gelmesine yardımcı oldu.)"
+      },
+      {
+        word: "Ubiquitous",
+        pronunciation: "/juːˈbɪk.wɪ.təs/",
+        meaning: "Her yerde bulunan, yaygın",
+        example: "\"Smartphones have become ubiquitous in modern society.\" (Akıllı telefonlar modern toplumda her yerde bulunur hale geldi.)"
+      },
+      {
+        word: "Melancholy",
+        pronunciation: "/ˈmel.ən.kɒl.i/",
+        meaning: "Hüzün, melankoli",
+        example: "\"There's a sense of melancholy in his music.\" (Onun müziğinde bir hüzün duygusu var.)"
+      }
+    ];
+
+    function setEnglishWordOfTheDay() {
+      // Günün kelimesini gün index'ine göre seç (her gün farklı bir kelime)
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+      const wordIndex = dayOfYear % englishWords.length;
+      const wordData = englishWords[wordIndex];
+      
+      el('#englishWord').textContent = wordData.word;
+      el('#wordPronunciation').textContent = wordData.pronunciation;
+      el('#wordMeaning').textContent = wordData.meaning;
+      el('#wordExample').textContent = wordData.example;
+    }
 
     // --- Yardımcı Fonksiyonlar ---
     function openModal(id) { el(id).classList.add('show'); }
@@ -1032,11 +1098,12 @@
         const songNames = names.split(',').map(s => s.trim()).filter(s => s.length > 0).slice(0, 5);
         if (songNames.length > 0) {
           el('#musicStatus').textContent = `${songNames.length} şarkı aranıyor...`;
-          const simulatedIds = ['V-t8h1D-eJ0', '1k8craCGpgs', 'z2f6j9G-y00', '1R0gV-37o5s', 'a3K7_N37Sj8'];
+          // 5 şarkı özelliği için sabit video ID'leri
+          const audioOnlyIds = ['5qap5aO4i9A', 'MCkTebktHVc', 'jfKfPfyJRdk', 'kgx4WGK0oNU', 'Dx5qFachd3A'];
           currentPlaylist = songNames.map((name, index) => {
-            return simulatedIds[index % simulatedIds.length]; 
+            return audioOnlyIds[index % audioOnlyIds.length];
           });
-          el('#musicStatus').textContent = `${currentPlaylist.length} şarkı listeye eklendi (Simülasyon).`;
+          el('#musicStatus').textContent = `${currentPlaylist.length} şarkı listeye eklendi.`;
         } else {
           alert('Lütfen geçerli bir YouTube linki yapıştırın veya en fazla 5 şarkı adı yazın.');
           el('#musicStatus').textContent = 'Hazır.';
@@ -1061,6 +1128,9 @@
 
     // --- EVENT HANDLERS ---
     document.addEventListener('DOMContentLoaded', () => {
+      // Günün İngilizce Kelimesini Ayarla
+      setEnglishWordOfTheDay();
+
       // Ana navigasyon
       el('#brandTitle').onclick = () => {
         location.hash = '#home';
