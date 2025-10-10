@@ -254,7 +254,7 @@
           </div>
         </div>
 
-       <!-- Müzik Bölümü: YouTube arka planda -->
+      <!-- Müzik Bölümü: YouTube arka planda -->
 <div class="card pad">
   <h3>Müzik (arka planda)</h3>
   <p>Seçili: 3 Saat Dinlendirici Müzik</p>
@@ -263,19 +263,11 @@
     <button id="btnStopRadio" class="ghost">Durdur</button>
   </div>
   <div style="margin-top:8px;color:var(--muted);font-size:12px">
-    Not: Tarayıcı otomatik oynatmayı kısıtlayabilir; eğer otomatik başlamazsa Oynat butonuna bas.
+    Durum: <span id="radioStatus">Hazır</span>
   </div>
-  <!-- Gizli YouTube iframe konumu (JS ile oluşturuluyor). -->
-  <div id="ytContainer"></div>
-   <iframe 
-      id="youtubePlayer"
-      width="100%" 
-      height="0" 
-      src="https://www.youtube.com/embed/jfKfPfyJRdk?enablejsapi=1&autoplay=0" 
-      frameborder="0" 
-      allow="autoplay; encrypted-media" 
-      style="display:none;"
-    ></iframe>
+  <!-- YouTube iframe'i - GÜNCELLENMİŞ -->
+  <div id="ytContainer" style="display:none">
+    <div id="youtubePlayer"></div>
   </div>
 </div>
 
@@ -1160,14 +1152,84 @@
         window.open(url, '_blank');
       };
 
-      // Müzik butonları
-      el('#btnPlayRadio').onclick = () => {
-        alert('Müzik çalma özelliği aktif edildi');
-      };
+     // --- MÜZİK (YOUTUBE IFRAME API) ---
+let player;
+let isRadioPlaying = false;
 
-      el('#btnStopRadio').onclick = () => {
-        alert('Müzik durduruldu');
-      };
+// YouTube Iframe API yükleme
+function loadYouTubeAPI() {
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  const firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+// YouTube API hazır olduğunda
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('youtubePlayer', {
+    height: '0',
+    width: '0',
+    videoId: 'jfKfPfyJRdk', // Lofi hip hop radio
+    playerVars: {
+      'playsinline': 1,
+      'enablejsapi': 1,
+      'origin': window.location.origin
+    },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  el('#radioStatus').textContent = 'Hazır';
+  console.log('YouTube player hazır');
+}
+
+function onPlayerStateChange(event) {
+  const statusEl = el('#radioStatus');
+  
+  switch(event.data) {
+    case YT.PlayerState.PLAYING:
+      statusEl.textContent = 'Çalıyor';
+      isRadioPlaying = true;
+      break;
+    case YT.PlayerState.PAUSED:
+      statusEl.textContent = 'Duraklatıldı';
+      isRadioPlaying = false;
+      break;
+    case YT.PlayerState.ENDED:
+      statusEl.textContent = 'Bitti';
+      isRadioPlaying = false;
+      break;
+  }
+}
+
+// Müzik butonları - GÜNCELLENMİŞ
+el('#btnPlayRadio').onclick = () => {
+  if (player && typeof player.playVideo === 'function') {
+    player.playVideo();
+    el('#radioStatus').textContent = 'Başlatılıyor...';
+    isRadioPlaying = true;
+  } else {
+    alert('Müzik çalar henüz hazır değil. Lütfen birkaç saniye bekleyip tekrar deneyin.');
+  }
+};
+
+el('#btnStopRadio').onclick = () => {
+  if (player && typeof player.pauseVideo === 'function') {
+    player.pauseVideo();
+    el('#radioStatus').textContent = 'Durduruldu';
+    isRadioPlaying = false;
+  }
+};
+
+// Sayfa yüklendiğinde YouTube API'yi yükle
+document.addEventListener('DOMContentLoaded', () => {
+  loadYouTubeAPI();
+  // ... diğer mevcut kodlar
+});
 
       // Otopark butonları
       el('#btnSaveParking').onclick = () => {
