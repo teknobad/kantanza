@@ -118,7 +118,22 @@
 
     .link{color:var(--accent)}
     
-    .radio-player{border-radius:12px;overflow:hidden;margin-top:10px}
+    .
+/* YouTube Oynatıcı Güncellemesi */
+.youtube-player-controls{margin-top:10px}
+.youtube-player-controls label{font-size:14px; color:var(--muted); margin-bottom:4px}
+.youtube-player-controls button{padding:6px 12px; font-size:14px; border-radius:8px;}
+.youtube-player-controls input{font-size:14px; padding:8px;}
+.youtube-player-controls .row{flex-wrap:wrap; gap:8px;}
+/* Küçük ve görünmez iframe boyutu */
+#youtubePlayer iframe {
+    width: 100px;
+    height: 1px;
+    border: none;
+    opacity: 0.01; /* Neredeyse görünmez */
+    pointer-events: none; /* Tıklanabilir olmasın */
+    position: absolute; /* Akışı bozmasın */
+}
     .parking-display{font-size:24pt;font-weight:bold;text-align:center;margin:10px 0;color:var(--accent)}
     .habit-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
     .habit-day{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -257,17 +272,24 @@
       <!-- Müzik Bölümü: YouTube arka planda -->
 <div class="card pad">
   <h3>Müzik (arka planda)</h3>
-  <p>Seçili: 3 Saat Dinlendirici Müzik</p>
-  <div class="row" style="margin-top:8px;justify-content:space-between">
-    <button id="btnPlayRadio">Oynat</button>
-    <button id="btnStopRadio" class="ghost">Durdur</button>
+  <div class="youtube-player-controls">
+    
+    <label for="musicLinkInput">YouTube Video Linki (URL)</label>
+    <input type="text" id="musicLinkInput" placeholder="YouTube video linkini yapıştırın" />
+    <div style="margin:10px 0;text-align:center;color:var(--muted);font-size:12px;">VEYA (max 5 şarkı)</div>
+    
+    <label for="musicNameInput">Şarkı Adı(ları) - Virgülle Ayırın</label>
+    <textarea id="musicNameInput" rows="3" maxlength="250" placeholder="Şarkı 1, Şarkı 2, Şarkı 3, ..."></textarea>
+
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <button id="btnPlayMusic">Oynat</button>
+      <button id="btnStopMusic" class="ghost">Durdur</button>
+    </div>
+    <div style="margin-top:8px;color:var(--muted);font-size:12px">
+      Durum: <span id="musicStatus">Hazır</span>
+    </div>
   </div>
-  <div style="margin-top:8px;color:var(--muted);font-size:12px">
-    Durum: <span id="radioStatus">Hazır</span>
-  </div>
-  <!-- YouTube iframe'i - GÜNCELLENMİŞ -->
-  <div id="ytContainer" style="display:none">
-    <div id="youtubePlayer"></div>
+  <div id="ytContainer" style="margin-top:10px; position:relative; height:10px;"> <div id="youtubePlayer"></div>
   </div>
 </div>
 
@@ -444,10 +466,163 @@
     const el = s=>document.querySelector(s);
     const els = s=>Array.from(document.querySelectorAll(s));
     
-    // --- Uygulama durumu ---
-    let topics = JSON.parse(localStorage.getItem('topics')||'[]');
-    let activeTopicForComment = null;
+   // --- Uygulama durumu ---
+let topics = JSON.parse(localStorage.getItem('topics')||'[]');
+let activeTopicForComment = null;
+let userList = JSON.parse(localStorage.getItem('userList') || '[]'); // Kullanıcı listesi eklendi
+
+// --- YouTube Oynatıcı Durumu ---
+let player;
+let isPlayerReady = false;
+let currentPlaylist = [];
+let currentPlaylistIndex = 0;
+const defaultVideoId = 't_H0qL1z2Jc'; // Örnek arka plan müziği
+// YouTube API'sını yükler
+function loadYouTubeAPI() {
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+// YouTube API hazır olduğunda bu fonksiyonu çağırır
+window.onYouTubeIframeAPIReady = function() {
+    isPlayerReady = true;
+    el('#musicStatus').textContent = 'Oynatıcı Hazır.';
     
+    // Oynatıcıyı varsayılan video ile başlat
+    player = new YT.Player('youtubePlayer', {
+        height: '100%',
+        width: '100%',
+        videoId: defaultVideoId,
+        playerVars: {
+            'autoplay': 0,
+            'controls': 0,
+            'loop': 1,
+            'playlist': defaultVideoId,
+            'disablekb': 1,
+            'iv_load_policy': 3
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    el('#musicStatus').textContent = 'Oynatıcı Başlatılmaya Hazır.';
+    currentPlaylist = [defaultVideoId];
+    // Varsayılan videonun adını göster
+    // Bu kısım normalde YT API ile video adı çekilerek yapılır, basitlik için sabit bırakıldı
+    el('#musicStatus').textContent = 'Hazır (Seçili: Dinlendirici Müzik)';
+}
+
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        el('#musicStatus').textContent = 'Oynatılıyor.';
+    } else if (event.data == YT.PlayerState.PAUSED) {
+        el('#musicStatus').textContent = 'Durduruldu.';
+    } else if (event.data == YT.PlayerState.ENDED) {
+        if (currentPlaylist.length > 1) {
+            // Çalma listesinde bir sonraki şarkıya geç
+            currentPlaylistIndex = (currentPlaylistIndex + 1) % currentPlaylist.length;
+            player.loadVideoById(currentPlaylist[currentPlaylistIndex]);
+        } else {
+            // Tek şarkı ise (veya varsayılan) döngüye devam et (loop=1 ile)
+            player.playVideo();
+        }
+    }
+}
+
+// --- Video ID'si Çekme Fonksiyonu ---
+function extractVideoId(url) {
+    if (!url) return null;
+    let videoId = null;
+    const urlObj = new URL(url);
+    if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
+        if (urlObj.searchParams.get('v')) {
+            videoId = urlObj.searchParams.get('v');
+        } else if (urlObj.pathname.length > 1 && urlObj.hostname.includes('youtu.be')) {
+            videoId = urlObj.pathname.substring(1);
+        }
+    }
+    // Basit doğrulama, daha kapsamlı bir regex kullanılabilir
+    if (videoId && videoId.length === 11) return videoId;
+    return null;
+}
+
+// --- Müzik Oynatıcı Fonksiyonları ---
+async function handlePlayMusic() {
+    if (!isPlayerReady) {
+        alert('YouTube oynatıcı henüz yüklenmedi. Lütfen bekleyin.');
+        return;
+    }
+
+    const link = el('#musicLinkInput').value.trim();
+    const names = el('#musicNameInput').value.trim();
+
+    currentPlaylist = [];
+    currentPlaylistIndex = 0;
+
+    if (link) {
+        // Link varsa sadece onu kullan
+        const id = extractVideoId(link);
+        if (id) {
+            currentPlaylist.push(id);
+            el('#musicStatus').textContent = 'Link ile yükleniyor...';
+        } else {
+            alert('Geçersiz YouTube Video Linki.');
+            el('#musicStatus').textContent = 'HATA: Geçersiz link.';
+            return;
+        }
+    } else if (names) {
+        // Link yoksa, şarkı adlarını kullan
+        const songNames = names.split(',').map(s => s.trim()).filter(s => s.length > 0).slice(0, 5);
+        if (songNames.length > 0) {
+            el('#musicStatus').textContent = `${songNames.length} şarkı aranıyor...`;
+            
+            // Gerçek bir uygulamada, her şarkı adı için arka uçta arama yapılıp ID bulunması gerekir.
+            // Örnek olarak, her şarkı adını 'Müzik + Şarkı Adı' olarak Google'da arayacağız.
+            // **NOT: Bu bir tarayıcı içi koddur, gerçek bir arama API'si gerektirir.
+            // Basitlik için varsayılan ID'yi kullanıp uyarı vereceğiz.**
+            
+            // Eğer bu kısımdan sonra arama API'si entegre edilmeyecekse:
+            // alert('Şarkı adı ile arama yapmak için bir arama API entegrasyonu gereklidir. Varsayılan müziğe dönülüyor.');
+            // currentPlaylist.push(defaultVideoId);
+
+            // Geliştirilmiş simülasyon: Kullanıcıya sadece ilk 5 şarkı adını gösterecek bir liste oluşturma
+            const simulatedIds = ['V-t8h1D-eJ0', '1k8craCGpgs', 'z2f6j9G-y00', '1R0gV-37o5s', 'a3K7_N37Sj8']; // Rastgele örnek ID'ler
+            currentPlaylist = songNames.map((name, index) => {
+                // Her şarkı adının bir ID'ye dönüştürüldüğünü varsayalım
+                // Gerçekte, bir arama servisi kullanılmalı
+                return simulatedIds[index % simulatedIds.length]; 
+            });
+            el('#musicStatus').textContent = `${currentPlaylist.length} şarkı listeye eklendi (Simülasyon).`;
+
+        } else {
+            alert('Lütfen geçerli bir YouTube linki yapıştırın veya en fazla 5 şarkı adı yazın.');
+            el('#musicStatus').textContent = 'Hazır.';
+            return;
+        }
+    } else {
+        // Hiçbir şey girilmemişse varsayılan müziği çal
+        currentPlaylist.push(defaultVideoId);
+        el('#musicStatus').textContent = 'Varsayılan müzik yükleniyor.';
+    }
+
+    if (currentPlaylist.length > 0) {
+        // Çalma listesini yükle ve oynat
+        player.loadPlaylist(currentPlaylist);
+    }
+}
+
+function handleStopMusic() {
+    if (isPlayerReady) {
+        player.pauseVideo();
+        el('#musicStatus').textContent = 'Durduruldu.';
+    }
+}
     // --- Modallar ---
     function openModal(id){ el(id).classList.add('show'); }
     function closeModal(id){ el(id).classList.remove('show'); }
@@ -648,11 +823,45 @@
       }
     }
 
-    // --- VALIDASYON FONKSİYONLARI ---
-    function validateEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+   // --- VALIDASYON FONKSİYONLARI ---
+const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
+
+function validateEmail(email) {
+    const parts = email.split('@');
+    if (parts.length !== 2) return { valid: false, message: "Geçersiz e-posta formatı." };
+    
+    const domain = parts[1].toLowerCase();
+    if (!allowedDomains.includes(domain)) {
+        return { 
+            valid: false, 
+            message: `@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.` 
+        };
     }
+    
+    // Basit e-posta formatı kontrolü
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return { valid: false, message: "Geçersiz e-posta formatı." };
+    }
+
+    // Aynı mail ile 2 defa kayıt kontrolü
+    if (userList.some(user => user.mail.toLowerCase() === email.toLowerCase())) {
+        return { valid: false, message: "Bu e-posta adresi zaten kayıtlı." };
+    }
+    
+    return { valid: true, message: "" };
+}
+
+function validatePassword(password) {
+    if (password.length < 5) return { valid: false, message: "Şifre en az 5 karakter olmalı." };
+    if (!/[A-Z]/.test(password)) return { valid: false, message: "Şifre en az 1 büyük harf içermeli." };
+    if (!/\d/.test(password)) return { valid: false, message: "Şifre en az 1 sayı içermeli." };
+    return { valid: true, message: "" };
+}
+
+function formatUserId(id) {
+    return String(id).padStart(5, '0');
+}
 
     function validatePassword(password) {
       if (password.length < 5) return false;
@@ -1225,11 +1434,63 @@ el('#btnStopRadio').onclick = () => {
   }
 };
 
-// Sayfa yüklendiğinde YouTube API'yi yükle
+// --- Olay İşleyicileri ---
 document.addEventListener('DOMContentLoaded', () => {
-  loadYouTubeAPI();
-  // ... diğer mevcut kodlar
-});
+    // ... mevcut DOMContentLoaded içeriği ...
+    
+    // Müzik Oynatıcı Olay İşleyicileri
+    el('#btnPlayMusic').addEventListener('click', handlePlayMusic);
+    el('#btnStopMusic').addEventListener('click', handleStopMusic);
+    
+    // YouTube API'yi yükle
+    loadYouTubeAPI();
+
+    // Yeni Konu Açma
+    el('#btnSaveTopic').addEventListener('click', ()=>{
+        // ... (mevcut konu kaydetme mantığı) ...
+    });
+    
+    // Üye Olma İşlemi (SIGNUP)
+    el('#btnDoSignup').addEventListener('click', ()=>{
+        const mail = el('#suMail').value.trim();
+        const user = el('#suUser').value.trim();
+        const pass = el('#suPass').value;
+        const pass2 = el('#suPass2').value;
+
+        const mailValidation = validateEmail(mail);
+        if (!mailValidation.valid) {
+            alert('Üyelik hatası: ' + mailValidation.message);
+            return;
+        }
+
+        const passValidation = validatePassword(pass);
+        if (!passValidation.valid) {
+            alert('Üyelik hatası: ' + passValidation.message);
+            return;
+        }
+
+        if (pass !== pass2) {
+            alert('Üyelik hatası: Şifreler uyuşmuyor.');
+            return;
+        }
+
+        const newId = (userList.length > 0 ? userList[userList.length - 1].id : 0) + 1;
+        const newUser = {
+            id: newId,
+            mail: mail.toLowerCase(),
+            username: user,
+            password: pass, // Gerçek uygulamada HASHLENMELİ
+            createdAt: Date.now()
+        };
+
+        userList.push(newUser);
+        localStorage.setItem('userList', JSON.stringify(userList));
+        
+        alert('Tebrikler, kaydınız başarıyla tamamlandı. Giriş yapabilirsiniz.');
+        closeModal('#modalSignup');
+        openModal('#modalLogin');
+    });
+
 
       // Otopark butonları
       el('#btnSaveParking').onclick = () => {
