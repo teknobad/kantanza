@@ -109,8 +109,8 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      background: white; /* BEYAZ ARKA PLAN */
-      color: #0f1115; /* KOYU YAZI RENGİ */
+      background: white;
+      color: #0f1115;
     }
     .day.period{background:#3a1f2f; color: white;}
     .day.predicted{background:#1f2f3a; color: white;}
@@ -118,22 +118,21 @@
 
     .link{color:var(--accent)}
     
-    .
-/* YouTube Oynatıcı Güncellemesi */
-.youtube-player-controls{margin-top:10px}
-.youtube-player-controls label{font-size:14px; color:var(--muted); margin-bottom:4px}
-.youtube-player-controls button{padding:6px 12px; font-size:14px; border-radius:8px;}
-.youtube-player-controls input{font-size:14px; padding:8px;}
-.youtube-player-controls .row{flex-wrap:wrap; gap:8px;}
-/* Küçük ve görünmez iframe boyutu */
-#youtubePlayer iframe {
-    width: 100px;
-    height: 1px;
-    border: none;
-    opacity: 0.01; /* Neredeyse görünmez */
-    pointer-events: none; /* Tıklanabilir olmasın */
-    position: absolute; /* Akışı bozmasın */
-}
+    /* YouTube Oynatıcı Güncellemesi */
+    .youtube-player-controls{margin-top:10px}
+    .youtube-player-controls label{font-size:14px; color:var(--muted); margin-bottom:4px}
+    .youtube-player-controls button{padding:6px 12px; font-size:14px; border-radius:8px;}
+    .youtube-player-controls input{font-size:14px; padding:8px;}
+    .youtube-player-controls .row{flex-wrap:wrap; gap:8px;}
+    /* Küçük ve görünmez iframe boyutu */
+    #youtubePlayer iframe {
+        width: 100px;
+        height: 1px;
+        border: none;
+        opacity: 0.01;
+        pointer-events: none;
+        position: absolute;
+    }
     .parking-display{font-size:24pt;font-weight:bold;text-align:center;margin:10px 0;color:var(--accent)}
     .habit-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
     .habit-day{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -269,29 +268,29 @@
           </div>
         </div>
 
-      <!-- Müzik Bölümü: YouTube arka planda -->
-<div class="card pad">
-  <h3>Müzik (arka planda)</h3>
-  <div class="youtube-player-controls">
-    
-    <label for="musicLinkInput">YouTube Video Linki (URL)</label>
-    <input type="text" id="musicLinkInput" placeholder="YouTube video linkini yapıştırın" />
-    <div style="margin:10px 0;text-align:center;color:var(--muted);font-size:12px;">VEYA (max 5 şarkı)</div>
-    
-    <label for="musicNameInput">Şarkı Adı(ları) - Virgülle Ayırın</label>
-    <textarea id="musicNameInput" rows="3" maxlength="250" placeholder="Şarkı 1, Şarkı 2, Şarkı 3, ..."></textarea>
+        <!-- Müzik Bölümü: YouTube arka planda -->
+        <div class="card pad">
+          <h3>Müzik (arka planda)</h3>
+          <div class="youtube-player-controls">
+            <label for="musicLinkInput">YouTube Video Linki (URL)</label>
+            <input type="text" id="musicLinkInput" placeholder="YouTube video linkini yapıştırın" />
+            <div style="margin:10px 0;text-align:center;color:var(--muted);font-size:12px;">VEYA (max 5 şarkı)</div>
+            
+            <label for="musicNameInput">Şarkı Adı(ları) - Virgülle Ayırın</label>
+            <textarea id="musicNameInput" rows="3" maxlength="250" placeholder="Şarkı 1, Şarkı 2, Şarkı 3, ..."></textarea>
 
-    <div class="row" style="margin-top:10px;justify-content:space-between">
-      <button id="btnPlayMusic">Oynat</button>
-      <button id="btnStopMusic" class="ghost">Durdur</button>
-    </div>
-    <div style="margin-top:8px;color:var(--muted);font-size:12px">
-      Durum: <span id="musicStatus">Hazır</span>
-    </div>
-  </div>
-  <div id="ytContainer" style="margin-top:10px; position:relative; height:10px;"> <div id="youtubePlayer"></div>
-  </div>
-</div>
+            <div class="row" style="margin-top:10px;justify-content:space-between">
+              <button id="btnPlayMusic">Oynat</button>
+              <button id="btnStopMusic" class="ghost">Durdur</button>
+            </div>
+            <div style="margin-top:8px;color:var(--muted);font-size:12px">
+              Durum: <span id="musicStatus">Hazır</span>
+            </div>
+          </div>
+          <div id="ytContainer" style="margin-top:10px; position:relative; height:10px;">
+            <div id="youtubePlayer"></div>
+          </div>
+        </div>
 
         <div class="card pad">
           <h3>Otopark Numarası</h3>
@@ -463,177 +462,38 @@
 
   <script>
     // --- Yardımcı seçiciler ---
-    const el = s=>document.querySelector(s);
-    const els = s=>Array.from(document.querySelectorAll(s));
+    const el = s => document.querySelector(s);
+    const els = s => Array.from(document.querySelectorAll(s));
     
-   // --- Uygulama durumu ---
-let topics = JSON.parse(localStorage.getItem('topics')||'[]');
-let activeTopicForComment = null;
-let userList = JSON.parse(localStorage.getItem('userList') || '[]'); // Kullanıcı listesi eklendi
+    // --- Uygulama durumu ---
+    let topics = JSON.parse(localStorage.getItem('topics') || '[]');
+    let activeTopicForComment = null;
+    let userList = JSON.parse(localStorage.getItem('userList') || '[]');
 
-// --- YouTube Oynatıcı Durumu ---
-let player;
-let isPlayerReady = false;
-let currentPlaylist = [];
-let currentPlaylistIndex = 0;
-const defaultVideoId = 't_H0qL1z2Jc'; // Örnek arka plan müziği
-// YouTube API'sını yükler
-function loadYouTubeAPI() {
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
+    // --- YouTube Oynatıcı Durumu ---
+    let player;
+    let isPlayerReady = false;
+    let currentPlaylist = [];
+    let currentPlaylistIndex = 0;
+    const defaultVideoId = 't_H0qL1z2Jc';
 
-// YouTube API hazır olduğunda bu fonksiyonu çağırır
-window.onYouTubeIframeAPIReady = function() {
-    isPlayerReady = true;
-    el('#musicStatus').textContent = 'Oynatıcı Hazır.';
+    // --- Yardımcı Fonksiyonlar ---
+    function openModal(id) { el(id).classList.add('show'); }
+    function closeModal(id) { el(id).classList.remove('show'); }
     
-    // Oynatıcıyı varsayılan video ile başlat
-    player = new YT.Player('youtubePlayer', {
-        height: '100%',
-        width: '100%',
-        videoId: defaultVideoId,
-        playerVars: {
-            'autoplay': 0,
-            'controls': 0,
-            'loop': 1,
-            'playlist': defaultVideoId,
-            'disablekb': 1,
-            'iv_load_policy': 3
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
-}
-
-function onPlayerReady(event) {
-    el('#musicStatus').textContent = 'Oynatıcı Başlatılmaya Hazır.';
-    currentPlaylist = [defaultVideoId];
-    // Varsayılan videonun adını göster
-    // Bu kısım normalde YT API ile video adı çekilerek yapılır, basitlik için sabit bırakıldı
-    el('#musicStatus').textContent = 'Hazır (Seçili: Dinlendirici Müzik)';
-}
-
-function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING) {
-        el('#musicStatus').textContent = 'Oynatılıyor.';
-    } else if (event.data == YT.PlayerState.PAUSED) {
-        el('#musicStatus').textContent = 'Durduruldu.';
-    } else if (event.data == YT.PlayerState.ENDED) {
-        if (currentPlaylist.length > 1) {
-            // Çalma listesinde bir sonraki şarkıya geç
-            currentPlaylistIndex = (currentPlaylistIndex + 1) % currentPlaylist.length;
-            player.loadVideoById(currentPlaylist[currentPlaylistIndex]);
-        } else {
-            // Tek şarkı ise (veya varsayılan) döngüye devam et (loop=1 ile)
-            player.playVideo();
-        }
-    }
-}
-
-// --- Video ID'si Çekme Fonksiyonu ---
-function extractVideoId(url) {
-    if (!url) return null;
-    let videoId = null;
-    const urlObj = new URL(url);
-    if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
-        if (urlObj.searchParams.get('v')) {
-            videoId = urlObj.searchParams.get('v');
-        } else if (urlObj.pathname.length > 1 && urlObj.hostname.includes('youtu.be')) {
-            videoId = urlObj.pathname.substring(1);
-        }
-    }
-    // Basit doğrulama, daha kapsamlı bir regex kullanılabilir
-    if (videoId && videoId.length === 11) return videoId;
-    return null;
-}
-
-// --- Müzik Oynatıcı Fonksiyonları ---
-async function handlePlayMusic() {
-    if (!isPlayerReady) {
-        alert('YouTube oynatıcı henüz yüklenmedi. Lütfen bekleyin.');
-        return;
+    function escapeHTML(s) { 
+      return s.replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); 
     }
 
-    const link = el('#musicLinkInput').value.trim();
-    const names = el('#musicNameInput').value.trim();
-
-    currentPlaylist = [];
-    currentPlaylistIndex = 0;
-
-    if (link) {
-        // Link varsa sadece onu kullan
-        const id = extractVideoId(link);
-        if (id) {
-            currentPlaylist.push(id);
-            el('#musicStatus').textContent = 'Link ile yükleniyor...';
-        } else {
-            alert('Geçersiz YouTube Video Linki.');
-            el('#musicStatus').textContent = 'HATA: Geçersiz link.';
-            return;
-        }
-    } else if (names) {
-        // Link yoksa, şarkı adlarını kullan
-        const songNames = names.split(',').map(s => s.trim()).filter(s => s.length > 0).slice(0, 5);
-        if (songNames.length > 0) {
-            el('#musicStatus').textContent = `${songNames.length} şarkı aranıyor...`;
-            
-            // Gerçek bir uygulamada, her şarkı adı için arka uçta arama yapılıp ID bulunması gerekir.
-            // Örnek olarak, her şarkı adını 'Müzik + Şarkı Adı' olarak Google'da arayacağız.
-            // **NOT: Bu bir tarayıcı içi koddur, gerçek bir arama API'si gerektirir.
-            // Basitlik için varsayılan ID'yi kullanıp uyarı vereceğiz.**
-            
-            // Eğer bu kısımdan sonra arama API'si entegre edilmeyecekse:
-            // alert('Şarkı adı ile arama yapmak için bir arama API entegrasyonu gereklidir. Varsayılan müziğe dönülüyor.');
-            // currentPlaylist.push(defaultVideoId);
-
-            // Geliştirilmiş simülasyon: Kullanıcıya sadece ilk 5 şarkı adını gösterecek bir liste oluşturma
-            const simulatedIds = ['V-t8h1D-eJ0', '1k8craCGpgs', 'z2f6j9G-y00', '1R0gV-37o5s', 'a3K7_N37Sj8']; // Rastgele örnek ID'ler
-            currentPlaylist = songNames.map((name, index) => {
-                // Her şarkı adının bir ID'ye dönüştürüldüğünü varsayalım
-                // Gerçekte, bir arama servisi kullanılmalı
-                return simulatedIds[index % simulatedIds.length]; 
-            });
-            el('#musicStatus').textContent = `${currentPlaylist.length} şarkı listeye eklendi (Simülasyon).`;
-
-        } else {
-            alert('Lütfen geçerli bir YouTube linki yapıştırın veya en fazla 5 şarkı adı yazın.');
-            el('#musicStatus').textContent = 'Hazır.';
-            return;
-        }
-    } else {
-        // Hiçbir şey girilmemişse varsayılan müziği çal
-        currentPlaylist.push(defaultVideoId);
-        el('#musicStatus').textContent = 'Varsayılan müzik yükleniyor.';
-    }
-
-    if (currentPlaylist.length > 0) {
-        // Çalma listesini yükle ve oynat
-        player.loadPlaylist(currentPlaylist);
-    }
-}
-
-function handleStopMusic() {
-    if (isPlayerReady) {
-        player.pauseVideo();
-        el('#musicStatus').textContent = 'Durduruldu.';
-    }
-}
     // --- Modallar ---
-    function openModal(id){ el(id).classList.add('show'); }
-    function closeModal(id){ el(id).classList.remove('show'); }
-    
-    // Modal kapatma işleyicileri
     document.addEventListener('DOMContentLoaded', () => {
       // Modal kapatma butonları
-      els('[data-close]').forEach(b=>b.addEventListener('click', e=> closeModal(b.getAttribute('data-close')) ));
+      els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
       
       // Modal dışına tıklama ile kapatma
-      els('.modal').forEach(m=> m.addEventListener('click', (e)=>{ if(e.target===m) m.classList.remove('show'); }) );
+      els('.modal').forEach(m => m.addEventListener('click', (e) => { 
+        if(e.target === m) m.classList.remove('show'); 
+      }));
     });
 
     // --- YEMEK TARİFLERİ ---
@@ -672,7 +532,6 @@ function handleStopMusic() {
       }
     ];
 
-    // Yemek tariflerini render et
     function renderRecipes() {
       const container = el('#recipesList');
       container.innerHTML = '';
@@ -692,7 +551,6 @@ function handleStopMusic() {
       });
     }
 
-    // Yemek tarifi modalını göster
     function showRecipeModal(recipe) {
       el('#modalRecipeTitle').textContent = recipe.title;
       el('#modalRecipeBody').innerHTML = `
@@ -703,30 +561,27 @@ function handleStopMusic() {
     }
 
     // --- KONU YÖNETİMİ ---
-    // Örnek iki konu (sadece ilk kez)
-    if(topics.length===0){
-      addTopic({title:'Merhaba Dünya', body:'Bu forumda ilk mesajımı bırakıyorum. Herkese selamlar!', userId: '00001', username: 'Admin'});
-      addTopic({title:'Kurallar', body:'Lütfen saygılı olun ve özel karakter kullanmayın. Keyifli forumlar!', userId: '00001', username: 'Admin'});
-    }
-
-    function saveTopics(){ localStorage.setItem('topics', JSON.stringify(topics)); }
     const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
 
-    function addTopic({title, body, userId, username}){
+    function saveTopics() { 
+      localStorage.setItem('topics', JSON.stringify(topics)); 
+    }
+
+    function addTopic({title, body, userId, username}) {
       const id = (topics[0]?.id || 0) + 1;
-      const t = {id, title, body, comments:[], createdAt: Date.now(), userId, username};
+      const t = {id, title, body, comments: [], createdAt: Date.now(), userId, username};
       topics.unshift(t);
       saveTopics();
       renderTopics();
       return t;
     }
 
-    function renderTopics(){
+    function renderTopics() {
       const list = el('#topicsList');
       list.innerHTML = '';
-      topics.forEach((t, idx)=>{
+      topics.forEach((t, idx) => {
         const wrap = document.createElement('div');
-        wrap.className='topic-item';
+        wrap.className = 'topic-item';
         wrap.setAttribute('data-topic-id', t.id);
         wrap.innerHTML = `
           <div>
@@ -740,16 +595,11 @@ function handleStopMusic() {
       });
     }
 
-    function escapeHTML(s){ 
-      return s.replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); 
-    }
-
-    // Konu detayını render et
-    function renderTopicDetail(t){
+    function renderTopicDetail(t) {
       const box = el('#topicDetail');
       box.innerHTML = '';
       const h = document.createElement('div');
-      h.className='topic-view-title';
+      h.className = 'topic-view-title';
       h.textContent = t.title;
       
       const userInfo = document.createElement('div');
@@ -758,25 +608,25 @@ function handleStopMusic() {
       userInfo.style.marginBottom = '8px';
       
       const thick = document.createElement('div'); 
-      thick.className='thick-line'; 
-      thick.style.margin='8px 0';
+      thick.className = 'thick-line'; 
+      thick.style.margin = '8px 0';
       const p = document.createElement('p'); 
       p.textContent = t.body;
       const actions = document.createElement('div'); 
-      actions.className='row'; 
-      actions.style.margin='12px 0';
+      actions.className = 'row'; 
+      actions.style.margin = '12px 0';
       const btn = document.createElement('button'); 
-      btn.textContent='bir şeyler yazmak istiyorum';
-      btn.onclick=()=>{ 
+      btn.textContent = 'bir şeyler yazmak istiyorum';
+      btn.onclick = () => { 
         openModal('#modalComment'); 
-        activeTopicForComment=t; 
+        activeTopicForComment = t; 
       };
       actions.appendChild(btn);
       const commentsWrap = document.createElement('div');
-      commentsWrap.id='commentsWrap';
+      commentsWrap.id = 'commentsWrap';
       
       if (t.comments && t.comments.length > 0) {
-        t.comments.forEach(c=>{
+        t.comments.forEach(c => {
           const it = document.createElement('div');
           it.className = 'comment-item';
           it.innerHTML = `<div><strong>${c.username} (#${c.userId})</strong>: ${c.text}</div>`;
@@ -794,7 +644,7 @@ function handleStopMusic() {
     }
 
     // --- ROUTER ---
-    function route(){
+    function route() {
       const hash = location.hash || '#home';
       const mainContainer = document.querySelector('main.container');
       const topicView = el('#view-topic');
@@ -805,69 +655,56 @@ function handleStopMusic() {
       if(topicView) topicView.style.display = 'none';
       if(profileView) profileView.style.display = 'none';
 
-      if(hash.startsWith('#topic/')){
+      if(hash.startsWith('#topic/')) {
         const id = Number(hash.split('/')[1]);
-        const t = topics.find(x=>x.id===id);
-        if(!t){ 
+        const t = topics.find(x => x.id === id);
+        if(!t) { 
           alert('Konu bulunamadı'); 
-          location.hash='#home'; 
+          location.hash = '#home'; 
           return; 
         }
         if(mainContainer) mainContainer.style.display = 'none';
         if(topicView) topicView.style.display = 'grid';
         renderTopicDetail(t);
-      } else if(hash==='#profile'){
+      } else if(hash === '#profile') {
         if(mainContainer) mainContainer.style.display = 'none';
         if(profileView) profileView.style.display = 'grid';
         loadProfileData();
       }
     }
 
-   // --- VALIDASYON FONKSİYONLARI ---
-const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
+    // --- VALIDASYON FONKSİYONLARI ---
+    const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
 
-function validateEmail(email) {
-    const parts = email.split('@');
-    if (parts.length !== 2) return { valid: false, message: "Geçersiz e-posta formatı." };
-    
-    const domain = parts[1].toLowerCase();
-    if (!allowedDomains.includes(domain)) {
+    function validateEmail(email) {
+      const parts = email.split('@');
+      if (parts.length !== 2) return { valid: false, message: "Geçersiz e-posta formatı." };
+      
+      const domain = parts[1].toLowerCase();
+      if (!allowedDomains.includes(domain)) {
         return { 
-            valid: false, 
-            message: `@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.` 
+          valid: false, 
+          message: `@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.` 
         };
-    }
-    
-    // Basit e-posta formatı kontrolü
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
         return { valid: false, message: "Geçersiz e-posta formatı." };
-    }
+      }
 
-    // Aynı mail ile 2 defa kayıt kontrolü
-    if (userList.some(user => user.mail.toLowerCase() === email.toLowerCase())) {
+      if (userList.some(user => user.mail.toLowerCase() === email.toLowerCase())) {
         return { valid: false, message: "Bu e-posta adresi zaten kayıtlı." };
+      }
+      
+      return { valid: true, message: "" };
     }
-    
-    return { valid: true, message: "" };
-}
-
-function validatePassword(password) {
-    if (password.length < 5) return { valid: false, message: "Şifre en az 5 karakter olmalı." };
-    if (!/[A-Z]/.test(password)) return { valid: false, message: "Şifre en az 1 büyük harf içermeli." };
-    if (!/\d/.test(password)) return { valid: false, message: "Şifre en az 1 sayı içermeli." };
-    return { valid: true, message: "" };
-}
-
-function formatUserId(id) {
-    return String(id).padStart(5, '0');
-}
 
     function validatePassword(password) {
-      if (password.length < 5) return false;
-      if (!/[A-Z]/.test(password)) return false;
-      if (!/\d/.test(password)) return false;
-      return true;
+      if (password.length < 5) return { valid: false, message: "Şifre en az 5 karakter olmalı." };
+      if (!/[A-Z]/.test(password)) return { valid: false, message: "Şifre en az 1 büyük harf içermeli." };
+      if (!/\d/.test(password)) return { valid: false, message: "Şifre en az 1 sayı içermeli." };
+      return { valid: true, message: "" };
     }
 
     function formatUserId(id) {
@@ -875,62 +712,73 @@ function formatUserId(id) {
     }
 
     // --- PROFİL FONKSİYONLARI ---
-    // Konum işlemleri
-    async function readCurrentLocation(){
+    async function readCurrentLocation() {
       const label = el('#currAddr');
       label.textContent = 'Konum okunuyor…';
-      if(!('geolocation' in navigator)){ label.textContent='Tarayıcınız konumu desteklemiyor.'; return null; }
-      try{
-        const pos = await new Promise((res, rej)=> navigator.geolocation.getCurrentPosition(res, rej));
-        const {latitude:lat, longitude:lng} = pos.coords;
+      if(!('geolocation' in navigator)) { 
+        label.textContent = 'Tarayıcınız konumu desteklemiyor.'; 
+        return null; 
+      }
+      try {
+        const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+        const {latitude: lat, longitude: lng} = pos.coords;
         let addr = '';
-        try{
+        try {
           const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
-          if(r.ok){ const j = await r.json(); addr = j.display_name || ''; }
-        }catch(e){}
+          if(r.ok) { 
+            const j = await r.json(); 
+            addr = j.display_name || ''; 
+          }
+        } catch(e) {}
         const text = `Adres: ${addr || 'Bulunamadı'} | Koordinat: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         label.textContent = text;
         return {lat, lng, addr};
-      }catch(e){ label.textContent = 'Konum alınamadı.'; return null; }
+      } catch(e) { 
+        label.textContent = 'Konum alınamadı.'; 
+        return null; 
+      }
     }
 
-    // Takvim
-    function buildCalendar(){
+    function buildCalendar() {
       const startStr = el('#periodStart').value;
-      const cycle = parseInt(el('#cycleLen').value||'28',10);
-      const cal = el('#calendar'); cal.innerHTML='';
-      if(!startStr){ el('#calendarMeta').textContent='Başlangıç tarihi seçin.'; return; }
+      const cycle = parseInt(el('#cycleLen').value || '28', 10);
+      const cal = el('#calendar'); 
+      cal.innerHTML = '';
+      if(!startStr) { 
+        el('#calendarMeta').textContent = 'Başlangıç tarihi seçin.'; 
+        return; 
+      }
       const start = new Date(startStr);
       const today = new Date();
       const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-      const monthEnd = new Date(today.getFullYear(), today.getMonth()+1, 0);
+      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
       const days = monthEnd.getDate();
       const periods = [];
-      for(let i=-6;i<=6;i++){
+      for(let i = -6; i <= 6; i++) {
         const d = new Date(start);
-        d.setDate(d.getDate()+i*cycle);
+        d.setDate(d.getDate() + i * cycle);
         periods.push(d);
       }
 
-      const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+      const prof = JSON.parse(localStorage.getItem('profile') || '{}');
       const specialDays = prof.specialDays || [];
 
       el('#calendarMeta').textContent = `Gösterilen ay: ${today.toLocaleString('tr-TR',{month:'long'})} ${today.getFullYear()} | Döngü: ${cycle} gün`;
 
-      for(let i=1;i<=days;i++){
+      for(let i = 1; i <= days; i++) {
         const d = new Date(today.getFullYear(), today.getMonth(), i);
         const cell = document.createElement('div');
-        cell.className='day';
+        cell.className = 'day';
         cell.textContent = i;
 
-        const isPeriod = periods.some(p=> Math.abs((+d - +p)/(1000*3600*24)) <= 1 );
-        const nextStart = periods.find(p=> p>=today);
+        const isPeriod = periods.some(p => Math.abs((+d - +p)/(1000*3600*24)) <= 1 );
+        const nextStart = periods.find(p => p >= today);
         if(isPeriod) cell.classList.add('period');
 
-        if(nextStart){
+        if(nextStart) {
           const diff = Math.round((+d - +nextStart)/(1000*3600*24));
-          if(diff>=0 && diff<3) cell.classList.add('predicted');
+          if(diff >= 0 && diff < 3) cell.classList.add('predicted');
         }
 
         const isSpecial = specialDays.some(sd => {
@@ -939,11 +787,10 @@ function formatUserId(id) {
         });
         if(isSpecial) cell.classList.add('special');
 
-        // Tıklandığında periodStart inputunu o gün ile doldur
-        cell.addEventListener('click', ()=> {
+        cell.addEventListener('click', () => {
           const yyyy = d.getFullYear();
-          const mm = String(d.getMonth()+1).padStart(2,'0');
-          const dd = String(d.getDate()).padStart(2,'0');
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
           const val = `${yyyy}-${mm}-${dd}`;
           el('#periodStart').value = val;
           buildCalendar();
@@ -953,9 +800,9 @@ function formatUserId(id) {
       }
     }
 
-    // Alışveriş listesi
     function renderShoppingList(items) {
-      const list = el('#shoppingList'); list.innerHTML = '';
+      const list = el('#shoppingList'); 
+      list.innerHTML = '';
       items.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'shopping-item';
@@ -963,11 +810,10 @@ function formatUserId(id) {
         list.appendChild(div);
       });
       
-      // Silme butonlarına event listener ekle
       els('#shoppingList .delete-btn').forEach(btn => {
         btn.onclick = () => {
           const index = parseInt(btn.getAttribute('data-index'));
-          const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
           prof.shoppingList.splice(index, 1);
           localStorage.setItem('profile', JSON.stringify(prof));
           renderShoppingList(prof.shoppingList);
@@ -975,9 +821,9 @@ function formatUserId(id) {
       });
     }
 
-    // Alışkanlıklar
     function renderHabits(habits) {
-      const list = el('#habitsList'); list.innerHTML = '';
+      const list = el('#habitsList'); 
+      list.innerHTML = '';
       habits.forEach((habit, habitIndex) => {
         const habitDiv = document.createElement('div');
         habitDiv.style.marginBottom = '16px';
@@ -1012,12 +858,11 @@ function formatUserId(id) {
         list.appendChild(habitDiv);
       });
       
-      // Alışkanlık günlerine tıklama
       els('.habit-day').forEach(day => {
         day.onclick = () => {
           const habitIndex = parseInt(day.getAttribute('data-habit'));
           const dayIndex = parseInt(day.getAttribute('data-day'));
-          const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
           if(!prof.habits[habitIndex].days) prof.habits[habitIndex].days = [];
           prof.habits[habitIndex].days[dayIndex] = !prof.habits[habitIndex].days[dayIndex];
           localStorage.setItem('profile', JSON.stringify(prof));
@@ -1025,11 +870,10 @@ function formatUserId(id) {
         };
       });
       
-      // Alışkanlık silme butonları
       els('#habitsList .delete-btn').forEach(btn => {
         btn.onclick = () => {
           const habitIndex = parseInt(btn.getAttribute('data-habit'));
-          const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
           prof.habits.splice(habitIndex, 1);
           localStorage.setItem('profile', JSON.stringify(prof));
           renderHabits(prof.habits);
@@ -1037,9 +881,9 @@ function formatUserId(id) {
       });
     }
 
-    // Özel günler
     function renderSpecialDays(specialDays) {
-      const list = el('#specialDaysList'); list.innerHTML = '';
+      const list = el('#specialDaysList'); 
+      list.innerHTML = '';
       specialDays.forEach((day, index) => {
         const div = document.createElement('div');
         div.className = 'special-day-item';
@@ -1051,8 +895,7 @@ function formatUserId(id) {
           <span class="delete-btn" data-index="${index}">✕</span>
         `;
         
-        // Tıklayınca periodStart'a aktar
-        div.querySelector('div').addEventListener('click', ()=>{
+        div.querySelector('div').addEventListener('click', () => {
           el('#periodStart').value = new Date(day.date).toISOString().slice(0,10);
           buildCalendar();
         });
@@ -1060,11 +903,10 @@ function formatUserId(id) {
         list.appendChild(div);
       });
       
-      // Özel gün silme butonları
       els('#specialDaysList .delete-btn').forEach(btn => {
         btn.onclick = () => {
           const index = parseInt(btn.getAttribute('data-index'));
-          const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
           prof.specialDays.splice(index, 1);
           localStorage.setItem('profile', JSON.stringify(prof));
           renderSpecialDays(prof.specialDays);
@@ -1073,27 +915,23 @@ function formatUserId(id) {
       });
     }
 
-    // Profil verileri yükleme
     function loadProfileData() {
-      const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+      const prof = JSON.parse(localStorage.getItem('profile') || '{}');
 
-      // Otopark numarasını yükle
       el('#parkingDisplay').textContent = prof.parkingNo || '-';
       if(prof.parkingNo) el('#inpParkingNo').value = prof.parkingNo;
 
-      // Diğer verileri render et
       renderShoppingList(prof.shoppingList || []);
       renderHabits(prof.habits || []);
       renderSpecialDays(prof.specialDays || []);
       applyProfile();
       buildCalendar();
       
-      // Konumu oku
       readCurrentLocation();
     }
 
-    function applyProfile(){
-      const prof = JSON.parse(localStorage.getItem('profile')||'null');
+    function applyProfile() {
+      const prof = JSON.parse(localStorage.getItem('profile') || 'null');
       const img = el('#pfp');
       img.src = prof?.pfp || '';
       img.style.background = prof?.pfp ? 'none' : '#0c0f14';
@@ -1101,22 +939,141 @@ function formatUserId(id) {
       el('#profileUserId').textContent = prof?.userId ? `#${prof.userId}` : '';
     }
 
+    // --- YOUTUBE PLAYER FONKSİYONLARI ---
+    function loadYouTubeAPI() {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    window.onYouTubeIframeAPIReady = function() {
+      isPlayerReady = true;
+      el('#musicStatus').textContent = 'Oynatıcı Hazır.';
+      
+      player = new YT.Player('youtubePlayer', {
+        height: '100%',
+        width: '100%',
+        videoId: defaultVideoId,
+        playerVars: {
+          'autoplay': 0,
+          'controls': 0,
+          'loop': 1,
+          'playlist': defaultVideoId,
+          'disablekb': 1,
+          'iv_load_policy': 3
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      el('#musicStatus').textContent = 'Oynatıcı Başlatılmaya Hazır.';
+      currentPlaylist = [defaultVideoId];
+      el('#musicStatus').textContent = 'Hazır (Seçili: Dinlendirici Müzik)';
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING) {
+        el('#musicStatus').textContent = 'Oynatılıyor.';
+      } else if (event.data == YT.PlayerState.PAUSED) {
+        el('#musicStatus').textContent = 'Durduruldu.';
+      } else if (event.data == YT.PlayerState.ENDED) {
+        if (currentPlaylist.length > 1) {
+          currentPlaylistIndex = (currentPlaylistIndex + 1) % currentPlaylist.length;
+          player.loadVideoById(currentPlaylist[currentPlaylistIndex]);
+        } else {
+          player.playVideo();
+        }
+      }
+    }
+
+    function extractVideoId(url) {
+      if (!url) return null;
+      let videoId = null;
+      const urlObj = new URL(url);
+      if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
+        if (urlObj.searchParams.get('v')) {
+          videoId = urlObj.searchParams.get('v');
+        } else if (urlObj.pathname.length > 1 && urlObj.hostname.includes('youtu.be')) {
+          videoId = urlObj.pathname.substring(1);
+        }
+      }
+      if (videoId && videoId.length === 11) return videoId;
+      return null;
+    }
+
+    async function handlePlayMusic() {
+      if (!isPlayerReady) {
+        alert('YouTube oynatıcı henüz yüklenmedi. Lütfen bekleyin.');
+        return;
+      }
+
+      const link = el('#musicLinkInput').value.trim();
+      const names = el('#musicNameInput').value.trim();
+
+      currentPlaylist = [];
+      currentPlaylistIndex = 0;
+
+      if (link) {
+        const id = extractVideoId(link);
+        if (id) {
+          currentPlaylist.push(id);
+          el('#musicStatus').textContent = 'Link ile yükleniyor...';
+        } else {
+          alert('Geçersiz YouTube Video Linki.');
+          el('#musicStatus').textContent = 'HATA: Geçersiz link.';
+          return;
+        }
+      } else if (names) {
+        const songNames = names.split(',').map(s => s.trim()).filter(s => s.length > 0).slice(0, 5);
+        if (songNames.length > 0) {
+          el('#musicStatus').textContent = `${songNames.length} şarkı aranıyor...`;
+          const simulatedIds = ['V-t8h1D-eJ0', '1k8craCGpgs', 'z2f6j9G-y00', '1R0gV-37o5s', 'a3K7_N37Sj8'];
+          currentPlaylist = songNames.map((name, index) => {
+            return simulatedIds[index % simulatedIds.length]; 
+          });
+          el('#musicStatus').textContent = `${currentPlaylist.length} şarkı listeye eklendi (Simülasyon).`;
+        } else {
+          alert('Lütfen geçerli bir YouTube linki yapıştırın veya en fazla 5 şarkı adı yazın.');
+          el('#musicStatus').textContent = 'Hazır.';
+          return;
+        }
+      } else {
+        currentPlaylist.push(defaultVideoId);
+        el('#musicStatus').textContent = 'Varsayılan müzik yükleniyor.';
+      }
+
+      if (currentPlaylist.length > 0) {
+        player.loadPlaylist(currentPlaylist);
+      }
+    }
+
+    function handleStopMusic() {
+      if (isPlayerReady) {
+        player.pauseVideo();
+        el('#musicStatus').textContent = 'Durduruldu.';
+      }
+    }
+
     // --- EVENT HANDLERS ---
     document.addEventListener('DOMContentLoaded', () => {
-      // Kantanza başlığına tıklama - ana sayfaya yönlendirme
+      // Ana navigasyon
       el('#brandTitle').onclick = () => {
         location.hash = '#home';
         route();
       };
 
-      // Geri dön butonu
       el('#backToHome').onclick = (e) => {
         e.preventDefault();
         location.hash = '#home';
         route();
       };
 
-      // Konu listesi tıklama (delegation)
+      // Konu listesi tıklama
       el('#topicsList').addEventListener('click', (e) => {
         const topicItem = e.target.closest('.topic-item');
         if (topicItem) {
@@ -1126,7 +1083,7 @@ function formatUserId(id) {
         }
       });
 
-      // Tarif butonları (delegation)
+      // Tarif butonları
       el('#recipesList').addEventListener('click', (e) => {
         if (e.target.classList.contains('recipe-button')) {
           const recipeId = parseInt(e.target.getAttribute('data-recipe-id'));
@@ -1138,11 +1095,11 @@ function formatUserId(id) {
       });
 
       // Auth modalları
-      el('#btnLogin').onclick=()=>openModal('#modalLogin');
-      el('#btnSignup').onclick=()=>openModal('#modalSignup');
+      el('#btnLogin').onclick = () => openModal('#modalLogin');
+      el('#btnSignup').onclick = () => openModal('#modalSignup');
 
-      // Konu Aç Modalı - GİRİŞ KONTROLÜ
-      el('#btnNewTopic').onclick=()=>{
+      // Konu Aç Modalı
+      el('#btnNewTopic').onclick = () => {
         const session = JSON.parse(localStorage.getItem('session') || '{}');
         if (!session.userId) {
           alert('Konu açmak için giriş yapmalısınız!');
@@ -1152,7 +1109,7 @@ function formatUserId(id) {
         openModal('#modalTopic');
       };
 
-      el('#btnSaveTopic').onclick=()=>{
+      el('#btnSaveTopic').onclick = () => {
         const session = JSON.parse(localStorage.getItem('session') || '{}');
         if (!session.userId) {
           alert('Konu açmak için giriş yapmalısınız!');
@@ -1162,10 +1119,19 @@ function formatUserId(id) {
 
         const title = el('#inpTopicTitle').value.trim();
         const body = el('#inpTopicBody').value.trim();
-        if(title.length===0 || body.length===0){ alert('Başlık ve konu metni gerekli.'); return; }
-        if(title.length>15){ alert('Başlık 15 karakteri aşamaz.'); return; }
-        if(body.length>250){ alert('Konu 250 karakteri aşamaz.'); return; }
-        if(!textRegex.test(title) || !textRegex.test(body)){
+        if(title.length === 0 || body.length === 0) { 
+          alert('Başlık ve konu metni gerekli.'); 
+          return; 
+        }
+        if(title.length > 15) { 
+          alert('Başlık 15 karakteri aşamaz.'); 
+          return; 
+        }
+        if(body.length > 250) { 
+          alert('Konu 250 karakteri aşamaz.'); 
+          return; 
+        }
+        if(!textRegex.test(title) || !textRegex.test(body)) {
           alert('Özel karakterlere izin verilmez. Sadece harf, rakam ve boşluk kullanın.');
           return;
         }
@@ -1176,12 +1142,12 @@ function formatUserId(id) {
           username: session.user
         });
         closeModal('#modalTopic');
-        el('#inpTopicTitle').value='';
-        el('#inpTopicBody').value='';
+        el('#inpTopicTitle').value = '';
+        el('#inpTopicBody').value = '';
       };
 
       // Yorum gönderme
-      el('#btnSendComment').onclick=()=>{
+      el('#btnSendComment').onclick = () => {
         const session = JSON.parse(localStorage.getItem('session') || '{}');
         if (!session.userId) {
           alert('Yorum yapmak için giriş yapmalısınız!');
@@ -1190,37 +1156,46 @@ function formatUserId(id) {
         }
 
         const txt = el('#inpComment').value.trim();
-        if(txt.length===0){ alert('Yorum boş olamaz'); return; }
-        if(txt.length>250){ alert('Yorum 250 karakteri geçemez'); return; }
+        if(txt.length === 0) { 
+          alert('Yorum boş olamaz'); 
+          return; 
+        }
+        if(txt.length > 250) { 
+          alert('Yorum 250 karakteri geçemez'); 
+          return; 
+        }
         if (!activeTopicForComment) {
           alert('Bir konu seçilmedi');
           return;
         }
         
-        const idx = topics.findIndex(x=>x.id===activeTopicForComment.id);
-        if(idx>-1){ 
+        const idx = topics.findIndex(x => x.id === activeTopicForComment.id);
+        if(idx > -1) { 
           if (!topics[idx].comments) topics[idx].comments = [];
           topics[idx].comments.push({
-            text:txt, 
-            at:Date.now(),
+            text: txt, 
+            at: Date.now(),
             userId: session.userId,
             username: session.user
           }); 
           saveTopics(); 
         }
-        el('#inpComment').value='';
+        el('#inpComment').value = '';
         closeModal('#modalComment');
         renderTopicDetail(topics[idx]);
       };
 
-      // Login/Signup
-      el('#btnDoLogin').onclick=()=>{
+      // Login
+      el('#btnDoLogin').onclick = () => {
         const u = el('#loginUser').value.trim();
         const p = el('#loginPass').value.trim();
-        if(!u || !p){ alert('Kullanıcı adı ve şifre gerekli.'); return; }
-        const acc = JSON.parse(localStorage.getItem('account')||'null');
-        if(acc && acc.user===u && acc.pass===p){
-          localStorage.setItem('session', JSON.stringify({user:u, userId: acc.userId}));
+        if(!u || !p) { 
+          alert('Kullanıcı adı ve şifre gerekli.'); 
+          return; 
+        }
+        const acc = JSON.parse(localStorage.getItem('account') || 'null');
+        if(acc && acc.user === u && acc.pass === p) {
+          localStorage.setItem('session', JSON.stringify({user: u, userId: acc.userId}));
           closeModal('#modalLogin');
           alert('Giriş başarılı.');
           location.hash = '#profile';
@@ -1230,47 +1205,54 @@ function formatUserId(id) {
         }
       };
 
-      el('#btnDoSignup').onclick=()=>{
-        const mail=el('#suMail').value.trim();
-        const user=el('#suUser').value.trim();
-        const pass=el('#suPass').value.trim();
-        const pass2=el('#suPass2').value.trim();
-        if(!mail || !user || !pass || !pass2){ alert('Tüm alanlar gerekli.'); return; }
+      // Signup
+      el('#btnDoSignup').onclick = () => {
+        const mail = el('#suMail').value.trim();
+        const user = el('#suUser').value.trim();
+        const pass = el('#suPass').value.trim();
+        const pass2 = el('#suPass2').value.trim();
+        if(!mail || !user || !pass || !pass2) { 
+          alert('Tüm alanlar gerekli.'); 
+          return; 
+        }
         
-        if (!validateEmail(mail)) {
-          alert('Geçerli bir mail adresi giriniz.');
+        const mailValidation = validateEmail(mail);
+        if (!mailValidation.valid) {
+          alert(mailValidation.message);
           return;
         }
         
-        if (!validatePassword(pass)) {
-          alert('Şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.');
+        const passValidation = validatePassword(pass);
+        if (!passValidation.valid) {
+          alert(passValidation.message);
           return;
         }
         
-        if(pass!==pass2){ alert('Şifreler eşleşmiyor.'); return; }
+        if(pass !== pass2) { 
+          alert('Şifreler eşleşmiyor.'); 
+          return; 
+        }
         
-        // Yeni kullanıcı ID'si oluştur
         const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
         const userId = formatUserId(nextUserId);
         
-        localStorage.setItem('account', JSON.stringify({mail,user,pass, userId}));
+        localStorage.setItem('account', JSON.stringify({mail, user, pass, userId}));
         localStorage.setItem('nextUserId', (nextUserId + 1).toString());
         localStorage.setItem('session', JSON.stringify({user, userId}));
         closeModal('#modalSignup');
         
-        if(!localStorage.getItem('profile')){
+        if(!localStorage.getItem('profile')) {
           localStorage.setItem('profile', JSON.stringify({
             user, 
             userId,
-            pfp:null, 
-            savedLoc:null,
+            pfp: null, 
+            savedLoc: null,
             parkingNo: null,
             shoppingList: [],
             habits: [],
             specialDays: []
           }));
         } else {
-          // Mevcut profili güncelle
           const prof = JSON.parse(localStorage.getItem('profile'));
           prof.user = user;
           prof.userId = userId;
@@ -1281,15 +1263,14 @@ function formatUserId(id) {
         route();
       };
 
-      // --- PROFİL BUTONLARI ---
-      // PFP yükleme
-      el('#btnAddPfp').onclick=()=> el('#pfpInput').click();
-      el('#pfpInput').addEventListener('change', (e)=>{
+      // Profil butonları
+      el('#btnAddPfp').onclick = () => el('#pfpInput').click();
+      el('#pfpInput').addEventListener('change', (e) => {
         const f = e.target.files[0];
         if(!f) return;
         const reader = new FileReader();
-        reader.onload = ()=>{
-          const prof = JSON.parse(localStorage.getItem('profile'))||{};
+        reader.onload = () => {
+          const prof = JSON.parse(localStorage.getItem('profile')) || {};
           prof.pfp = reader.result; 
           localStorage.setItem('profile', JSON.stringify(prof));
           applyProfile();
@@ -1297,23 +1278,21 @@ function formatUserId(id) {
         reader.readAsDataURL(f);
       });
 
-      // Profil ayarları modalı
-      el('#btnProfileSettings').onclick=()=>{
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+      el('#btnProfileSettings').onclick = () => {
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
         el('#settingsUsername').value = prof.user || '';
         openModal('#modalProfileSettings');
       };
 
-      // Profil ayarları kaydet
       el('#btnSaveProfileSettings').onclick = () => {
         const newUsername = el('#settingsUsername').value.trim();
         const newPassword = el('#settingsPassword').value;
         const newPasswordConfirm = el('#settingsPasswordConfirm').value;
         
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
-        const acc = JSON.parse(localStorage.getItem('account')||'{}');
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        const acc = JSON.parse(localStorage.getItem('account') || '{}');
         
-        if (newPassword && !validatePassword(newPassword)) {
+        if (newPassword && !validatePassword(newPassword).valid) {
           alert('Yeni şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.');
           return;
         }
@@ -1344,159 +1323,38 @@ function formatUserId(id) {
       };
 
       // Konum butonları
-      el('#btnSaveLoc').onclick = async ()=>{
+      el('#btnSaveLoc').onclick = async () => {
         const p = await readCurrentLocation();
         if(!p) return;
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
         prof.savedLoc = p; 
         localStorage.setItem('profile', JSON.stringify(prof));
         alert('Konum kaydedildi.');
       };
 
-      el('#btnGoLoc').onclick = ()=>{
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
-        if(!prof.savedLoc){ alert('Önce konum kaydedin.'); return; }
-        const {lat,lng} = prof.savedLoc;
+      el('#btnGoLoc').onclick = () => {
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        if(!prof.savedLoc) { 
+          alert('Önce konum kaydedin.'); 
+          return; 
+        }
+        const {lat, lng} = prof.savedLoc;
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         window.open(url, '_blank');
       };
 
-     // --- MÜZİK (YOUTUBE IFRAME API) ---
-let player;
-let isRadioPlaying = false;
-
-// YouTube Iframe API yükleme
-function loadYouTubeAPI() {
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
-
-// YouTube API hazır olduğunda
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('youtubePlayer', {
-    height: '0',
-    width: '0',
-    videoId: 'jfKfPfyJRdk', // Lofi hip hop radio
-    playerVars: {
-      'playsinline': 1,
-      'enablejsapi': 1,
-      'origin': window.location.origin
-    },
-    events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
-    }
-  });
-}
-
-function onPlayerReady(event) {
-  el('#radioStatus').textContent = 'Hazır';
-  console.log('YouTube player hazır');
-}
-
-function onPlayerStateChange(event) {
-  const statusEl = el('#radioStatus');
-  
-  switch(event.data) {
-    case YT.PlayerState.PLAYING:
-      statusEl.textContent = 'Çalıyor';
-      isRadioPlaying = true;
-      break;
-    case YT.PlayerState.PAUSED:
-      statusEl.textContent = 'Duraklatıldı';
-      isRadioPlaying = false;
-      break;
-    case YT.PlayerState.ENDED:
-      statusEl.textContent = 'Bitti';
-      isRadioPlaying = false;
-      break;
-  }
-}
-
-// Müzik butonları - GÜNCELLENMİŞ
-el('#btnPlayRadio').onclick = () => {
-  if (player && typeof player.playVideo === 'function') {
-    player.playVideo();
-    el('#radioStatus').textContent = 'Başlatılıyor...';
-    isRadioPlaying = true;
-  } else {
-    alert('Müzik çalar henüz hazır değil. Lütfen birkaç saniye bekleyip tekrar deneyin.');
-  }
-};
-
-el('#btnStopRadio').onclick = () => {
-  if (player && typeof player.pauseVideo === 'function') {
-    player.pauseVideo();
-    el('#radioStatus').textContent = 'Durduruldu';
-    isRadioPlaying = false;
-  }
-};
-
-// --- Olay İşleyicileri ---
-document.addEventListener('DOMContentLoaded', () => {
-    // ... mevcut DOMContentLoaded içeriği ...
-    
-    // Müzik Oynatıcı Olay İşleyicileri
-    el('#btnPlayMusic').addEventListener('click', handlePlayMusic);
-    el('#btnStopMusic').addEventListener('click', handleStopMusic);
-    
-    // YouTube API'yi yükle
-    loadYouTubeAPI();
-
-    // Yeni Konu Açma
-    el('#btnSaveTopic').addEventListener('click', ()=>{
-        // ... (mevcut konu kaydetme mantığı) ...
-    });
-    
-    // Üye Olma İşlemi (SIGNUP)
-    el('#btnDoSignup').addEventListener('click', ()=>{
-        const mail = el('#suMail').value.trim();
-        const user = el('#suUser').value.trim();
-        const pass = el('#suPass').value;
-        const pass2 = el('#suPass2').value;
-
-        const mailValidation = validateEmail(mail);
-        if (!mailValidation.valid) {
-            alert('Üyelik hatası: ' + mailValidation.message);
-            return;
-        }
-
-        const passValidation = validatePassword(pass);
-        if (!passValidation.valid) {
-            alert('Üyelik hatası: ' + passValidation.message);
-            return;
-        }
-
-        if (pass !== pass2) {
-            alert('Üyelik hatası: Şifreler uyuşmuyor.');
-            return;
-        }
-
-        const newId = (userList.length > 0 ? userList[userList.length - 1].id : 0) + 1;
-        const newUser = {
-            id: newId,
-            mail: mail.toLowerCase(),
-            username: user,
-            password: pass, // Gerçek uygulamada HASHLENMELİ
-            createdAt: Date.now()
-        };
-
-        userList.push(newUser);
-        localStorage.setItem('userList', JSON.stringify(userList));
-        
-        alert('Tebrikler, kaydınız başarıyla tamamlandı. Giriş yapabilirsiniz.');
-        closeModal('#modalSignup');
-        openModal('#modalLogin');
-    });
-
+      // Müzik butonları
+      el('#btnPlayMusic').addEventListener('click', handlePlayMusic);
+      el('#btnStopMusic').addEventListener('click', handleStopMusic);
 
       // Otopark butonları
       el('#btnSaveParking').onclick = () => {
         const parkingNo = el('#inpParkingNo').value.trim();
-        if(!parkingNo) { alert('Otopark numarası gerekli.'); return; }
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+        if(!parkingNo) { 
+          alert('Otopark numarası gerekli.'); 
+          return; 
+        }
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
         prof.parkingNo = parkingNo;
         localStorage.setItem('profile', JSON.stringify(prof));
         el('#parkingDisplay').textContent = parkingNo;
@@ -1504,7 +1362,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       el('#btnClearParking').onclick = () => {
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
         prof.parkingNo = null;
         localStorage.setItem('profile', JSON.stringify(prof));
         el('#parkingDisplay').textContent = '-';
@@ -1518,7 +1376,7 @@ document.addEventListener('DOMContentLoaded', () => {
       el('#btnAddShopping').onclick = () => {
         const item = el('#inpShoppingItem').value.trim();
         if(!item) return;
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
         if(!prof.shoppingList) prof.shoppingList = [];
         prof.shoppingList.push(item);
         localStorage.setItem('profile', JSON.stringify(prof));
@@ -1530,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
       el('#btnAddHabit').onclick = () => {
         const habitName = el('#inpHabit').value.trim();
         if(!habitName) return;
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
         if(!prof.habits) prof.habits = [];
         prof.habits.push({ name: habitName, days: [] });
         localStorage.setItem('profile', JSON.stringify(prof));
@@ -1542,8 +1400,11 @@ document.addEventListener('DOMContentLoaded', () => {
       el('#btnAddSpecialDay').onclick = () => {
         const name = el('#inpSpecialDayName').value.trim();
         const date = el('#inpSpecialDayDate').value;
-        if(!name || !date) { alert('Etkinlik adı ve tarihi gerekli.'); return; }
-        const prof = JSON.parse(localStorage.getItem('profile')||'{}');
+        if(!name || !date) { 
+          alert('Etkinlik adı ve tarihi gerekli.'); 
+          return; 
+        }
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
         if(!prof.specialDays) prof.specialDays = [];
         prof.specialDays.push({ name, date });
         localStorage.setItem('profile', JSON.stringify(prof));
@@ -1557,6 +1418,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderTopics();
       renderRecipes();
       route();
+      loadYouTubeAPI();
     });
 
     // Hash değişikliklerini dinle
