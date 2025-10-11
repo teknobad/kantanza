@@ -293,11 +293,7 @@
           <div class="youtube-player-controls">
             <label for="musicLinkInput">YouTube Video Linki (URL)</label>
             <input type="text" id="musicLinkInput" placeholder="YouTube video linkini yapıştırın" />
-            <div style="margin:10px 0;text-align:center;color:var(--muted);font-size:12px;">VEYA (max 5 şarkı)</div>
             
-            <label for="musicNameInput">Şarkı Adı(ları) - Virgülle Ayırın</label>
-            <textarea id="musicNameInput" rows="3" maxlength="250" placeholder="Şarkı 1, Şarkı 2, Şarkı 3, ..."></textarea>
-
             <div class="row" style="margin-top:10px;justify-content:space-between">
               <button id="btnPlayMusic">Oynat</button>
               <button id="btnStopMusic" class="ghost">Durdur</button>
@@ -579,22 +575,6 @@
         ingredients: "Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",
         description: "Klasik Türk mutfağından doyurucu bir çorba.",
         fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun. Mercimekleri ekleyip 2 dakika daha kavurun. Su ekleyip kaynatın. Patatesleri ekleyip yumuşayana kadar pişirin. Blendırdan geçirip servis yapın. Limon suyu ile servis edin."
-      },
-      {
-        id: 3,
-        title: "Domatesli Makarna",
-        ingredientCount: 6,
-        ingredients: "Makarna, domates, sarımsak, zeytinyağı, tuz, fesleğen",
-        description: "10 dakikada hazırlanabilecek pratik bir makarna.",
-        fullRecipe: "Makarnayı tuzlu suda haşlayın. Domatesleri küp küp doğrayın. Zeytinyağında sarımsak ve domatesleri soteleyin. Haşlanmış makarnayı ekleyip karıştırın. Üzerine fesleğen serperek servis yapın."
-      },
-      {
-        id: 4,
-        title: "Sebzeli Omlet",
-        ingredientCount: 7,
-        ingredients: "Yumurta, süt, biber, domates, soğan, tuz, karabiber",
-        description: "Kahvaltılar için sağlıklı ve doyurucu bir omlet.",
-        fullRecipe: "Sebzeleri küçük küçük doğrayın. Yumurta ve sütü çırpın. Tavanızı ısıtın, sebzeleri soteleyin. Yumurta karışımını ekleyin. Altın rengi alana kadar pişirin. Sıcak servis yapın."
       }
     ];
 
@@ -1079,7 +1059,6 @@
       }
 
       const link = el('#musicLinkInput').value.trim();
-      const names = el('#musicNameInput').value.trim();
 
       currentPlaylist = [];
       currentPlaylistIndex = 0;
@@ -1092,21 +1071,6 @@
         } else {
           alert('Geçersiz YouTube Video Linki.');
           el('#musicStatus').textContent = 'HATA: Geçersiz link.';
-          return;
-        }
-      } else if (names) {
-        const songNames = names.split(',').map(s => s.trim()).filter(s => s.length > 0).slice(0, 5);
-        if (songNames.length > 0) {
-          el('#musicStatus').textContent = `${songNames.length} şarkı aranıyor...`;
-          // 5 şarkı özelliği için sabit video ID'leri
-          const audioOnlyIds = ['5qap5aO4i9A', 'MCkTebktHVc', 'jfKfPfyJRdk', 'kgx4WGK0oNU', 'Dx5qFachd3A'];
-          currentPlaylist = songNames.map((name, index) => {
-            return audioOnlyIds[index % audioOnlyIds.length];
-          });
-          el('#musicStatus').textContent = `${currentPlaylist.length} şarkı listeye eklendi.`;
-        } else {
-          alert('Lütfen geçerli bir YouTube linki yapıştırın veya en fazla 5 şarkı adı yazın.');
-          el('#musicStatus').textContent = 'Hazır.';
           return;
         }
       } else {
