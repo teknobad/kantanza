@@ -16,7 +16,6 @@
       --ok:#7fdc82;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri, Arial, Helvetica, sans-serif;}
 
     /* Genel iskelet */
@@ -36,34 +35,64 @@
     label{display:block;margin:10px 0 6px}
 
     /* Başlık alanı */
-    header.card{grid-column:1 / -1;position:relative}
+    header.card{grid-column:1 / -1;}
     .brand{font-family:'Arial Black', Arial, Helvetica, sans-serif;font-size:18pt;font-weight:900;letter-spacing:.5px;cursor:pointer}
     .brand-underline{height:3px;background:var(--ink);width:max(140px, 14ch);border-radius:3px;margin-top:6px}
+    .auth-actions{gap:10px}
+    
+    /* Başlık alanı - ORTALAMA İÇİN */
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
 
-    /* header layout: brand centered, actions right */
-    .header-content{display:flex;align-items:center;width:100%;gap:12px}
-    .brand-container{position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
-    .auth-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .brand-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-    /* admin button small fix */
-    #adminButton{display:flex;align-items:center}
+    .auth-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Admin butonu için stil */
+    #adminButton {
+      display: none;
+      margin-right: 10px;
+    }
 
     /* Mobil için responsive */
     @media (max-width: 768px) {
-      .brand-container{position:static;transform:none}
-      .header-content{flex-direction:column;align-items:center}
-      .auth-actions{width:100%;justify-content:center}
+      .header-content {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .auth-actions {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
     /* Konular listesi */
     .topics .title{font-family:Calibri, Arial, Helvetica, sans-serif;font-weight:700;font-size:16pt}
     .topic-item{padding:12px 8px;cursor:pointer}
-    .topic-item:hover{background:rgba(255,255,255,0.03)}
+    .topic-item:hover{background:rgba(255,255,255,0.05)}
+    .topic-item + .topic-item{border-top:1px solid var(--line)}
     .topic-id{font-weight:700;color:var(--muted);margin-right:8px}
     .topic-head{font-weight:700}
     .topic-desc{color:var(--muted);font-size:14px;margin-top:4px}
     .topic-user{color:var(--muted);font-size:12px;margin-top:4px}
 
+    /* Sol yan: film & yemek */
+    .sidebar h3{margin:0 0 8px}
+    .badge{display:inline-block;background:var(--line);padding:2px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+    
     /* Yemek tarifleri */
     .recipe-item{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
     .recipe-item:last-child{margin-bottom:0;border-bottom:none}
@@ -71,6 +100,9 @@
     .recipe-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px;color:var(--muted)}
     .recipe-ingredients{font-size:14px;margin-bottom:10px;color:var(--muted)}
     .recipe-button{width:100%;margin-top:8px}
+
+    /* Sağ yan: kombin */
+    .outfit li{margin-bottom:6px}
 
     /* Günün İngilizce Kelimesi */
     .word-of-the-day {margin-top: 16px;}
@@ -89,13 +121,13 @@
     .label-12-calibri{font-family:Calibri, Arial, Helvetica, sans-serif;font-weight:700;font-size:12pt}
     .label-12-calibri-normal{font-family:Calibri, Arial, Helvetica, sans-serif;font-size:12pt}
     .topic-view-title{font-family:"Comic Sans MS", "Comic Sans", cursive;font-weight:700;font-size:18pt}
-
+    
     .link{color:var(--accent)}
-
+    
     /* Konu detay sayfası */
     .comment-item{padding:12px 0;border-bottom:1px solid var(--line)}
     .comment-item:last-child{border-bottom:none}
-
+    
     @media (max-width:900px){
       .container{grid-template-columns:1fr; padding:12px}
     }
@@ -109,14 +141,20 @@
       <div class="brand" id="brandTitle">KANTANZA</div>
       <div class="brand-underline"></div>
     </div>
-
-    <div class="auth-actions" id="authActions">
-      <div id="adminButton" style="display:none"><button id="btnAdminPanel" class="ghost">Admin Paneli</button></div>
+    <div class="auth-actions">
+      <!-- Admin Panel Butonu -->
+      <div id="adminButton" style="display: none;">
+        <button id="btnAdminPanel" class="ghost">Admin Paneli</button>
+      </div>
+      
+      <!-- Giriş yapmamış kullanıcı butonları -->
       <div id="guestButtons">
         <button id="btnLogin">Giriş yap</button>
         <button class="ghost" id="btnSignup">Üye ol</button>
       </div>
-      <div id="userButton" style="display:none">
+      
+      <!-- Giriş yapmış kullanıcı butonu -->
+      <div id="userButton" style="display: none;">
         <button id="btnProfileHeader">Profilim</button>
         <button id="btnLogout" class="danger">Çıkış yap</button>
       </div>
@@ -125,339 +163,703 @@
   <div class="line" style="margin-top:12px"></div>
 </header>
 
-<main class="container">
-  <!-- Sol: Film & Yemek -->
-  <aside class="card pad sidebar">
-    <h3>Bugünkü Film Tavsiyemiz</h3>
-    <div class="line" style="margin:8px 0"></div>
-    <div class="row" style="flex-wrap:wrap;gap:6px">
-      <span class="badge">IMDb: 8.6</span>
-      <span class="badge">Rotten Tomatoes: 94%</span>
-      <span class="badge">+18 değil</span>
-      <span class="badge">Macera • Korku • Gizem</span>
+  <main class="container">
+    <!-- Sol: Film & Yemek -->
+    <aside class="card pad sidebar">
+      <h3>Bugünkü Film Tavsiyemiz</h3>
+      <div class="line" style="margin:8px 0"></div>
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <span class="badge">IMDb: 8.6</span>
+        <span class="badge">Rotten Tomatoes: 94%</span>
+        <span class="badge">+18 değil</span>
+        <span class="badge">Macera • Korku • Gizem</span>
+      </div>
+      <p><strong>Film:</strong> "Karanlığın Ormanı"</p>
+      <p><strong>Oyuncular:</strong> A. Kaya, B. Demir, C. Öz</p>
+      <p><strong>Kısaca:</strong> Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.</p>
+      <div class="line" style="margin:16px 0"></div>
+      <!-- YEMEK TARİFLERİ BÖLÜMÜ -->
+      <h3>Basit Yemek Tarifleri</h3>
+      <div id="recipesList"></div>
+    </aside>
+    
+    <!-- Orta: Konular -->
+    <section class="card pad topics" id="view-home">
+      <div class="between">
+        <div class="title">KONULAR</div>
+        <button id="btnNewTopic">Konu Aç</button>
+      </div>
+      <div class="line" style="margin-top:8px"></div>
+      <div id="topicsList" style="margin-top:8px"></div>
+    </section>
+    
+    <!-- Sağ: Kombin ve Günün İngilizce Kelimesi -->
+    <div>
+      <!-- Kombin bölümü buraya yüklenecek -->
+      <div id="outfit-section"></div>
+      
+      <!-- GÜNÜN İNGİLİZCE KELİMESİ BÖLÜMÜ -->
+      <aside class="card pad word-of-the-day">
+        <h3>Günün İngilizce Kelimesi</h3>
+        <div class="line" style="margin:8px 0"></div>
+        <div class="english-word" id="englishWord">Serendipity</div>
+        <div class="word-pronunciation" id="wordPronunciation">/ˌser.ənˈdɪp.ə.ti/</div>
+        <div class="word-meaning" id="wordMeaning">Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma</div>
+        <div class="word-example" id="wordExample">"Finding this beautiful cafe was a real serendipity." (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)</div>
+      </aside>
     </div>
-    <p><strong>Film:</strong> "Karanlığın Ormanı"</p>
-    <p><strong>Oyuncular:</strong> A. Kaya, B. Demir, C. Öz</p>
-    <p><strong>Kısaca:</strong> Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.</p>
-    <div class="line" style="margin:16px 0"></div>
-    <h3>Basit Yemek Tarifleri</h3>
-    <div id="recipesList"></div>
-  </aside>
+  </main>
 
-  <!-- Orta: Konular -->
-  <section class="card pad topics" id="view-home">
-    <div class="between">
-      <div class="title">KONULAR</div>
-      <button id="btnNewTopic">Konu Aç</button>
+  <!-- Konu Detay Görünümü (SPA) -->
+  <section class="container" id="view-topic" style="display:none">
+    <div class="card pad" style="grid-column:1 / -1">
+      <a class="link" href="#" id="backToHome">← Geri dön</a>
     </div>
-    <div class="line" style="margin-top:8px"></div>
-    <div id="topicsList" style="margin-top:8px"></div>
+    <div class="card pad" style="grid-column:1 / -1">
+      <div id="topicDetail"></div>
+    </div>
   </section>
 
-  <!-- Sağ: Kombin ve Günün İngilizce Kelimesi -->
-  <div>
-    <div id="outfit-section"></div>
-    <aside class="card pad word-of-the-day">
-      <h3>Günün İngilizce Kelimesi</h3>
-      <div class="line" style="margin:8px 0"></div>
-      <div class="english-word" id="englishWord">Serendipity</div>
-      <div class="word-pronunciation" id="wordPronunciation">/ˌser.ənˈdɪp.ə.ti/</div>
-      <div class="word-meaning" id="wordMeaning">Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma</div>
-      <div class="word-example" id="wordExample">"Finding this beautiful cafe was a real serendipity." (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)</div>
-    </aside>
-  </div>
-</main>
-
-<section class="container" id="view-topic" style="display:none">
-  <div class="card pad" style="grid-column:1 / -1">
-    <a class="link" href="#" id="backToHome">← Geri dön</a>
-  </div>
-  <div class="card pad" style="grid-column:1 / -1">
-    <div id="topicDetail"></div>
-  </div>
-</section>
-
-<!-- Modals (kısaltılmış ama tam işlevli) -->
-<div class="modal" id="modalTopic">
-  <div class="sheet">
-    <div class="head"><div class="label-12-calibri">KONU BAŞLIĞI</div></div>
-    <div class="body">
-      <div class="line" style="margin:6px 0 12px"></div>
-      <input id="inpTopicTitle" maxlength="15" placeholder="Başlık (max 15)" />
-      <label class="label-12-calibri-normal" style="margin-top:14px">KONU</label>
-      <textarea id="inpTopicBody" rows="5" maxlength="250" placeholder="Açıklama (max 250)"></textarea>
-      <small style="color:var(--muted)">* Özel karakterlere izin verilmez. Harf ve rakamlar metin olarak kabul edilir.</small>
-    </div>
-    <div class="foot">
-      <button class="ghost" data-close="#modalTopic">İptal</button>
-      <button id="btnSaveTopic">Konuyu Kaydet</button>
+  <!-- Modals (konu, yorum, login, signup, yemek) -->
+  <div class="modal" id="modalTopic">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">KONU BAŞLIĞI</div></div>
+      <div class="body">
+        <div class="line" style="margin:6px 0 12px"></div>
+        <input id="inpTopicTitle" maxlength="15" placeholder="Başlık (max 15)" />
+        <label class="label-12-calibri-normal" style="margin-top:14px">KONU</label>
+        <textarea id="inpTopicBody" rows="5" maxlength="250" placeholder="Açıklama (max 250)"></textarea>
+        <small style="color:var(--muted)">* Özel karakterlere izin verilmez. Harf ve rakamlar metin olarak kabul edilir.</small>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalTopic">İptal</button>
+        <button id="btnSaveTopic">Konuyu Kaydet</button>
+      </div>
     </div>
   </div>
-</div>
-
-<div class="modal" id="modalComment">
-  <div class="sheet">
-    <div class="head"><div class="label-12-calibri">yorumum</div></div>
-    <div class="body">
-      <textarea id="inpComment" rows="5" maxlength="250" placeholder="Yorum (max 250)"></textarea>
-    </div>
-    <div class="foot">
-      <button class="ghost" data-close="#modalComment">İptal</button>
-      <button id="btnSendComment">Gönder</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="modalLogin">
-  <div class="sheet">
-    <div class="head"><div class="label-12-calibri">Kullanıcı adı</div></div>
-    <div class="body">
-      <input id="loginUser" placeholder="Kullanıcı adı" />
-      <div class="line" style="margin:8px 0"></div>
-      <label class="label-12-calibri-normal">Şifre</label>
-      <input id="loginPass" type="password" placeholder="Şifre" />
-      <div class="line" style="margin:8px 0"></div>
-    </div>
-    <div class="foot">
-      <button class="ghost" data-close="#modalLogin">Kapat</button>
-      <button id="btnDoLogin">Giriş yap</button>
+  
+  <div class="modal" id="modalComment">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">yorumum</div></div>
+      <div class="body">
+        <textarea id="inpComment" rows="5" maxlength="250" placeholder="Yorum (max 250)"></textarea>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalComment">İptal</button>
+        <button id="btnSendComment">Gönder</button>
+      </div>
     </div>
   </div>
-</div>
-
-<div class="modal" id="modalSignup">
-  <div class="sheet">
-    <div class="head"><div class="label-12-calibri">Üyelik</div></div>
-    <div class="body">
-      <label class="label-12-calibri-normal">Mail</label>
-      <input id="suMail" type="email" placeholder="ornek@site.com" />
-      <div class="line" style="margin:8px 0"></div>
-      <label class="label-12-calibri-normal">Kullanıcı adı</label>
-      <input id="suUser" placeholder="Kullanıcı adı" />
-      <div class="line" style="margin:8px 0"></div>
-      <label class="label-12-calibri-normal">Şifre</label>
-      <input id="suPass" type="password" placeholder="Şifre (min 5 karakter, 1 büyük harf, 1 sayı)" />
-      <label class="label-12-calibri-normal" style="margin-top:10px">Şifre onay</label>
-      <input id="suPass2" type="password" placeholder="Şifre tekrar" />
-      <div class="line" style="margin:8px 0"></div>
-      <small style="color:var(--muted)">* Şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.</small>
-    </div>
-    <div class="foot">
-      <button class="ghost" data-close="#modalSignup">Kapat</button>
-      <button id="btnDoSignup">Üye ol</button>
+  
+  <div class="modal" id="modalLogin">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">Kullanıcı adı</div></div>
+      <div class="body">
+        <input id="loginUser" placeholder="Kullanıcı adı" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Şifre</label>
+        <input id="loginPass" type="password" placeholder="Şifre" />
+        <div class="line" style="margin:8px 0"></div>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalLogin">Kapat</button>
+        <button id="btnDoLogin">Giriş yap</button>
+      </div>
     </div>
   </div>
-</div>
-
-<div class="modal" id="modalRecipe">
-  <div class="sheet">
-    <div class="head"><div class="label-12-calibri" id="modalRecipeTitle">Yemek Tarifi</div></div>
-    <div class="body" id="modalRecipeBody"></div>
-    <div class="foot">
-      <button class="ghost" data-close="#modalRecipe">Kapat</button>
+  
+  <div class="modal" id="modalSignup">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">Üyelik</div></div>
+      <div class="body">
+        <label class="label-12-calibri-normal">Mail</label>
+        <input id="suMail" type="email" placeholder="ornek@site.com" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Kullanıcı adı</label>
+        <input id="suUser" placeholder="Kullanıcı adı" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Şifre</label>
+        <input id="suPass" type="password" placeholder="Şifre (min 5 karakter, 1 büyük harf, 1 sayı)" />
+        <label class="label-12-calibri-normal" style="margin-top:10px">Şifre onay</label>
+        <input id="suPass2" type="password" placeholder="Şifre tekrar" />
+        <div class="line" style="margin:8px 0"></div>
+        <small style="color:var(--muted)">* Şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.</small>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalSignup">Kapat</button>
+        <button id="btnDoSignup">Üye ol</button>
+      </div>
     </div>
   </div>
-</div>
+  
+  <!-- YEMEK TARİFİ MODALI -->
+  <div class="modal" id="modalRecipe">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri" id="modalRecipeTitle">Yemek Tarifi</div></div>
+      <div class="body" id="modalRecipeBody">
+        <!-- İçerik JavaScript ile doldurulacak -->
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalRecipe">Kapat</button>
+      </div>
+    </div>
+  </div>
 
-<script>
-  /* --- helpers / small storage wrapper --- */
-  const el = s => document.querySelector(s);
-  const els = s => Array.from(document.querySelectorAll(s));
-  const Storage = {
-    get(key, fallback){try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch(e){return fallback}},
-    set(key, val){localStorage.setItem(key, JSON.stringify(val))}
-  };
+  <script>
+    // --- Yardımcı seçiciler ---
+    const el = s => document.querySelector(s);
+    const els = s => Array.from(document.querySelectorAll(s));
+    
+    // --- Uygulama durumu ---
+    let topics = JSON.parse(localStorage.getItem('topics') || '[]');
+    let activeTopicForComment = null;
+    let userList = JSON.parse(localStorage.getItem('userList') || '[]');
 
-  // state
-  let topics = Storage.get('topics', []);
-  let activeTopicForComment = null;
-  let userList = Storage.get('userList', []);
+    // --- Günün İngilizce Kelimesi Verisi ---
+    const englishWords = [
+      {
+        word: "Serendipity",
+        pronunciation: "/ˌser.ənˈdɪp.ə.ti/",
+        meaning: "Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma",
+        example: "\"Finding this beautiful cafe was a real serendipity.\" (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)"
+      },
+      {
+        word: "Ephemeral",
+        pronunciation: "/ɪˈfem.ər.əl/",
+        meaning: "Kısa ömürlü, geçici",
+        example: "\"The beauty of cherry blossoms is ephemeral.\" (Kiraz çiçeklerinin güzelliği geçicidir.)"
+      },
+      {
+        word: "Resilience",
+        pronunciation: "/rɪˈzɪl.i.əns/",
+        meaning: "Dayanıklılık, zorluklardan sonra toparlanabilme yeteneği",
+        example: "\"Her resilience helped her overcome many challenges.\" (Dayanıklılığı, birçok zorluğun üstesinden gelmesine yardımcı oldu.)"
+      },
+      {
+        word: "Ubiquitous",
+        pronunciation: "/juːˈbɪk.wɪ.təs/",
+        meaning: "Her yerde bulunan, yaygın",
+        example: "\"Smartphones have become ubiquitous in modern society.\" (Akıllı telefonlar modern toplumda her yerde bulunur hale geldi.)"
+      },
+      {
+        word: "Melancholy",
+        pronunciation: "/ˈmel.ən.kɒl.i/",
+        meaning: "Hüzün, melankoli",
+        example: "\"There's a sense of melancholy in his music.\" (Onun müziğinde bir hüzün duygusu var.)"
+      }
+    ];
 
-  // english words (unchanged)
-  const englishWords = [
-    {word: "Serendipity", pronunciation: "/ˌser.ənˈdɪp.ə.ti/", meaning: "Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma", example: '"Finding this beautiful cafe was a real serendipity." (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)'},
-    {word: "Ephemeral", pronunciation: "/ɪˈfem.ər.əl/", meaning: "Kısa ömürlü, geçici", example: '"The beauty of cherry blossoms is ephemeral." (Kiraz çiçeklerinin güzelliği geçicidir.)'},
-    {word: "Resilience", pronunciation: "/rɪˈzɪl.i.əns/", meaning: "Dayanıklılık, zorluklardan sonra toparlanabilme yeteneği", example: '"Her resilience helped her overcome many challenges." (Dayanıklılığı, birçok zorluğun üstesinden gelmesine yardımcı oldu.)'},
-    {word: "Ubiquitous", pronunciation: "/juːˈbɪk.wɪt.əs/", meaning: "Her yerde bulunan, yaygın", example: '"Smartphones have become ubiquitous in modern society." (Akıllı telefonlar modern toplumda her yerde bulunur hale geldi.)'},
-    {word: "Melancholy", pronunciation: "/ˈmel.ən.kɒl.i/", meaning: "Hüzün, melankoli", example: '"There's a sense of melancholy in his music." (Onun müziğinde bir hüzün duygusu var.)'}
-  ];
+    // --- YEMEK TARİFLERİ ---
+    const recipes = [
+      {
+        id: 1,
+        title: "Fırında Baharatlı Tavuk",
+        ingredientCount: 7,
+        ingredients: "Tavuk baget, zeytinyağı, sarımsak, kekik, kırmızı biber, tuz, karabiber",
+        description: "Tavuk bagetler zeytinyağı ve baharatla harmanlanıp fırında kızartılır.",
+        fullRecipe: "Malzemeleri bir kapta karıştırın. Tavukları marine edip 30 dakika bekletin. 200°C önceden ısıtılmış fırında 35-40 dakika pişirin."
+      },
+      {
+        id: 2,
+        title: "Mercimek Çorbası",
+        ingredientCount: 8,
+        ingredients: "Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",
+        description: "Klasik Türk mutfağından doyurucu bir çorba.",
+        fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun. Mercimekleri ekleyip su ilave edin. Patatesleri ekleyip pişirin. Blendırdan geçirip servis yapın."
+      }
+    ];
 
-  // recipes (unchanged)
-  const recipes = [
-    {id:1,title:"Fırında Baharatlı Tavuk",ingredientCount:7,ingredients:"Tavuk baget, zeytinyağı, sarımsak, kekik, kırmızı biber, tuz, karabiber",description:"Tavuk bagetler zeytinyağı ve baharatla harmanlanıp fırında kızartılır.",fullRecipe:"Malzemeleri bir kapta karıştırın. Tavukları marine edip 30 dakika bekletin. 200°C önceden ısıtılmış fırında 35-40 dakika pişirin."},
-    {id:2,title:"Mercimek Çorbası",ingredientCount:8,ingredients:"Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",description:"Klasik Türk mutfağından doyurucu bir çorba.",fullRecipe:"Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun. Mercimekleri ekleyip su ilave edin. Patatesleri ekleyip pişirin. Blendırdan geçirip servis yapın."}
-  ];
+    // --- KONU YÖNETİMİ ---
+    const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
 
-  // validation
-  const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
-  const allowedDomains = ['gmail.com','hotmail.com','outlook.com','yahoo.com'];
+    // --- VALIDASYON FONKSİYONLARI ---
+    const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
 
-  function escapeHTML(s=''){return String(s).replace(/[&<>\"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+    // --- YARDIMCI FONKSİYONLAR ---
+    // Admin butonunu güncelleme
+    function updateAuthButtons() {
+      const session = JSON.parse(localStorage.getItem('session') || '{}');
+      const guestButtons = document.getElementById('guestButtons');
+      const userButton = document.getElementById('userButton');
+      const adminButton = document.getElementById('adminButton');
+      
+      if (session.userId) {
+        guestButtons.style.display = 'none';
+        userButton.style.display = 'flex';
+        
+        // Admin kontrolü - basit bir yöntem
+        if (session.user === 'admin' || session.userId === '00001') {
+          adminButton.style.display = 'flex';
+        } else {
+          adminButton.style.display = 'none';
+        }
+      } else {
+        guestButtons.style.display = 'flex';
+        userButton.style.display = 'none';
+        adminButton.style.display = 'none';
+      }
+    }
 
-  function validateEmail(email){
-    if(!email || typeof email !== 'string') return {valid:false,message:'Geçersiz e-posta'};
-    const parts = email.split('@'); if(parts.length!==2) return {valid:false,message:'Geçersiz e-posta formatı.'};
-    const domain = parts[1].toLowerCase(); if(!allowedDomains.includes(domain)) return {valid:false,message:`@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.`};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if(!emailRegex.test(email)) return {valid:false,message:'Geçersiz e-posta formatı.'};
-    if(userList.some(u => u.mail.toLowerCase()===email.toLowerCase())) return {valid:false,message:'Bu e-posta adresi zaten kayıtlı.'};
-    return {valid:true,message:''};
-  }
+    function logout() {
+      localStorage.removeItem('session');
+      updateAuthButtons();
+      location.hash = '#home';
+      route();
+      alert('Çıkış yapıldı.');
+    }
 
-  function validatePassword(password){ if(typeof password !== 'string') return {valid:false,message:'Geçersiz şifre'}; if(password.length<5) return {valid:false,message:'Şifre en az 5 karakter olmalı.'}; if(!/[A-Z]/.test(password)) return {valid:false,message:'Şifre en az 1 büyük harf içermeli.'}; if(!/\d/.test(password)) return {valid:false,message:'Şifre en az 1 sayı içermeli.'}; return {valid:true,message:''}; }
+    function setEnglishWordOfTheDay() {
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+      const wordIndex = dayOfYear % englishWords.length;
+      const wordData = englishWords[wordIndex];
+      
+      el('#englishWord').textContent = wordData.word;
+      el('#wordPronunciation').textContent = wordData.pronunciation;
+      el('#wordMeaning').textContent = wordData.meaning;
+      el('#wordExample').textContent = wordData.example;
+    }
 
-  function formatUserId(num){ return String(num).padStart(5,'0'); }
+    function openModal(id) { el(id).classList.add('show'); }
+    function closeModal(id) { el(id).classList.remove('show'); }
+    
+    function escapeHTML(s) { 
+      return s.replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); 
+    }
 
-  // small utilities
-  function openModal(id){ el(id).classList.add('show') }
-  function closeModal(id){ el(id).classList.remove('show') }
+    function validateEmail(email) {
+      const parts = email.split('@');
+      if (parts.length !== 2) return { valid: false, message: "Geçersiz e-posta formatı." };
+      
+      const domain = parts[1].toLowerCase();
+      if (!allowedDomains.includes(domain)) {
+        return { 
+          valid: false, 
+          message: `@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.` 
+        };
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return { valid: false, message: "Geçersiz e-posta formatı." };
+      }
 
-  function setEnglishWordOfTheDay(){
-    const today = new Date();
-    const dayOfYear = Math.floor((today - new Date(today.getFullYear(),0,0))/(1000*60*60*24));
-    const wordIndex = dayOfYear % englishWords.length;
-    const wordData = englishWords[wordIndex];
-    el('#englishWord').textContent = wordData.word;
-    el('#wordPronunciation').textContent = wordData.pronunciation;
-    el('#wordMeaning').textContent = wordData.meaning;
-    el('#wordExample').textContent = wordData.example;
-  }
+      if (userList.some(user => user.mail.toLowerCase() === email.toLowerCase())) {
+        return { valid: false, message: "Bu e-posta adresi zaten kayıtlı." };
+      }
+      
+      return { valid: true, message: "" };
+    }
 
-  function saveTopics(){ Storage.set('topics', topics); }
+    function validatePassword(password) {
+      if (password.length < 5) return { valid: false, message: "Şifre en az 5 karakter olmalı." };
+      if (!/[A-Z]/.test(password)) return { valid: false, message: "Şifre en az 1 büyük harf içermeli." };
+      if (!/\d/.test(password)) return { valid: false, message: "Şifre en az 1 sayı içermeli." };
+      return { valid: true, message: "" };
+    }
 
-  function addTopic({title, body, userId, username}){
-    // use timestamp-based id to avoid collisions
-    const id = Date.now();
-    const t = {id, title, body, comments: [], createdAt: Date.now(), userId, username};
-    topics.unshift(t);
-    saveTopics(); renderTopics(); return t;
-  }
+    function formatUserId(id) {
+      return String(id).padStart(5, '0');
+    }
 
-  function renderRecipes(){
-    const container = el('#recipesList'); container.innerHTML='';
-    recipes.forEach(r=>{
-      const div = document.createElement('div'); div.className='recipe-item';
-      div.innerHTML = `<div class="recipe-title">${escapeHTML(r.title)}</div><div class="recipe-meta"><span>${r.ingredientCount} malzeme</span></div><div class="recipe-ingredients">${escapeHTML(r.ingredients)}</div><button class="recipe-button" data-recipe-id="${r.id}">Tarif Göster</button>`;
-      container.appendChild(div);
-    })
-  }
+    // --- YEMEK TARİFLERİ FONKSİYONLARI ---
+    function renderRecipes() {
+      const container = el('#recipesList');
+      container.innerHTML = '';
+      recipes.forEach(recipe => {
+        const recipeEl = document.createElement('div');
+        recipeEl.className = 'recipe-item';
+        recipeEl.innerHTML = `
+          <div class="recipe-title">${recipe.title}</div>
+          <div class="recipe-meta">
+            <span>${recipe.ingredientCount} malzeme</span>
+          </div>
+          <div class="recipe-ingredients">${recipe.ingredients}</div>
+          <button class="recipe-button" data-recipe-id="${recipe.id}">Tarif Göster</button>
+        `;
+        container.appendChild(recipeEl);
+      });
+    }
 
-  function showRecipeModal(recipe){ el('#modalRecipeTitle').textContent = recipe.title; el('#modalRecipeBody').innerHTML = `<p><strong>Malzemeler:</strong> ${escapeHTML(recipe.ingredients)}</p><p><strong>Hazırlanışı:</strong> ${escapeHTML(recipe.fullRecipe)}</p>`; openModal('#modalRecipe'); }
+    function showRecipeModal(recipe) {
+      el('#modalRecipeTitle').textContent = recipe.title;
+      el('#modalRecipeBody').innerHTML = `
+        <p><strong>Malzemeler:</strong> ${recipe.ingredients}</p>
+        <p><strong>Hazırlanışı:</strong> ${recipe.fullRecipe}</p>
+      `;
+      openModal('#modalRecipe');
+    }
 
-  function renderTopics(){
-    const list = el('#topicsList'); list.innerHTML='';
-    topics.forEach(t=>{
-      const item = document.createElement('div'); item.className='topic-item'; item.dataset.topicId = t.id;
-      const head = document.createElement('div');
-      const idSpan = document.createElement('span'); idSpan.className='topic-id'; idSpan.textContent = `#${t.id}`;
-      const titleSpan = document.createElement('span'); titleSpan.className='topic-head'; titleSpan.textContent = t.title;
-      head.append(idSpan, titleSpan);
-      const desc = document.createElement('div'); desc.className='topic-desc'; desc.textContent = (t.body||'').slice(0,60);
-      const user = document.createElement('div'); user.className='topic-user'; user.textContent = `${t.username} (#${t.userId})`;
-      item.append(head, desc, user);
-      list.appendChild(item);
-    })
-  }
+    // --- KONU FONKSİYONLARI ---
+    function saveTopics() { 
+      localStorage.setItem('topics', JSON.stringify(topics)); 
+    }
 
-  function renderTopicDetail(t){
-    const box = el('#topicDetail'); box.innerHTML='';
-    const h = document.createElement('div'); h.className='topic-view-title'; h.textContent = t.title;
-    const userInfo = document.createElement('div'); userInfo.className='topic-user'; userInfo.textContent = `${t.username} (#${t.userId})`; userInfo.style.marginBottom='8px';
-    const thick = document.createElement('div'); thick.className='thick-line'; thick.style.margin='8px 0';
-    const p = document.createElement('p'); p.textContent = t.body;
-    const actions = document.createElement('div'); actions.className='row'; actions.style.margin='12px 0';
-    const btn = document.createElement('button'); btn.textContent = 'bir şeyler yazmak istiyorum'; btn.addEventListener('click', ()=>{ openModal('#modalComment'); activeTopicForComment = t; });
-    actions.appendChild(btn);
-    const commentsWrap = document.createElement('div'); commentsWrap.id='commentsWrap';
-    if(t.comments && t.comments.length>0){ t.comments.forEach(c=>{ const it = document.createElement('div'); it.className='comment-item'; it.innerHTML = `<div><strong>${escapeHTML(c.username)} (#${escapeHTML(c.userId)})</strong>: ${escapeHTML(c.text)}</div>`; commentsWrap.appendChild(it); }); } else { const noComment = document.createElement('div'); noComment.textContent='Henüz yorum yapılmamış.'; noComment.style.color='var(--muted)'; noComment.style.fontStyle='italic'; commentsWrap.appendChild(noComment); }
-    box.append(h,userInfo,p,thick,actions,commentsWrap);
-  }
+    function addTopic({title, body, userId, username}) {
+      const id = (topics[0]?.id || 0) + 1;
+      const t = {id, title, body, comments: [], createdAt: Date.now(), userId, username};
+      topics.unshift(t);
+      saveTopics();
+      renderTopics();
+      return t;
+    }
 
-  function updateAuthButtons(){
-    const session = Storage.get('session', {});
-    const guestButtons = el('#guestButtons');
-    const userButton = el('#userButton');
-    const adminButton = el('#adminButton');
-    if(session && session.userId){ guestButtons.style.display='none'; userButton.style.display='flex'; if(session.user==='admin' || session.userId==='00001') adminButton.style.display='flex'; else adminButton.style.display='none'; } else { guestButtons.style.display='flex'; userButton.style.display='none'; adminButton.style.display='none'; }
-  }
+    function renderTopics() {
+      const list = el('#topicsList');
+      list.innerHTML = '';
+      topics.forEach((t, idx) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'topic-item';
+        wrap.setAttribute('data-topic-id', t.id);
+        wrap.innerHTML = `
+          <div>
+            <span class="topic-id">#${t.id}</span>
+            <span class="topic-head">${escapeHTML(t.title)}</span>
+          </div>
+          <div class="topic-desc">${(t.body || '').slice(0,20)}</div>
+          <div class="topic-user">${t.username} (#${t.userId})</div>
+        `;
+        list.appendChild(wrap);
+      });
+    }
 
-  function logout(){ localStorage.removeItem('session'); updateAuthButtons(); location.hash='#home'; route(); alert('Çıkış yapıldı.'); }
+    function renderTopicDetail(t) {
+      const box = el('#topicDetail');
+      box.innerHTML = '';
+      const h = document.createElement('div');
+      h.className = 'topic-view-title';
+      h.textContent = t.title;
+      
+      const userInfo = document.createElement('div');
+      userInfo.className = 'topic-user';
+      userInfo.textContent = `${t.username} (#${t.userId})`;
+      userInfo.style.marginBottom = '8px';
+      
+      const thick = document.createElement('div'); 
+      thick.className = 'thick-line'; 
+      thick.style.margin = '8px 0';
+      const p = document.createElement('p'); 
+      p.textContent = t.body;
+      const actions = document.createElement('div'); 
+      actions.className = 'row'; 
+      actions.style.margin = '12px 0';
+      const btn = document.createElement('button'); 
+      btn.textContent = 'bir şeyler yazmak istiyorum';
+      btn.onclick = () => { 
+        openModal('#modalComment'); 
+        activeTopicForComment = t; 
+      };
+      actions.appendChild(btn);
+      const commentsWrap = document.createElement('div');
+      commentsWrap.id = 'commentsWrap';
+      
+      if (t.comments && t.comments.length > 0) {
+        t.comments.forEach(c => {
+          const it = document.createElement('div');
+          it.className = 'comment-item';
+          it.innerHTML = `<div><strong>${c.username} (#${c.userId})</strong>: ${c.text}</div>`;
+          commentsWrap.appendChild(it);
+        });
+      } else {
+        const noComment = document.createElement('div');
+        noComment.textContent = 'Henüz yorum yapılmamış.';
+        noComment.style.color = 'var(--muted)';
+        noComment.style.fontStyle = 'italic';
+        commentsWrap.appendChild(noComment);
+      }
+      
+      box.append(h, userInfo, p, thick, actions, commentsWrap);
+    }
 
-  // router
-  function route(){ const hash = location.hash || '#home'; const mainContainer = document.querySelector('main.container'); const topicView = el('#view-topic'); if(mainContainer) mainContainer.style.display='grid'; if(topicView) topicView.style.display='none'; if(hash.startsWith('#topic/')){ const id = Number(hash.split('/')[1]); const t = topics.find(x=>x.id===id); if(!t){ alert('Konu bulunamadı'); location.hash='#home'; return; } if(mainContainer) mainContainer.style.display='none'; if(topicView) topicView.style.display='grid'; renderTopicDetail(t); } }
+    // --- ROUTER ---
+    function route() {
+      const hash = location.hash || '#home';
+      const mainContainer = document.querySelector('main.container');
+      const topicView = el('#view-topic');
+      
+      // Varsayılan olarak ana sayfayı göster
+      if(mainContainer) mainContainer.style.display = 'grid';
+      if(topicView) topicView.style.display = 'none';
 
-  // load outfit (graceful fallback)
-  function loadOutfitSection(){ fetch('outfit.html').then(r=>r.text()).then(html=>{ el('#outfit-section').innerHTML = html }).catch(()=>{ el('#outfit-section').innerHTML = `<aside class="card pad"><h3>Günlük Kombin Tavsiyesi</h3><ul class="outfit"><li><strong>Saç şekli:</strong> Topuz</li><li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li><li><strong>Küpe:</strong> Halka küpe</li><li><strong>Kolye:</strong> Mini taşlı kolye</li></ul></aside>` }) }
+      if(hash.startsWith('#topic/')) {
+        const id = Number(hash.split('/')[1]);
+        const t = topics.find(x => x.id === id);
+        if(!t) { 
+          alert('Konu bulunamadı'); 
+          location.hash = '#home'; 
+          return; 
+        }
+        if(mainContainer) mainContainer.style.display = 'none';
+        if(topicView) topicView.style.display = 'grid';
+        renderTopicDetail(t);
+      }
+    }
 
-  // events
-  document.addEventListener('DOMContentLoaded', ()=>{
-    setEnglishWordOfTheDay(); loadOutfitSection(); els('[data-close]').forEach(b=>b.addEventListener('click', ()=>closeModal(b.getAttribute('data-close')))); els('.modal').forEach(m=>m.addEventListener('click', (e)=>{ if(e.target===m) m.classList.remove('show') }));
+    // --- KOMBİN BÖLÜMÜ YÜKLEME ---
+    function loadOutfitSection() {
+      fetch('outfit.html')
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('outfit-section').innerHTML = html;
+        })
+        .catch(error => {
+          console.error('Kombin bölümü yüklenirken hata oluştu:', error);
+          // Hata durumunda fallback içerik
+          document.getElementById('outfit-section').innerHTML = `
+            <aside class="card pad">
+              <h3>Günlük Kombin Tavsiyesi</h3>
+              <ul class="outfit">
+                <li><strong>Saç şekli:</strong> Topuz</li>
+                <li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li>
+                <li><strong>Küpe:</strong> Halka küpe</li>
+                <li><strong>Kolye:</strong> Mini taşlı kolye</li>
+                <li><strong>Üst:</strong> Yaka detaylı crop ekru gömlek</li>
+                <li><strong>Pantolon:</strong> Indigo mavisi jean gömlek</li>
+                <li><strong>Ayakkabı:</strong> Lumberjack ROMINA 5FX siyah koşu ayakkabısı</li>
+                <li><strong>Oje:</strong> Pastel oje</li>
+                <li><strong>Yüzük:</strong> Eklem yüzüğü</li>
+              </ul>
+            </aside>
+          `;
+        });
+    }
 
-    el('#brandTitle').onclick = ()=>{ location.hash = '#home'; route(); };
-    el('#backToHome').addEventListener('click', e=>{ e.preventDefault(); location.hash='#home'; route(); });
+    // --- EVENT HANDLERS ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Günün İngilizce Kelimesini Ayarla
+      setEnglishWordOfTheDay();
 
-    el('#topicsList').addEventListener('click', e=>{ const topicItem = e.target.closest('.topic-item'); if(topicItem){ const topicId = topicItem.dataset.topicId; location.hash = `#topic/${topicId}`; route(); } });
+      // Kombin bölümünü yükle
+      loadOutfitSection();
 
-    el('#recipesList').addEventListener('click', e=>{ const btn = e.target.closest('.recipe-button'); if(btn){ const recipeId = Number(btn.dataset.recipeId); const recipe = recipes.find(r=>r.id===recipeId); if(recipe) showRecipeModal(recipe); } });
+      // Modal kapatma butonları
+      els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
+      
+      // Modal dışına tıklama ile kapatma
+      els('.modal').forEach(m => m.addEventListener('click', (e) => { 
+        if(e.target === m) m.classList.remove('show'); 
+      }));
 
-    el('#btnLogin').addEventListener('click', ()=>openModal('#modalLogin'));
-    el('#btnSignup').addEventListener('click', ()=>openModal('#modalSignup'));
-    el('#btnProfileHeader').addEventListener('click', ()=>{ window.location.href='profile.html' });
-    el('#btnAdminPanel').addEventListener('click', ()=>{ window.location.href='admin.html' });
-    el('#btnLogout').addEventListener('click', logout);
+      // Ana navigasyon
+      el('#brandTitle').onclick = () => {
+        location.hash = '#home';
+        route();
+      };
 
-    el('#btnNewTopic').addEventListener('click', ()=>{ const session = Storage.get('session', {}); if(!session.userId){ alert('Konu açmak için giriş yapmalısınız!'); openModal('#modalLogin'); return; } openModal('#modalTopic'); });
+      el('#backToHome').onclick = (e) => {
+        e.preventDefault();
+        location.hash = '#home';
+        route();
+      };
 
-    el('#btnSaveTopic').addEventListener('click', ()=>{
-      const session = Storage.get('session', {}); if(!session.userId){ alert('Konu açmak için giriş yapmalısınız!'); openModal('#modalLogin'); return; }
-      const title = el('#inpTopicTitle').value.trim(); const body = el('#inpTopicBody').value.trim();
-      if(!title || !body){ alert('Başlık ve konu metni gerekli.'); return; }
-      if(title.length>15){ alert('Başlık 15 karakteri aşamaz.'); return; }
-      if(body.length>250){ alert('Konu 250 karakteri aşamaz.'); return; }
-      if(!textRegex.test(title) || !textRegex.test(body)){ alert('Özel karakterlere izin verilmez. Sadece harf, rakam ve boşluk kullanın.'); return; }
-      addTopic({ title, body, userId: session.userId, username: session.user }); closeModal('#modalTopic'); el('#inpTopicTitle').value=''; el('#inpTopicBody').value='';
+      // Konu listesi tıklama
+      el('#topicsList').addEventListener('click', (e) => {
+        const topicItem = e.target.closest('.topic-item');
+        if (topicItem) {
+          const topicId = topicItem.getAttribute('data-topic-id');
+          location.hash = `#topic/${topicId}`;
+          route();
+        }
+      });
+
+      // Tarif butonları
+      el('#recipesList').addEventListener('click', (e) => {
+        if (e.target.classList.contains('recipe-button')) {
+          const recipeId = parseInt(e.target.getAttribute('data-recipe-id'));
+          const recipe = recipes.find(r => r.id === recipeId);
+          if (recipe) {
+            showRecipeModal(recipe);
+          }
+        }
+      });
+
+      // Auth modalları
+      el('#btnLogin').onclick = () => openModal('#modalLogin');
+      el('#btnSignup').onclick = () => openModal('#modalSignup');
+
+      // Profil butonu - profile.html'ye yönlendir
+      el('#btnProfileHeader').onclick = () => {
+        window.location.href = 'profile.html';
+      };
+
+      // Admin paneli butonu
+      el('#btnAdminPanel').onclick = () => {
+        window.location.href = 'admin.html';
+      };
+
+      // Çıkış yap butonu
+      el('#btnLogout').onclick = logout;
+
+      // Konu Aç Modalı
+      el('#btnNewTopic').onclick = () => {
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Konu açmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+        openModal('#modalTopic');
+      };
+
+      el('#btnSaveTopic').onclick = () => {
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Konu açmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+
+        const title = el('#inpTopicTitle').value.trim();
+        const body = el('#inpTopicBody').value.trim();
+        if(title.length === 0 || body.length === 0) { 
+          alert('Başlık ve konu metni gerekli.'); 
+          return;
+        }
+        if(title.length > 15) { 
+          alert('Başlık 15 karakteri aşamaz.'); 
+          return; 
+        }
+        if(body.length > 250) { 
+          alert('Konu 250 karakteri aşamaz.'); 
+          return; 
+        }
+        if(!textRegex.test(title) || !textRegex.test(body)) {
+          alert('Özel karakterlere izin verilmez. Sadece harf, rakam ve boşluk kullanın.');
+          return;
+        }
+        addTopic({
+          title, 
+          body, 
+          userId: session.userId, 
+          username: session.user
+        });
+        closeModal('#modalTopic');
+        el('#inpTopicTitle').value = '';
+        el('#inpTopicBody').value = '';
+      };
+
+      // Yorum gönderme
+      el('#btnSendComment').onclick = () => {
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Yorum yapmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+        const txt = el('#inpComment').value.trim();
+        if(txt.length === 0) { 
+          alert('Yorum boş olamaz'); 
+          return; 
+        }
+        if(txt.length > 250) { 
+          alert('Yorum 250 karakteri geçemez'); 
+          return; 
+        }
+        if (!activeTopicForComment) {
+          alert('Bir konu seçilmedi');
+          return;
+        }
+        
+        const idx = topics.findIndex(x => x.id === activeTopicForComment.id);
+        if(idx > -1) { 
+          if (!topics[idx].comments) topics[idx].comments = [];
+          topics[idx].comments.push({
+            text: txt, 
+            at: Date.now(),
+            userId: session.userId,
+            username: session.user
+          }); 
+          saveTopics(); 
+        }
+        el('#inpComment').value = '';
+        closeModal('#modalComment');
+        renderTopicDetail(topics[idx]);
+      };
+
+      // Login
+      el('#btnDoLogin').onclick = () => {
+        const u = el('#loginUser').value.trim();
+        const p = el('#loginPass').value.trim();
+        if(!u || !p) { 
+          alert('Kullanıcı adı ve şifre gerekli.'); 
+          return; 
+        }
+        const acc = JSON.parse(localStorage.getItem('account') || 'null');
+        if(acc && acc.user === u && acc.pass === p) {
+          localStorage.setItem('session', JSON.stringify({user: u, userId: acc.userId}));
+          closeModal('#modalLogin');
+          alert('Giriş başarılı.');
+          updateAuthButtons();
+          location.hash = '#home';
+          route();
+        } else {
+          alert('Kullanıcı adı veya şifre hatalı.');
+        }
+      };
+
+      // Signup
+      el('#btnDoSignup').onclick = () => {
+        const mail = el('#suMail').value.trim();
+        const user = el('#suUser').value.trim();
+        const pass = el('#suPass').value.trim();
+        const pass2 = el('#suPass2').value.trim();
+        if(!mail || !user || !pass || !pass2) { 
+          alert('Tüm alanlar gerekli.'); 
+          return; 
+        }
+        const mailValidation = validateEmail(mail);
+        if (!mailValidation.valid) {
+          alert(mailValidation.message);
+          return;
+        }
+        const passValidation = validatePassword(pass);
+        if (!passValidation.valid) {
+          alert(passValidation.message);
+          return;
+        }
+        if(pass !== pass2) { 
+          alert('Şifreler eşleşmiyor.'); 
+          return; 
+        }
+        const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
+        const userId = formatUserId(nextUserId);
+        localStorage.setItem('account', JSON.stringify({mail, user, pass, userId}));
+        localStorage.setItem('nextUserId', (nextUserId + 1).toString());
+        localStorage.setItem('session', JSON.stringify({user, userId}));
+        closeModal('#modalSignup');
+        
+        // Profil verilerini oluştur
+        if(!localStorage.getItem('profile')) {
+          localStorage.setItem('profile', JSON.stringify({
+            user, 
+            userId,
+            pfp: null, 
+            savedLoc: null,
+            parkingNo: null,
+            shoppingList: [],
+            habits: [],
+            specialDays: []
+          }));
+        } else {
+          const prof = JSON.parse(localStorage.getItem('profile'));
+          prof.user = user;
+          prof.userId = userId;
+          localStorage.setItem('profile', JSON.stringify(prof));
+        }
+        updateAuthButtons();
+        location.hash = '#home';
+        route();
+      };
+
+      // İlk render
+      renderTopics();
+      renderRecipes();
+      route();
+      updateAuthButtons();
     });
 
-    el('#btnSendComment').addEventListener('click', ()=>{
-      const session = Storage.get('session', {}); if(!session.userId){ alert('Yorum yapmak için giriş yapmalısınız!'); openModal('#modalLogin'); return; }
-      const txt = el('#inpComment').value.trim(); if(!txt){ alert('Yorum boş olamaz'); return; } if(txt.length>250){ alert('Yorum 250 karakteri geçemez'); return; } if(!activeTopicForComment){ alert('Bir konu seçilmedi'); return; }
-      const idx = topics.findIndex(x=>x.id === activeTopicForComment.id);
-      if(idx > -1){ if(!topics[idx].comments) topics[idx].comments = []; topics[idx].comments.push({ text: txt, at: Date.now(), userId: session.userId, username: session.user }); saveTopics(); }
-      el('#inpComment').value=''; closeModal('#modalComment'); renderTopicDetail(topics[idx]);
-    });
-
-    el('#btnDoLogin').addEventListener('click', ()=>{
-      const u = el('#loginUser').value.trim(); const p = el('#loginPass').value.trim(); if(!u || !p){ alert('Kullanıcı adı ve şifre gerekli.'); return; }
-      const acc = Storage.get('account', null);
-      if(acc && acc.user === u && acc.pass === p){ Storage.set('session', {user:u, userId: acc.userId}); closeModal('#modalLogin'); alert('Giriş başarılı.'); updateAuthButtons(); location.hash = '#home'; route(); } else { alert('Kullanıcı adı veya şifre hatalı.'); }
-    });
-
-    el('#btnDoSignup').addEventListener('click', ()=>{
-      const mail = el('#suMail').value.trim(); const user = el('#suUser').value.trim(); const pass = el('#suPass').value.trim(); const pass2 = el('#suPass2').value.trim();
-      if(!mail || !user || !pass || !pass2){ alert('Tüm alanlar gerekli.'); return; }
-      const mv = validateEmail(mail); if(!mv.valid){ alert(mv.message); return; }
-      const pv = validatePassword(pass); if(!pv.valid){ alert(pv.message); return; }
-      if(pass !== pass2){ alert('Şifreler eşleşmiyor.'); return; }
-      const nextUserId = Number(localStorage.getItem('nextUserId') || '1'); const userId = formatUserId(nextUserId);
-      // save to userList
-      userList.push({ mail, user, pass, userId }); Storage.set('userList', userList);
-      localStorage.setItem('nextUserId', (nextUserId + 1).toString());
-
-      // legacy account key kept for login compatibility
-      Storage.set('account', { mail, user, pass, userId });
-      Storage.set('session', { user, userId });
-
-      // profile
-      const prof = Storage.get('profile', { user, userId, pfp:null, savedLoc:null, parkingNo:null, shoppingList:[], habits:[], specialDays:[] });
-      prof.user = user; prof.userId = userId; Storage.set('profile', prof);
-
-      closeModal('#modalSignup'); updateAuthButtons(); location.hash = '#home'; route();
-    });
-
-    // initial render
-    renderTopics(); renderRecipes(); route(); updateAuthButtons();
-  });
-
-  window.addEventListener('hashchange', route);
-</script>
+    // Hash değişikliklerini dinle
+    window.addEventListener('hashchange', route);
+  </script>
 </body>
 </html>
