@@ -453,137 +453,17 @@
       </div>
     </div>
   </div>
+
   <script>
-<script>
-    // --- Yardımcı Fonksiyonlar ---
-    function updateAuthButtons() {
-      const session = JSON.parse(localStorage.getItem('session') || '{}');
-      const guestButtons = document.getElementById('guestButtons');
-      const userButton = document.getElementById('userButton');
-      
-      if (session.userId) {
-        // Kullanıcı giriş yapmış
-        guestButtons.style.display = 'none';
-        userButton.style.display = 'flex';
-      } else {
-        // Kullanıcı giriş yapmamış
-        guestButtons.style.display = 'flex';
-        userButton.style.display = 'none';
-      }
-    }
-
-    // --- EVENT HANDLERS ---
-    document.addEventListener('DOMContentLoaded', () => {
-      // ... mevcut event listener'lar ...
-
-      // Profil butonu
-      el('#btnProfileHeader').onclick = () => {
-        location.hash = '#profile';
-        route();
-      };
-
-      // Giriş yap butonu
-      el('#btnDoLogin').onclick = () => {
-        const u = el('#loginUser').value.trim();
-        const p = el('#loginPass').value.trim();
-        if(!u || !p) { 
-          alert('Kullanıcı adı ve şifre gerekli.'); 
-          return; 
-        }
-        const acc = JSON.parse(localStorage.getItem('account') || 'null');
-        if(acc && acc.user === u && acc.pass === p) {
-          localStorage.setItem('session', JSON.stringify({user: u, userId: acc.userId}));
-          closeModal('#modalLogin');
-          alert('Giriş başarılı.');
-          updateAuthButtons(); // Butonları güncelle
-          location.hash = '#profile';
-          route();
-        } else {
-          alert('Kullanıcı adı veya şifre hatalı.');
-        }
-      };
-
-      // Üye ol butonu
-      el('#btnDoSignup').onclick = () => {
-        const mail = el('#suMail').value.trim();
-        const user = el('#suUser').value.trim();
-        const pass = el('#suPass').value.trim();
-        const pass2 = el('#suPass2').value.trim();
-        if(!mail || !user || !pass || !pass2) { 
-          alert('Tüm alanlar gerekli.'); 
-          return; 
-        }
-        
-        const mailValidation = validateEmail(mail);
-        if (!mailValidation.valid) {
-          alert(mailValidation.message);
-          return;
-        }
-        
-        const passValidation = validatePassword(pass);
-        if (!passValidation.valid) {
-          alert(passValidation.message);
-          return;
-        }
-        
-        if(pass !== pass2) { 
-          alert('Şifreler eşleşmiyor.'); 
-          return; 
-        }
-        
-        const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
-        const userId = formatUserId(nextUserId);
-        
-        localStorage.setItem('account', JSON.stringify({mail, user, pass, userId}));
-        localStorage.setItem('nextUserId', (nextUserId + 1).toString());
-        localStorage.setItem('session', JSON.stringify({user, userId}));
-        closeModal('#modalSignup');
-        
-        if(!localStorage.getItem('profile')) {
-          localStorage.setItem('profile', JSON.stringify({
-            user, 
-            userId,
-            pfp: null, 
-            savedLoc: null,
-            parkingNo: null,
-            shoppingList: [],
-            habits: [],
-            specialDays: []
-          }));
-        } else {
-          const prof = JSON.parse(localStorage.getItem('profile'));
-          prof.user = user;
-          prof.userId = userId;
-          localStorage.setItem('profile', JSON.stringify(prof));
-        }
-        
-        updateAuthButtons(); // Butonları güncelle
-        location.hash = '#profile';
-        route();
-      };
-
-      // İlk yüklemede buton durumunu güncelle
-      updateAuthButtons();
-      
-      // ... diğer mevcut kodlar ...
-    });
-
-    // ... diğer fonksiyonlar aynı kalacak ...
-  </script>
-</body>
-</html>
-
-
-
-
-    
     // --- Yardımcı seçiciler ---
     const el = s => document.querySelector(s);
     const els = s => Array.from(document.querySelectorAll(s));
+    
     // --- Uygulama durumu ---
     let topics = JSON.parse(localStorage.getItem('topics') || '[]');
     let activeTopicForComment = null;
     let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+    
     // --- YouTube Oynatıcı Durumu ---
     let player;
     let isPlayerReady = false;
@@ -625,8 +505,50 @@
       }
     ];
 
+    // --- YEMEK TARİFLERİ ---
+    const recipes = [
+      {
+        id: 1,
+        title: "Fırında Baharatlı Tavuk",
+        ingredientCount: 7,
+        ingredients: "Tavuk baget, zeytinyağı, sarımsak, kekik, kırmızı biber, tuz, karabiber",
+        description: "Tavuk bagetler zeytinyağı ve baharatla harmanlanıp fırında kızartılır.",
+        fullRecipe: "Malzemeleri bir kapta karıştırın. Tavukları marine edip 30 dakika bekletin. 200°C önceden ısıtılmış fırında 35-40 dakika pişirin."
+      },
+      {
+        id: 2,
+        title: "Mercimek Çorbası",
+        ingredientCount: 8,
+        ingredients: "Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",
+        description: "Klasik Türk mutfağından doyurucu bir çorba.",
+        fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun. Mercimekleri ekleyip su ilave edin. Patatesleri ekleyip pişirin. Blendırdan geçirip servis yapın."
+      }
+    ];
+
+    // --- KONU YÖNETİMİ ---
+    const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
+
+    // --- VALIDASYON FONKSİYONLARI ---
+    const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
+
+    // --- YARDIMCI FONKSİYONLAR ---
+    function updateAuthButtons() {
+      const session = JSON.parse(localStorage.getItem('session') || '{}');
+      const guestButtons = document.getElementById('guestButtons');
+      const userButton = document.getElementById('userButton');
+      
+      if (session.userId) {
+        // Kullanıcı giriş yapmış
+        guestButtons.style.display = 'none';
+        userButton.style.display = 'flex';
+      } else {
+        // Kullanıcı giriş yapmamış
+        guestButtons.style.display = 'flex';
+        userButton.style.display = 'none';
+      }
+    }
+
     function setEnglishWordOfTheDay() {
-      // Günün kelimesini gün index'ine göre seç (her gün farklı bir kelime)
       const today = new Date();
       const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
       const wordIndex = dayOfYear % englishWords.length;
@@ -637,46 +559,55 @@
       el('#wordMeaning').textContent = wordData.meaning;
       el('#wordExample').textContent = wordData.example;
     }
-    // --- Yardımcı Fonksiyonlar ---
+
     function openModal(id) { el(id).classList.add('show'); }
     function closeModal(id) { el(id).classList.remove('show'); }
     
     function escapeHTML(s) { 
       return s.replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); 
     }
-    // --- Modallar ---
-    document.addEventListener('DOMContentLoaded', () => {
-      // Modal kapatma butonları
-      els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
-      // Modal dışına tıklama ile kapatma
-      els('.modal').forEach(m => m.addEventListener('click', (e) => { 
-        if(e.target === m) m.classList.remove('show'); 
-      }));
-    });
-    // --- YEMEK TARİFLERİ ---
-    const recipes = [
-      {
-        id: 1,
-        title: "Fırında Baharatlı Tavuk",
-        ingredientCount: 7,
-        ingredients: "Tavuk baget, zeytinyağı, sarımsak, kekik, kırmızı biber, tuz, karabiber",
-        description: "Tavuk bagetler zeytinyağı ve baharatla harmanlanıp fırında kızartılır.",
-        fullRecipe: "Malzemeleri bir kapta karıştırın. Tavukları marine edip 30 dakika bekletin. 200°C önceden ısıtılmış fırında 35-40 dakika pişirin. 
-      },
-      {
-        id: 2,
-        title: "Mercimek Çorbası",
-        ingredientCount: 8,
-        ingredients: "Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",
-        description: "Klasik Türk mutfağından doyurucu bir çorba.",
-        fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun.
+
+    function validateEmail(email) {
+      const parts = email.split('@');
+      if (parts.length !== 2) return { valid: false, message: "Geçersiz e-posta formatı." };
+      
+      const domain = parts[1].toLowerCase();
+      if (!allowedDomains.includes(domain)) {
+        return { 
+          valid: false, 
+          message: `@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.` 
+        };
       }
-    ];
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return { valid: false, message: "Geçersiz e-posta formatı." };
+      }
+
+      if (userList.some(user => user.mail.toLowerCase() === email.toLowerCase())) {
+        return { valid: false, message: "Bu e-posta adresi zaten kayıtlı." };
+      }
+      
+      return { valid: true, message: "" };
+    }
+
+    function validatePassword(password) {
+      if (password.length < 5) return { valid: false, message: "Şifre en az 5 karakter olmalı." };
+      if (!/[A-Z]/.test(password)) return { valid: false, message: "Şifre en az 1 büyük harf içermeli." };
+      if (!/\d/.test(password)) return { valid: false, message: "Şifre en az 1 sayı içermeli." };
+      return { valid: true, message: "" };
+    }
+
+    function formatUserId(id) {
+      return String(id).padStart(5, '0');
+    }
+
+    // --- YEMEK TARİFLERİ FONKSİYONLARI ---
     function renderRecipes() {
       const container = el('#recipesList');
       container.innerHTML = '';
       recipes.forEach(recipe => {
-       const recipeEl = document.createElement('div');
+        const recipeEl = document.createElement('div');
         recipeEl.className = 'recipe-item';
         recipeEl.innerHTML = `
           <div class="recipe-title">${recipe.title}</div>
@@ -689,6 +620,7 @@
         container.appendChild(recipeEl);
       });
     }
+
     function showRecipeModal(recipe) {
       el('#modalRecipeTitle').textContent = recipe.title;
       el('#modalRecipeBody').innerHTML = `
@@ -697,9 +629,8 @@
       `;
       openModal('#modalRecipe');
     }
-    // --- KONU YÖNETİMİ ---
-    const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
 
+    // --- KONU FONKSİYONLARI ---
     function saveTopics() { 
       localStorage.setItem('topics', JSON.stringify(topics)); 
     }
@@ -808,44 +739,6 @@
         if(profileView) profileView.style.display = 'grid';
         loadProfileData();
       }
-    }
-
-    // --- VALIDASYON FONKSİYONLARI ---
-    const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
-
-    function validateEmail(email) {
-      const parts = email.split('@');
-      if (parts.length !== 2) return { valid: false, message: "Geçersiz e-posta formatı." };
-      
-      const domain = parts[1].toLowerCase();
-      if (!allowedDomains.includes(domain)) {
-        return { 
-          valid: false, 
-          message: `@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.` 
-        };
-      }
-      
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return { valid: false, message: "Geçersiz e-posta formatı." };
-      }
-
-      if (userList.some(user => user.mail.toLowerCase() === email.toLowerCase())) {
-        return { valid: false, message: "Bu e-posta adresi zaten kayıtlı." };
-      }
-      
-      return { valid: true, message: "" };
-    }
-
-    function validatePassword(password) {
-      if (password.length < 5) return { valid: false, message: "Şifre en az 5 karakter olmalı." };
-      if (!/[A-Z]/.test(password)) return { valid: false, message: "Şifre en az 1 büyük harf içermeli." };
-      if (!/\d/.test(password)) return { valid: false, message: "Şifre en az 1 sayı içermeli." };
-      return { valid: true, message: "" };
-    }
-
-    function formatUserId(id) {
-      return String(id).padStart(5, '0');
     }
 
     // --- PROFİL FONKSİYONLARI ---
@@ -1186,6 +1079,14 @@
       // Günün İngilizce Kelimesini Ayarla
       setEnglishWordOfTheDay();
 
+      // Modal kapatma butonları
+      els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
+      
+      // Modal dışına tıklama ile kapatma
+      els('.modal').forEach(m => m.addEventListener('click', (e) => { 
+        if(e.target === m) m.classList.remove('show'); 
+      }));
+
       // Ana navigasyon
       el('#brandTitle').onclick = () => {
         location.hash = '#home';
@@ -1222,6 +1123,12 @@
       // Auth modalları
       el('#btnLogin').onclick = () => openModal('#modalLogin');
       el('#btnSignup').onclick = () => openModal('#modalSignup');
+
+      // Profil butonu
+      el('#btnProfileHeader').onclick = () => {
+        location.hash = '#profile';
+        route();
+      };
 
       // Konu Aç Modalı
       el('#btnNewTopic').onclick = () => {
@@ -1323,6 +1230,7 @@
           localStorage.setItem('session', JSON.stringify({user: u, userId: acc.userId}));
           closeModal('#modalLogin');
           alert('Giriş başarılı.');
+          updateAuthButtons(); // Butonları güncelle
           location.hash = '#profile';
           route();
         } else {
@@ -1384,6 +1292,7 @@
           localStorage.setItem('profile', JSON.stringify(prof));
         }
         
+        updateAuthButtons(); // Butonları güncelle
         location.hash = '#profile';
         route();
       };
@@ -1544,6 +1453,7 @@
       renderRecipes();
       route();
       loadYouTubeAPI();
+      updateAuthButtons(); // Buton durumunu güncelle
     });
 
     // Hash değişikliklerini dinle
