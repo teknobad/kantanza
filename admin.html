@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -45,8 +44,7 @@
     .header-content {
       display: flex;
       align-items: center;
-      justify-content: center;
-      position: relative;
+      justify-content: space-between;
       width: 100%;
     }
 
@@ -54,13 +52,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .auth-actions {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
     }
 
     /* Admin Grid */
@@ -151,6 +142,12 @@
       color: var(--muted);
     }
 
+    /* Küçük butonlar */
+    .small-button {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
     /* Mobil için responsive */
     @media (max-width: 768px) {
       .header-content {
@@ -159,8 +156,8 @@
       }
       
       .auth-actions {
-        position: static;
-        transform: none;
+        width: 100%;
+        justify-content: center;
       }
       
       .admin-grid {
@@ -426,9 +423,24 @@
       el('#statRecipes').textContent = recipes.length;
       
       // Kayıtlı kullanıcı sayısı (basit bir yaklaşım)
+      // Ana sayfada kullanılan userList sistemini kontrol et
+      let userCount = 0;
+      
+      // userList kontrolü
       const userList = JSON.parse(localStorage.getItem('userList') || '[]');
-      const accounts = JSON.parse(localStorage.getItem('account') ? '1' : '0');
-      el('#statUsers').textContent = userList.length + accounts;
+      userCount += userList.length;
+      
+      // account kontrolü (ana sayfada kullanılan sistem)
+      const account = JSON.parse(localStorage.getItem('account') || 'null');
+      if (account) userCount += 1;
+      
+      // nextUserId'den kullanıcı sayısını tahmin etmeye çalış
+      const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
+      if (nextUserId > 1) {
+        userCount = Math.max(userCount, nextUserId - 1);
+      }
+      
+      el('#statUsers').textContent = userCount;
     }
 
     // Konuları tabloya yükle
@@ -436,12 +448,19 @@
       const tableBody = el('#topicsTable');
       tableBody.innerHTML = '';
       
+      if (topics.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="4" style="text-align: center; color: var(--muted);">Henüz konu bulunmuyor</td>`;
+        tableBody.appendChild(row);
+        return;
+      }
+      
       topics.forEach(topic => {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>#${topic.id}</td>
           <td>${topic.title}</td>
-          <td>${topic.username} (#${topic.userId})</td>
+          <td>${topic.username || 'Anonim'} (#${topic.userId || '?'})</td>
           <td>
             <button class="danger small-button delete-topic" data-id="${topic.id}">Sil</button>
           </td>
@@ -463,14 +482,17 @@
       const tableBody = el('#commentsTable');
       tableBody.innerHTML = '';
       
+      let hasComments = false;
+      
       topics.forEach(topic => {
         if (topic.comments && topic.comments.length > 0) {
+          hasComments = true;
           topic.comments.forEach(comment => {
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${topic.title}</td>
               <td>${comment.text.length > 50 ? comment.text.substring(0, 50) + '...' : comment.text}</td>
-              <td>${comment.username} (#${comment.userId})</td>
+              <td>${comment.username || 'Anonim'} (#${comment.userId || '?'})</td>
               <td>
                 <button class="danger small-button delete-comment" data-topic-id="${topic.id}" data-comment-index="${topic.comments.indexOf(comment)}">Sil</button>
               </td>
@@ -479,6 +501,12 @@
           });
         }
       });
+      
+      if (!hasComments) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="4" style="text-align: center; color: var(--muted);">Henüz yorum bulunmuyor</td>`;
+        tableBody.appendChild(row);
+      }
       
       // Silme butonlarına event listener ekle
       els('.delete-comment').forEach(btn => {
@@ -495,12 +523,20 @@
       const tableBody = el('#recipesTable');
       tableBody.innerHTML = '';
       
+      if (recipes.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="4" style="text-align: center; color: var(--muted);">Henüz tarif bulunmuyor</td>`;
+        tableBody.appendChild(row);
+        return;
+      }
+      
       recipes.forEach(recipe => {
+        const ingredientCount = recipe.ingredientCount || (recipe.ingredients ? recipe.ingredients.split(',').length : 0);
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${recipe.id}</td>
           <td>${recipe.title}</td>
-          <td>${recipe.ingredientCount || recipe.ingredients.split(',').length}</td>
+          <td>${ingredientCount}</td>
           <td>
             <button class="ghost small-button edit-recipe" data-id="${recipe.id}">Düzenle</button>
             <button class="danger small-button delete-recipe" data-id="${recipe.id}">Sil</button>
@@ -542,7 +578,7 @@
     function deleteComment(topicId, commentIndex) {
       if (confirm('Bu yorumu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
         const topicIndex = topics.findIndex(topic => topic.id === topicId);
-        if (topicIndex !== -1) {
+        if (topicIndex !== -1 && topics[topicIndex].comments) {
           topics[topicIndex].comments.splice(commentIndex, 1);
           localStorage.setItem('topics', JSON.stringify(topics));
           loadCommentsTable();
@@ -557,10 +593,10 @@
       const recipe = recipes.find(r => r.id === id);
       if (recipe) {
         currentEditingRecipeId = id;
-        el('#recipeTitle').value = recipe.title;
-        el('#recipeIngredients').value = recipe.ingredients;
-        el('#recipeDescription').value = recipe.description;
-        el('#recipeFull').value = recipe.fullRecipe;
+        el('#recipeTitle').value = recipe.title || '';
+        el('#recipeIngredients').value = recipe.ingredients || '';
+        el('#recipeDescription').value = recipe.description || '';
+        el('#recipeFull').value = recipe.fullRecipe || '';
         
         el('#btnSaveRecipe').textContent = 'Tarifi Güncelle';
       }
@@ -708,8 +744,34 @@
       el('#outfitRing').value = outfitData.ring;
     }
 
+    // Admin kontrolü
+    function checkAdminAccess() {
+      const session = JSON.parse(localStorage.getItem('session') || '{}');
+      
+      // Basit admin kontrolü - kullanıcı adı "admin" veya userId "00001" ise admin
+      if (session.user === 'admin' || session.userId === '00001') {
+        return true;
+      }
+      
+      // Alternatif olarak şifre kontrolü
+      const password = prompt('Admin şifresini girin:');
+      if (password === 'admin123') {
+        localStorage.setItem('adminSession', 'true');
+        return true;
+      }
+      
+      alert('Yetkiniz yok!');
+      window.location.href = 'index.html';
+      return false;
+    }
+
     // Event Listeners
     document.addEventListener('DOMContentLoaded', function() {
+      // Önce admin kontrolü yap
+      if (!checkAdminAccess()) {
+        return;
+      }
+      
       // İstatistikleri ve tabloları yükle
       updateStats();
       loadTopicsTable();
@@ -739,19 +801,6 @@
       el('#btnResetRecipe').addEventListener('click', resetRecipeForm);
       el('#btnNewRecipe').addEventListener('click', resetRecipeForm);
       el('#btnSaveRecipe').addEventListener('click', saveRecipe);
-      
-      // Admin giriş kontrolü (basit bir kontrol)
-      const adminSession = localStorage.getItem('adminSession');
-      if (!adminSession) {
-        // Basit bir admin girişi - gerçek uygulamada daha güvenli bir yöntem kullanılmalı
-        const password = prompt('Admin şifresini girin:');
-        if (password !== 'admin123') { // Basit bir şifre kontrolü
-          alert('Yetkiniz yok!');
-          window.location.href = 'index.html';
-        } else {
-          localStorage.setItem('adminSession', 'true');
-        }
-      }
     });
   </script>
 </body>
