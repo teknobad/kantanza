@@ -195,20 +195,8 @@
     
     <!-- Sağ: Kombin ve Günün İngilizce Kelimesi -->
     <div>
-      <aside class="card pad">
-        <h3>Günlük Kombin Tavsiyesi</h3>
-        <ul class="outfit">
-          <li><strong>Saç şekli:</strong> Topuz</li>
-          <li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li>
-          <li><strong>Küpe:</strong> Halka küpe</li>
-          <li><strong>Kolye:</strong> Mini taşlı kolye</li>
-          <li><strong>Üst:</strong> Yaka detaylı crop ekru gömlek</li>
-          <li><strong>Pantolon:</strong> Indigo mavisi jean gömlek</li>
-          <li><strong>Ayakkabı:</strong> Lumberjack ROMINA 5FX siyah koşu ayakkabısı</li>
-          <li><strong>Oje:</strong> Pastel oje</li>
-          <li><strong>Yüzük:</strong> Eklem yüzüğü</li>
-        </ul>
-      </aside>
+      <!-- Kombin bölümü buraya yüklenecek -->
+      <div id="outfit-section"></div>
       
       <!-- GÜNÜN İNGİLİZCE KELİMESİ BÖLÜMÜ -->
       <aside class="card pad word-of-the-day">
@@ -607,10 +595,42 @@
       }
     }
 
+    // --- KOMBİN BÖLÜMÜ YÜKLEME ---
+    function loadOutfitSection() {
+      fetch('outfit.html')
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('outfit-section').innerHTML = html;
+        })
+        .catch(error => {
+          console.error('Kombin bölümü yüklenirken hata oluştu:', error);
+          // Hata durumunda fallback içerik
+          document.getElementById('outfit-section').innerHTML = `
+            <aside class="card pad">
+              <h3>Günlük Kombin Tavsiyesi</h3>
+              <ul class="outfit">
+                <li><strong>Saç şekli:</strong> Topuz</li>
+                <li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li>
+                <li><strong>Küpe:</strong> Halka küpe</li>
+                <li><strong>Kolye:</strong> Mini taşlı kolye</li>
+                <li><strong>Üst:</strong> Yaka detaylı crop ekru gömlek</li>
+                <li><strong>Pantolon:</strong> Indigo mavisi jean gömlek</li>
+                <li><strong>Ayakkabı:</strong> Lumberjack ROMINA 5FX siyah koşu ayakkabısı</li>
+                <li><strong>Oje:</strong> Pastel oje</li>
+                <li><strong>Yüzük:</strong> Eklem yüzüğü</li>
+              </ul>
+            </aside>
+          `;
+        });
+    }
+
     // --- EVENT HANDLERS ---
     document.addEventListener('DOMContentLoaded', () => {
       // Günün İngilizce Kelimesini Ayarla
       setEnglishWordOfTheDay();
+
+      // Kombin bölümünü yükle
+      loadOutfitSection();
 
       // Modal kapatma butonları
       els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
