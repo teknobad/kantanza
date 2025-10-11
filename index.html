@@ -29,6 +29,7 @@
     a{color:var(--ink);text-decoration:none}
     button{background:var(--accent);color:#0b0d12;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
     button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    button.danger{background:var(--danger);color:white}
     button:disabled{opacity:.6;cursor:not-allowed}
     input, textarea{width:100%;background:#0f131a;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:10px}
     label{display:block;margin:10px 0 6px}
@@ -174,6 +175,7 @@
         <!-- Giriş yapmış kullanıcı butonu -->
         <div id="userButton" style="display: none;">
           <button id="btnProfileHeader">Profilim</button>
+          <button id="btnLogout" class="danger">Çıkış yap</button>
         </div>
       </div>
     </div>
@@ -261,6 +263,7 @@
         </div>
         <div class="profile-actions">
           <button id="btnProfileSettings" class="ghost small-button">Profil ayarları</button>
+          <button id="btnLogoutProfile" class="danger small-button">Çıkış yap</button>
         </div>
       </div>
     </div>
@@ -546,6 +549,14 @@
         guestButtons.style.display = 'flex';
         userButton.style.display = 'none';
       }
+    }
+
+    function logout() {
+      localStorage.removeItem('session');
+      updateAuthButtons();
+      location.hash = '#home';
+      route();
+      alert('Çıkış yapıldı.');
     }
 
     function setEnglishWordOfTheDay() {
@@ -1129,6 +1140,10 @@
         location.hash = '#profile';
         route();
       };
+
+      // Çıkış yap butonları
+      el('#btnLogout').onclick = logout;
+      el('#btnLogoutProfile').onclick = logout;
 
       // Konu Aç Modalı
       el('#btnNewTopic').onclick = () => {
