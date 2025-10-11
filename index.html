@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KANTANZA Forum (Güncel)</title>
+  <title>KANTANZA Forum</title>
   <style>
     :root{
       --bg:#0f1115;
@@ -122,74 +122,7 @@
     .label-12-calibri-normal{font-family:Calibri, Arial, Helvetica, sans-serif;font-size:12pt}
     .topic-view-title{font-family:"Comic Sans MS", "Comic Sans", cursive;font-weight:700;font-size:18pt}
     
-    /* Profil */
-    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .profile-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-
-    /* Yeni yatay profil düzeni: solda pfp, ortada isim, sağda ayarlar */
-    .profile-left{display:flex;flex-direction:column;align-items:center;gap:12px}
-    .pfp{width:120px;height:120px;border-radius:50%;border:2px solid var(--line);object-fit:cover;background:#0c0f14;display:block}
-    .profile-username{font-size:18pt;font-weight:bold;margin:0;text-align:center}
-    .profile-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .profile-actions{display:flex;gap:8px}
-    .loc-box .addr{font-family:monospace;color:var(--muted)}
-    
-    /* Takvim - BÜYÜTÜLMÜŞ ve BEYAZ */
-    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
-    .calendar .day{
-      padding:15px;
-      text-align:center;
-      border:1px solid var(--line);
-      border-radius:8px;
-      cursor:pointer;
-      color:white;
-      font-weight:bold;
-      font-size:14px;
-      min-height:50px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: white;
-      color: #0f1115;
-    }
-    .day.period{background:#3a1f2f; color: white;}
-    .day.predicted{background:#1f2f3a; color: white;}
-    .day.special{background:#2f3a1f; color: white;}
     .link{color:var(--accent)}
-    
-    /* YouTube Oynatıcı Güncellemesi */
-    .youtube-player-controls{margin-top:10px}
-    .youtube-player-controls label{font-size:14px; color:var(--muted); margin-bottom:4px}
-    .youtube-player-controls button{padding:6px 12px; font-size:14px; border-radius:8px;}
-    .youtube-player-controls input{font-size:14px; padding:8px;}
-    .youtube-player-controls .row{flex-wrap:wrap; gap:8px;}
-    
-    /* Küçük ve görünmez iframe boyutu */
-    #youtubePlayer iframe {
-        width: 100px;
-        height: 1px;
-        border: none;
-        opacity: 0.01;
-        pointer-events: none;
-        position: absolute;
-    }
-    .parking-display{font-size:24pt;font-weight:bold;text-align:center;margin:10px 0;color:var(--accent)}
-    .habit-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
-    .habit-day{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .habit-day.checked{background:var(--ok)}
-    .shopping-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
-    .shopping-item:last-child{border-bottom:none}
-    .special-day-item{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid var(--line)}
-    .special-day-item:last-child{border-bottom:none}
-    .delete-btn{color:var(--danger);cursor:pointer}
-    .small-button{padding:6px 10px;font-size:12px}
-    .special-day-form{display:flex;flex-direction:column;gap:8px}
-    .profile-info{display:flex;flex-direction:column;align-items:center;justify-content:center}
     
     /* Konu detay sayfası */
     .comment-item{padding:12px 0;border-bottom:1px solid var(--line)}
@@ -197,9 +130,6 @@
     
     @media (max-width:900px){
       .container{grid-template-columns:1fr; padding:12px}
-      .profile-top{flex-direction:column; align-items:center}
-      .profile-left{flex-direction:column}
-      .profile-center{width:100%}
     }
   </style>
 </head>
@@ -225,8 +155,7 @@
       
       <!-- Giriş yapmış kullanıcı butonu -->
       <div id="userButton" style="display: none;">
-       <!-- Orijinal index.html'deki profil butonu -->
-<button id="btnProfileHeader" onclick="window.location.href='profile.html'">Profilim</button>
+        <button id="btnProfileHeader">Profilim</button>
         <button id="btnLogout" class="danger">Çıkış yap</button>
       </div>
     </div>
@@ -303,119 +232,7 @@
     </div>
   </section>
 
-  <!-- Profil Sayfası -->
-  <section class="container" id="view-profile" style="display:none">
-    <div class="card pad" style="grid-column:1 / -1">
-      <div class="profile-top">
-        <div class="profile-left">
-          <img id="pfp" class="pfp" alt="Profil resmi" />
-          <div style="margin-top:8px">
-            <input type="file" id="pfpInput" accept="image/*" style="display:none" />
-            <button id="btnAddPfp" class="small-button">Profil resmi ekle</button>
-          </div>
-        </div>
-        <div class="profile-center">
-          <div class="profile-username" id="profileUsername">Kullanıcı Adı</div>
-          <div class="profile-userid" id="profileUserId" style="color:var(--muted);margin-top:4px;"></div>
-        </div>
-        <div class="profile-actions">
-          <button id="btnProfileSettings" class="ghost small-button">Profil ayarları</button>
-          <button id="btnLogoutProfile" class="danger small-button">Çıkış yap</button>
-        </div>
-      </div>
-    </div>
-    <div class="profile-grid" style="grid-column:1 / -1">
-      <!-- Sol -->
-      <div>
-        <div class="card pad">
-          <h3>Konum</h3>
-          <div class="loc-box">
-            <div class="addr" id="currAddr">Adres/Koordinat okunuyor…</div>
-            <div class="row" style="margin:10px 0;gap:8px">
-              <button id="btnSaveLoc">Konumumu kaydet</button>
-              <button id="btnGoLoc" class="ghost">Konuma git</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Müzik Bölümü: YouTube arka planda -->
-        <div class="card pad">
-          <h3>Müzik (arka planda)</h3>
-          <div class="youtube-player-controls">
-            <label for="musicLinkInput">YouTube Video Linki (URL)</label>
-            <input type="text" id="musicLinkInput" placeholder="YouTube video linkini yapıştırın" />
-            <div class="row" style="margin-top:10px;justify-content:space-between">
-              <button id="btnPlayMusic">Oynat</button>
-              <button id="btnStopMusic" class="ghost">Durdur</button>
-            </div>
-            <div style="margin-top:8px;color:var(--muted);font-size:12px">
-              Durum: <span id="musicStatus">Hazır</span>
-            </div>
-          </div>
-          <div id="ytContainer" style="margin-top:10px; position:relative; height:10px;">
-            <div id="youtubePlayer"></div>
-          </div>
-        </div>
-        <div class="card pad">
-          <h3>Otopark Numarası</h3>
-          <div class="parking-display" id="parkingDisplay">-</div>
-          <input type="text" id="inpParkingNo" placeholder="Otopark numarası" maxlength="10" />
-          <div class="row" style="margin-top:8px;gap:8px">
-            <button id="btnSaveParking">Kaydet</button>
-            <button id="btnClearParking" class="ghost">Temizle</button>
-          </div>
-        </div>
-      </div>
-      <!-- Sağ -->
-      <div>
-        <div class="card pad">
-          <h3>Regli Takvimi</h3>
-          <div class="row" style="gap:8px;flex-wrap:wrap">
-            <label>
-              Son başlangıç tarihi
-              <input type="date" id="periodStart" />
-            </label>
-            <label>
-              Döngü (gün)
-              <input type="number" id="cycleLen" min="20" max="40" value="28" />
-            </label>
-            <button id="btnBuildCal">Hesapla</button>
-          </div>
-          <div id="calendarMeta" class="muted" style="margin:8px 0;color:var(--muted)"></div>
-          <div id="calendar" class="calendar"></div>
-        </div>
-        <div class="card pad">
-          <h3>Alışveriş Listesi</h3>
-          <div class="row">
-            <input type="text" id="inpShoppingItem" placeholder="Yeni ürün ekle" style="flex:1" />
-            <button id="btnAddShopping">+</button>
-          </div>
-          <div id="shoppingList" style="margin-top:12px"></div>
-        </div>
-      </div>
-    </div>
-    <div class="profile-grid" style="grid-column:1 / -1; margin-top:16px">
-      <div class="card pad">
-        <h3>Alışkanlıklarım (21 Gün Kuralı)</h3>
-        <div class="row">
-          <input type="text" id="inpHabit" placeholder="Yeni alışkanlık" style="flex:1" />
-          <button id="btnAddHabit">+</button>
-        </div>
-        <div id="habitsList" style="margin-top:12px"></div>
-      </div>
-      <div class="card pad">
-        <h3>Özel Günler</h3>
-        <div class="special-day-form">
-          <input type="text" id="inpSpecialDayName" placeholder="Etkinlik adı" />
-          <input type="date" id="inpSpecialDayDate" />
-          <button id="btnAddSpecialDay">+</button>
-        </div>
-        <div id="specialDaysList" style="margin-top:12px"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Modals (konu, yorum, login, signup, profil ayar, yemek) -->
+  <!-- Modals (konu, yorum, login, signup, yemek) -->
   <div class="modal" id="modalTopic">
     <div class="sheet">
       <div class="head"><div class="label-12-calibri">KONU BAŞLIĞI</div></div>
@@ -499,26 +316,6 @@
       </div>
     </div>
   </div>
-  
-  <div class="modal" id="modalProfileSettings">
-    <div class="sheet">
-      <div class="head"><div class="label-12-calibri">Profil Ayarları</div></div>
-      <div class="body">
-        <label class="label-12-calibri-normal">Kullanıcı Adı</label>
-        <input id="settingsUsername" placeholder="Yeni kullanıcı adı" />
-        <div class="line" style="margin:8px 0"></div>
-        <label class="label-12-calibri-normal">Yeni Şifre</label>
-        <input id="settingsPassword" type="password" placeholder="Yeni şifre (min 5 karakter, 1 büyük harf, 1 sayı)" />
-        <div class="line" style="margin:8px 0"></div>
-        <label class="label-12-calibri-normal">Şifre Onay</label>
-        <input id="settingsPasswordConfirm" type="password" placeholder="Şifre tekrar" />
-      </div>
-      <div class="foot">
-        <button class="ghost" data-close="#modalProfileSettings">İptal</button>
-        <button id="btnSaveProfileSettings">Kaydet</button>
-      </div>
-    </div>
-  </div>
 
   <script>
     // --- Yardımcı seçiciler ---
@@ -529,13 +326,6 @@
     let topics = JSON.parse(localStorage.getItem('topics') || '[]');
     let activeTopicForComment = null;
     let userList = JSON.parse(localStorage.getItem('userList') || '[]');
-    
-    // --- YouTube Oynatıcı Durumu ---
-    let player;
-    let isPlayerReady = false;
-    let currentPlaylist = [];
-    let currentPlaylistIndex = 0;
-    const defaultVideoId = 't_H0qL1z2Jc';
 
     // --- Günün İngilizce Kelimesi Verisi ---
     const englishWords = [
@@ -798,12 +588,10 @@
       const hash = location.hash || '#home';
       const mainContainer = document.querySelector('main.container');
       const topicView = el('#view-topic');
-      const profileView = el('#view-profile');
       
       // Varsayılan olarak ana sayfayı göster
       if(mainContainer) mainContainer.style.display = 'grid';
       if(topicView) topicView.style.display = 'none';
-      if(profileView) profileView.style.display = 'none';
 
       if(hash.startsWith('#topic/')) {
         const id = Number(hash.split('/')[1]);
@@ -816,343 +604,6 @@
         if(mainContainer) mainContainer.style.display = 'none';
         if(topicView) topicView.style.display = 'grid';
         renderTopicDetail(t);
-      } else if(hash === '#profile') {
-        if(mainContainer) mainContainer.style.display = 'none';
-        if(profileView) profileView.style.display = 'grid';
-        loadProfileData();
-      }
-    }
-
-    // --- PROFİL FONKSİYONLARI ---
-    async function readCurrentLocation() {
-      const label = el('#currAddr');
-      label.textContent = 'Konum okunuyor…';
-      if(!('geolocation' in navigator)) { 
-        label.textContent = 'Tarayıcınız konumu desteklemiyor.'; 
-        return null; 
-      }
-      try {
-        const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
-        const {latitude: lat, longitude: lng} = pos.coords;
-        let addr = '';
-        try {
-          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
-          if(r.ok) { 
-            const j = await r.json(); 
-            addr = j.display_name || ''; 
-          }
-        } catch(e) {}
-        const text = `Adres: ${addr || 'Bulunamadı'} | Koordinat: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        label.textContent = text;
-        return {lat, lng, addr};
-      } catch(e) { 
-        label.textContent = 'Konum alınamadı.'; 
-        return null; 
-      }
-    }
-
-    function buildCalendar() {
-      const startStr = el('#periodStart').value;
-      const cycle = parseInt(el('#cycleLen').value || '28', 10);
-      const cal = el('#calendar'); 
-      cal.innerHTML = '';
-      if(!startStr) { 
-        el('#calendarMeta').textContent = 'Başlangıç tarihi seçin.'; 
-        return; 
-      }
-      const start = new Date(startStr);
-      const today = new Date();
-      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-      const days = monthEnd.getDate();
-      const periods = [];
-      for(let i = -6; i <= 6; i++) {
-        const d = new Date(start);
-        d.setDate(d.getDate() + i * cycle);
-        periods.push(d);
-      }
-
-      const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-      const specialDays = prof.specialDays || [];
-
-      el('#calendarMeta').textContent = `Gösterilen ay: ${today.toLocaleString('tr-TR',{month:'long'})} ${today.getFullYear()} | Döngü: ${cycle} gün`;
-
-      for(let i = 1; i <= days; i++) {
-        const d = new Date(today.getFullYear(), today.getMonth(), i);
-        const cell = document.createElement('div');
-        cell.className = 'day';
-        cell.textContent = i;
-
-        const isPeriod = periods.some(p => Math.abs((+d - +p)/(1000*3600*24)) <= 1 );
-        const nextStart = periods.find(p => p >= today);
-        if(isPeriod) cell.classList.add('period');
-
-        if(nextStart) {
-          const diff = Math.round((+d - +nextStart)/(1000*3600*24));
-          if(diff >= 0 && diff < 3) cell.classList.add('predicted');
-        }
-
-        const isSpecial = specialDays.some(sd => {
-          const sdDate = new Date(sd.date);
-          return sdDate.getDate() === d.getDate() && sdDate.getMonth() === d.getMonth() && sdDate.getFullYear() === d.getFullYear();
-        });
-        if(isSpecial) cell.classList.add('special');
-
-        cell.addEventListener('click', () => {
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
-          const val = `${yyyy}-${mm}-${dd}`;
-          el('#periodStart').value = val;
-          buildCalendar();
-        });
-
-        cal.appendChild(cell);
-      }
-    }
-
-    function renderShoppingList(items) {
-      const list = el('#shoppingList'); 
-      list.innerHTML = '';
-      items.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'shopping-item';
-        div.innerHTML = `<span>${item}</span><span class="delete-btn" data-index="${index}">✕</span>`;
-        list.appendChild(div);
-      });
-      
-      els('#shoppingList .delete-btn').forEach(btn => {
-        btn.onclick = () => {
-          const index = parseInt(btn.getAttribute('data-index'));
-          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-          prof.shoppingList.splice(index, 1);
-          localStorage.setItem('profile', JSON.stringify(prof));
-          renderShoppingList(prof.shoppingList);
-        };
-      });
-    }
-
-    function renderHabits(habits) {
-      const list = el('#habitsList'); 
-      list.innerHTML = '';
-      habits.forEach((habit, habitIndex) => {
-        const habitDiv = document.createElement('div');
-        habitDiv.style.marginBottom = '16px';
-        habitDiv.style.paddingBottom = '12px';
-        habitDiv.style.borderBottom = '1px solid var(--line)';
-        
-        const habitTitle = document.createElement('div');
-        habitTitle.textContent = habit.name;
-        habitTitle.style.fontWeight = 'bold';
-        habitTitle.style.marginBottom = '8px';
-        
-        const grid = document.createElement('div');
-        grid.className = 'habit-grid';
-        for (let i = 0; i < 21; i++) {
-          const day = document.createElement('div');
-          day.className = `habit-day ${habit.days && habit.days[i] ? 'checked' : ''}`;
-          day.textContent = i + 1;
-          day.setAttribute('data-habit', habitIndex);
-          day.setAttribute('data-day', i);
-          grid.appendChild(day);
-        }
-        
-        const deleteBtn = document.createElement('span');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.textContent = '✕';
-        deleteBtn.style.marginLeft = '10px';
-        deleteBtn.setAttribute('data-habit', habitIndex);
-        
-        habitDiv.appendChild(habitTitle);
-        habitDiv.appendChild(grid);
-        habitDiv.appendChild(deleteBtn);
-        list.appendChild(habitDiv);
-      });
-      
-      els('.habit-day').forEach(day => {
-        day.onclick = () => {
-          const habitIndex = parseInt(day.getAttribute('data-habit'));
-          const dayIndex = parseInt(day.getAttribute('data-day'));
-          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-          if(!prof.habits[habitIndex].days) prof.habits[habitIndex].days = [];
-          prof.habits[habitIndex].days[dayIndex] = !prof.habits[habitIndex].days[dayIndex];
-          localStorage.setItem('profile', JSON.stringify(prof));
-          day.classList.toggle('checked');
-        };
-      });
-      
-      els('#habitsList .delete-btn').forEach(btn => {
-        btn.onclick = () => {
-          const habitIndex = parseInt(btn.getAttribute('data-habit'));
-          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-          prof.habits.splice(habitIndex, 1);
-          localStorage.setItem('profile', JSON.stringify(prof));
-          renderHabits(prof.habits);
-        };
-      });
-    }
-
-    function renderSpecialDays(specialDays) {
-      const list = el('#specialDaysList'); 
-      list.innerHTML = '';
-      specialDays.forEach((day, index) => {
-        const div = document.createElement('div');
-        div.className = 'special-day-item';
-        div.innerHTML = `
-          <div>
-            <strong>${day.name}</strong>
-            <div>${new Date(day.date).toLocaleDateString('tr-TR')}</div>
-          </div>
-          <span class="delete-btn" data-index="${index}">✕</span>
-        `;
-        
-        div.querySelector('div').addEventListener('click', () => {
-          el('#periodStart').value = new Date(day.date).toISOString().slice(0,10);
-          buildCalendar();
-        });
-        
-        list.appendChild(div);
-      });
-      
-      els('#specialDaysList .delete-btn').forEach(btn => {
-        btn.onclick = () => {
-          const index = parseInt(btn.getAttribute('data-index'));
-          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-          prof.specialDays.splice(index, 1);
-          localStorage.setItem('profile', JSON.stringify(prof));
-          renderSpecialDays(prof.specialDays);
-          buildCalendar();
-        };
-      });
-    }
-
-    function loadProfileData() {
-      const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-
-      el('#parkingDisplay').textContent = prof.parkingNo || '-';
-      if(prof.parkingNo) el('#inpParkingNo').value = prof.parkingNo;
-
-      renderShoppingList(prof.shoppingList || []);
-      renderHabits(prof.habits || []);
-      renderSpecialDays(prof.specialDays || []);
-      applyProfile();
-      buildCalendar();
-      
-      readCurrentLocation();
-    }
-
-    function applyProfile() {
-      const prof = JSON.parse(localStorage.getItem('profile') || 'null');
-      const img = el('#pfp');
-      img.src = prof?.pfp || '';
-      img.style.background = prof?.pfp ? 'none' : '#0c0f14';
-      el('#profileUsername').textContent = prof?.user || '';
-      el('#profileUserId').textContent = prof?.userId ? `#${prof.userId}` : '';
-    }
-
-    // --- YOUTUBE PLAYER FONKSİYONLARI ---
-    function loadYouTubeAPI() {
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    }
-
-    window.onYouTubeIframeAPIReady = function() {
-      isPlayerReady = true;
-      el('#musicStatus').textContent = 'Oynatıcı Hazır.';
-      
-      player = new YT.Player('youtubePlayer', {
-        height: '100%',
-        width: '100%',
-        videoId: defaultVideoId,
-        playerVars: {
-          'autoplay': 0,
-          'controls': 0,
-          'loop': 1,
-          'playlist': defaultVideoId,
-          'disablekb': 1,
-          'iv_load_policy': 3
-        },
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
-        }
-      });
-    }
-
-    function onPlayerReady(event) {
-      el('#musicStatus').textContent = 'Oynatıcı Başlatılmaya Hazır.';
-      currentPlaylist = [defaultVideoId];
-      el('#musicStatus').textContent = 'Hazır (Seçili: Dinlendirici Müzik)';
-    }
-
-    function onPlayerStateChange(event) {
-      if (event.data == YT.PlayerState.PLAYING) {
-        el('#musicStatus').textContent = 'Oynatılıyor.';
-      } else if (event.data == YT.PlayerState.PAUSED) {
-        el('#musicStatus').textContent = 'Durduruldu.';
-      } else if (event.data == YT.PlayerState.ENDED) {
-        if (currentPlaylist.length > 1) {
-          currentPlaylistIndex = (currentPlaylistIndex + 1) % currentPlaylist.length;
-          player.loadVideoById(currentPlaylist[currentPlaylistIndex]);
-        } else {
-          player.playVideo();
-        }
-      }
-    }
-
-    function extractVideoId(url) {
-      if (!url) return null;
-      let videoId = null;
-      const urlObj = new URL(url);
-      if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
-        if (urlObj.searchParams.get('v')) {
-          videoId = urlObj.searchParams.get('v');
-        } else if (urlObj.pathname.length > 1 && urlObj.hostname.includes('youtu.be')) {
-          videoId = urlObj.pathname.substring(1);
-        }
-      }
-      if (videoId && videoId.length === 11) return videoId;
-      return null;
-    }
-
-    async function handlePlayMusic() {
-      if (!isPlayerReady) {
-        alert('YouTube oynatıcı henüz yüklenmedi. Lütfen bekleyin.');
-        return;
-      }
-
-      const link = el('#musicLinkInput').value.trim();
-
-      currentPlaylist = [];
-      currentPlaylistIndex = 0;
-
-      if (link) {
-        const id = extractVideoId(link);
-        if (id) {
-          currentPlaylist.push(id);
-          el('#musicStatus').textContent = 'Link ile yükleniyor...';
-        } else {
-          alert('Geçersiz YouTube Video Linki.');
-          el('#musicStatus').textContent = 'HATA: Geçersiz link.';
-          return;
-        }
-      } else {
-        currentPlaylist.push(defaultVideoId);
-        el('#musicStatus').textContent = 'Varsayılan müzik yükleniyor.';
-      }
-
-      if (currentPlaylist.length > 0) {
-        player.loadPlaylist(currentPlaylist);
-      }
-    }
-
-    function handleStopMusic() {
-      if (isPlayerReady) {
-        player.pauseVideo();
-        el('#musicStatus').textContent = 'Durduruldu.';
       }
     }
 
@@ -1206,10 +657,9 @@
       el('#btnLogin').onclick = () => openModal('#modalLogin');
       el('#btnSignup').onclick = () => openModal('#modalSignup');
 
-      // Profil butonu
+      // Profil butonu - profile.html'ye yönlendir
       el('#btnProfileHeader').onclick = () => {
-        location.hash = '#profile';
-        route();
+        window.location.href = 'profile.html';
       };
 
       // Admin paneli butonu
@@ -1217,9 +667,8 @@
         window.location.href = 'admin.html';
       };
 
-      // Çıkış yap butonları
+      // Çıkış yap butonu
       el('#btnLogout').onclick = logout;
-      el('#btnLogoutProfile').onclick = logout;
 
       // Konu Aç Modalı
       el('#btnNewTopic').onclick = () => {
@@ -1306,6 +755,7 @@
         closeModal('#modalComment');
         renderTopicDetail(topics[idx]);
       };
+
       // Login
       el('#btnDoLogin').onclick = () => {
         const u = el('#loginUser').value.trim();
@@ -1319,13 +769,14 @@
           localStorage.setItem('session', JSON.stringify({user: u, userId: acc.userId}));
           closeModal('#modalLogin');
           alert('Giriş başarılı.');
-          updateAuthButtons(); // Butonları güncelle
-          location.hash = '#profile';
+          updateAuthButtons();
+          location.hash = '#home';
           route();
         } else {
           alert('Kullanıcı adı veya şifre hatalı.');
         }
       };
+
       // Signup
       el('#btnDoSignup').onclick = () => {
         const mail = el('#suMail').value.trim();
@@ -1356,6 +807,8 @@
         localStorage.setItem('nextUserId', (nextUserId + 1).toString());
         localStorage.setItem('session', JSON.stringify({user, userId}));
         closeModal('#modalSignup');
+        
+        // Profil verilerini oluştur
         if(!localStorage.getItem('profile')) {
           localStorage.setItem('profile', JSON.stringify({
             user, 
@@ -1373,152 +826,18 @@
           prof.userId = userId;
           localStorage.setItem('profile', JSON.stringify(prof));
         }
-        updateAuthButtons(); // Butonları güncelle
-        location.hash = '#profile';
+        updateAuthButtons();
+        location.hash = '#home';
         route();
       };
-      // Profil butonları
-      el('#btnAddPfp').onclick = () => el('#pfpInput').click();
-      el('#pfpInput').addEventListener('change', (e) => {
-        const f = e.target.files[0];
-        if(!f) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          const prof = JSON.parse(localStorage.getItem('profile')) || {};
-          prof.pfp = reader.result; 
-          localStorage.setItem('profile', JSON.stringify(prof));
-          applyProfile();
-        };
-        reader.readAsDataURL(f);
-      });
-      el('#btnProfileSettings').onclick = () => {
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        el('#settingsUsername').value = prof.user || '';
-        openModal('#modalProfileSettings');
-      };
-      el('#btnSaveProfileSettings').onclick = () => {
-        const newUsername = el('#settingsUsername').value.trim();
-        const newPassword = el('#settingsPassword').value;
-        const newPasswordConfirm = el('#settingsPasswordConfirm').value;
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        const acc = JSON.parse(localStorage.getItem('account') || '{}');
-        if (newPassword && !validatePassword(newPassword).valid) {
-          alert('Yeni şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.');
-          return;
-        }
-        if(newUsername && newUsername !== prof.user) {
-          prof.user = newUsername;
-          acc.user = newUsername;
-          localStorage.setItem('profile', JSON.stringify(prof));
-          localStorage.setItem('account', JSON.stringify(acc));
-          localStorage.setItem('session', JSON.stringify({user: newUsername, userId: prof.userId}));
-          el('#profileUsername').textContent = newUsername;
-        }
-        if(newPassword) {
-          if(newPassword !== newPasswordConfirm) {
-            alert('Şifreler eşleşmiyor.');
-            return;
-          }
-          acc.pass = newPassword;
-          localStorage.setItem('account', JSON.stringify(acc));
-        }
-        closeModal('#modalProfileSettings');
-        el('#settingsUsername').value = '';
-        el('#settingsPassword').value = '';
-        el('#settingsPasswordConfirm').value = '';
-        alert('Profil ayarları kaydedildi.');
-      };
-      // Konum butonları
-      el('#btnSaveLoc').onclick = async () => {
-        const p = await readCurrentLocation();
-        if(!p) return;
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        prof.savedLoc = p; 
-        localStorage.setItem('profile', JSON.stringify(prof));
-        alert('Konum kaydedildi.');
-      };
-      el('#btnGoLoc').onclick = () => {
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        if(!prof.savedLoc) { 
-          alert('Önce konum kaydedin.'); 
-          return; 
-        }
-        const {lat, lng} = prof.savedLoc;
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-        window.open(url, '_blank');
-      };
-      // Müzik butonları
-      el('#btnPlayMusic').addEventListener('click', handlePlayMusic);
-      el('#btnStopMusic').addEventListener('click', handleStopMusic);
-      // Otopark butonları
-      el('#btnSaveParking').onclick = () => {
-        const parkingNo = el('#inpParkingNo').value.trim();
-        if(!parkingNo) { 
-          alert('Otopark numarası gerekli.'); 
-          return; 
-        }
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        prof.parkingNo = parkingNo;
-        localStorage.setItem('profile', JSON.stringify(prof));
-        el('#parkingDisplay').textContent = parkingNo;
-        alert('Otopark numarası kaydedildi.');
-      };
 
-      el('#btnClearParking').onclick = () => {
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        prof.parkingNo = null;
-        localStorage.setItem('profile', JSON.stringify(prof));
-        el('#parkingDisplay').textContent = '-';
-        el('#inpParkingNo').value = '';
-      };
-      // Takvim butonu
-      el('#btnBuildCal').onclick = buildCalendar;
-      // Alışveriş listesi butonu
-      el('#btnAddShopping').onclick = () => {
-        const item = el('#inpShoppingItem').value.trim();
-        if(!item) return;
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        if(!prof.shoppingList) prof.shoppingList = [];
-        prof.shoppingList.push(item);
-        localStorage.setItem('profile', JSON.stringify(prof));
-        el('#inpShoppingItem').value = '';
-        renderShoppingList(prof.shoppingList);
-      };
-      // Alışkanlık butonu
-      el('#btnAddHabit').onclick = () => {
-        const habitName = el('#inpHabit').value.trim();
-        if(!habitName) return;
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        if(!prof.habits) prof.habits = [];
-        prof.habits.push({ name: habitName, days: [] });
-        localStorage.setItem('profile', JSON.stringify(prof));
-        el('#inpHabit').value = '';
-        renderHabits(prof.habits);
-      };
-      // Özel gün butonu
-      el('#btnAddSpecialDay').onclick = () => {
-        const name = el('#inpSpecialDayName').value.trim();
-        const date = el('#inpSpecialDayDate').value;
-        if(!name || !date) { 
-          alert('Etkinlik adı ve tarihi gerekli.'); 
-          return; 
-        }
-        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
-        if(!prof.specialDays) prof.specialDays = [];
-        prof.specialDays.push({ name, date });
-        localStorage.setItem('profile', JSON.stringify(prof));
-        el('#inpSpecialDayName').value = '';
-        el('#inpSpecialDayDate').value = '';
-        renderSpecialDays(prof.specialDays);
-        buildCalendar();
-      };
       // İlk render
       renderTopics();
       renderRecipes();
       route();
-      loadYouTubeAPI();
-      updateAuthButtons(); // Buton durumunu güncelle
+      updateAuthButtons();
     });
+
     // Hash değişikliklerini dinle
     window.addEventListener('hashchange', route);
   </script>
