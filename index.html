@@ -39,7 +39,40 @@
     .brand{font-family:'Arial Black', Arial, Helvetica, sans-serif;font-size:18pt;font-weight:900;letter-spacing:.5px;cursor:pointer}
     .brand-underline{height:3px;background:var(--ink);width:max(140px, 14ch);border-radius:3px;margin-top:6px}
     .auth-actions{gap:10px}
+/* Başlık alanı - ORTALAMA İÇİN */
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
 
+.brand-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-actions {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Mobil için responsive */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .auth-actions {
+    position: static;
+    transform: none;
+  }
+}
     /* Konular listesi */
     .topics .title{font-family:Calibri, Arial, Helvetica, sans-serif;font-weight:700;font-size:16pt}
     .topic-item{padding:12px 8px;cursor:pointer}
@@ -159,28 +192,28 @@
   </style>
 </head>
 <body>
-  <!-- ÜST BÖLÜM: Marka ve Auth -->
-  <header class="card pad">
-    <div class="between">
-      <div>
-        <div class="brand" id="brandTitle">KANTANZA</div>
-        <div class="brand-underline"></div>
+ <!-- ÜST BÖLÜM: Marka ve Auth -->
+<header class="card pad">
+  <div class="header-content">
+    <div class="brand-container">
+      <div class="brand" id="brandTitle">KANTANZA</div>
+      <div class="brand-underline"></div>
+    </div>
+    <div class="auth-actions">
+      <!-- Giriş yapmamış kullanıcı butonları -->
+      <div id="guestButtons">
+        <button id="btnLogin">Giriş yap</button>
+        <button class="ghost" id="btnSignup">Üye ol</button>
       </div>
-      <div class="row auth-actions">
-        <!-- Giriş yapmamış kullanıcı butonları -->
-        <div id="guestButtons">
-          <button id="btnLogin">Giriş yap</button>
-          <button class="ghost" id="btnSignup">Üye ol</button>
-        </div>
-        <!-- Giriş yapmış kullanıcı butonu -->
-        <div id="userButton" style="display: none;">
-          <button id="btnProfileHeader">Profilim</button>
-          <button id="btnLogout" class="danger">Çıkış yap</button>
-        </div>
+      <!-- Giriş yapmış kullanıcı butonu -->
+      <div id="userButton" style="display: none;">
+        <button id="btnProfileHeader">Profilim</button>
+        <button id="btnLogout" class="danger">Çıkış yap</button>
       </div>
     </div>
-    <div class="line" style="margin-top:12px"></div>
-  </header>
+  </div>
+  <div class="line" style="margin-top:12px"></div>
+</header>
   <main class="container">
     <!-- Sol: Film & Yemek -->
     <aside class="card pad sidebar">
@@ -1168,7 +1201,7 @@
         const body = el('#inpTopicBody').value.trim();
         if(title.length === 0 || body.length === 0) { 
           alert('Başlık ve konu metni gerekli.'); 
-          return; 
+          return;
         }
         if(title.length > 15) { 
           alert('Başlık 15 karakteri aşamaz.'); 
