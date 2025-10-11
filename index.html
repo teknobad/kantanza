@@ -39,6 +39,10 @@
     .brand{font-family:'Arial Black', Arial, Helvetica, sans-serif;font-size:18pt;font-weight:900;letter-spacing:.5px;cursor:pointer}
     .brand-underline{height:3px;background:var(--ink);width:max(140px, 14ch);border-radius:3px;margin-top:6px}
     .auth-actions{gap:10px}
+    <!-- Ana uygulama header'ına bu butonu ekleyin -->
+<div id="adminButton" style="display: none;">
+  <button id="btnAdminPanel" class="ghost">Admin Paneli</button>
+</div>
 /* Başlık alanı - ORTALAMA İÇİN */
 .header-content {
   display: flex;
@@ -214,6 +218,48 @@
   </div>
   <div class="line" style="margin-top:12px"></div>
 </header>
+  // Film verilerini yükle
+function loadMovieData() {
+  const movieData = JSON.parse(localStorage.getItem('movieData') || JSON.stringify({
+    title: "Karanlığın Ormanı",
+    actors: "A. Kaya, B. Demir, C. Öz",
+    description: "Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.",
+    badges: ["IMDb: 8.6", "Rotten Tomatoes: 94%", "+18 değil", "Macera • Korku • Gizem"]
+  }));
+
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) {
+    // Film başlığı
+    const movieTitle = sidebar.querySelector('p strong');
+    if (movieTitle && movieTitle.nextSibling) {
+      movieTitle.nextSibling.textContent = ` "${movieData.title}"`;
+    }
+    
+    // Oyuncular
+    const movieActors = Array.from(sidebar.querySelectorAll('p')).find(p => p.textContent.includes('Oyuncular:'));
+    if (movieActors) {
+      movieActors.innerHTML = `<strong>Oyuncular:</strong> ${movieData.actors}`;
+    }
+    
+    // Açıklama
+    const movieDesc = Array.from(sidebar.querySelectorAll('p')).find(p => p.textContent.includes('Kısaca:'));
+    if (movieDesc) {
+      movieDesc.innerHTML = `<strong>Kısaca:</strong> ${movieData.description}`;
+    }
+    
+    // Etiketleri güncelle
+    const badgesContainer = sidebar.querySelector('.row');
+    if (badgesContainer && Array.isArray(movieData.badges)) {
+      badgesContainer.innerHTML = '';
+      movieData.badges.forEach(badge => {
+        const span = document.createElement('span');
+        span.className = 'badge';
+        span.textContent = badge;
+        badgesContainer.appendChild(span);
+      });
+    }
+  }
+}
   <main class="container">
     <!-- Sol: Film & Yemek -->
     <aside class="card pad sidebar">
@@ -243,6 +289,35 @@
       <div id="topicsList" style="margin-top:8px"></div>
     </section>
     <!-- Sağ: Kombin ve Günün İngilizce Kelimesi -->
+    // Kombin verilerini yükle
+function loadOutfitData() {
+  const outfitData = JSON.parse(localStorage.getItem('outfitData') || JSON.stringify({
+    hairstyle: "Topuz",
+    hairclip: "Good Hair Days Magic-grip Saç Topuz Tokası",
+    earrings: "Halka küpe",
+    necklace: "Mini taşlı kolye",
+    top: "Yaka detaylı crop ekru gömlek",
+    pants: "Indigo mavisi jean gömlek",
+    shoes: "Lumberjack ROMINA 5FX siyah koşu ayakkabısı",
+    nailPolish: "Pastel oje",
+    ring: "Eklem yüzüğü"
+  }));
+
+  const outfitList = document.querySelector('.outfit');
+  if (outfitList) {
+    outfitList.innerHTML = `
+      <li><strong>Saç şekli:</strong> ${outfitData.hairstyle}</li>
+      <li><strong>Toka:</strong> ${outfitData.hairclip}</li>
+      <li><strong>Küpe:</strong> ${outfitData.earrings}</li>
+      <li><strong>Kolye:</strong> ${outfitData.necklace}</li>
+      <li><strong>Üst:</strong> ${outfitData.top}</li>
+      <li><strong>Pantolon:</strong> ${outfitData.pants}</li>
+      <li><strong>Ayakkabı:</strong> ${outfitData.shoes}</li>
+      <li><strong>Oje:</strong> ${outfitData.nailPolish}</li>
+      <li><strong>Yüzük:</strong> ${outfitData.ring}</li>
+    `;
+  }
+}
     <div>
       <aside class="card pad">
         <h3>Günlük Kombin Tavsiyesi</h3>
@@ -542,6 +617,33 @@
     ];
 
     // --- YEMEK TARİFLERİ ---
+    // Tarif verilerini yükle
+function loadRecipesData() {
+  const savedRecipes = JSON.parse(localStorage.getItem('recipes') || '[]');
+  
+  // Eğer kayıtlı tarifler yoksa, varsayılan tarifleri kullan
+  const recipesToUse = savedRecipes.length > 0 ? savedRecipes : [
+    {
+      id: 1,
+      title: "Fırında Baharatlı Tavuk",
+      ingredientCount: 7,
+      ingredients: "Tavuk baget, zeytinyağı, sarımsak, kekik, kırmızı biber, tuz, karabiber",
+      description: "Tavuk bagetler zeytinyağı ve baharatla harmanlanıp fırında kızartılır.",
+      fullRecipe: "Malzemeleri bir kapta karıştırın. Tavukları marine edip 30 dakika bekletin. 200°C önceden ısıtılmış fırında 35-40 dakika pişirin."
+    },
+    {
+      id: 2,
+      title: "Mercimek Çorbası",
+      ingredientCount: 8,
+      ingredients: "Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",
+      description: "Klasik Türk mutfağından doyurucu bir çorba.",
+      fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun. Mercimekleri ekleyip su ilave edin. Patatesleri ekleyip pişirin. Blendırdan geçirip servis yapın."
+    }
+  ];
+
+  // Tarifleri render et
+  renderRecipes(recipesToUse);
+}
     const recipes = [
       {
         id: 1,
@@ -568,6 +670,57 @@
     const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
 
     // --- YARDIMCI FONKSİYONLAR ---
+    // Admin butonunu güncelleme
+function updateAuthButtons() {
+  const session = JSON.parse(localStorage.getItem('session') || '{}');
+  const guestButtons = document.getElementById('guestButtons');
+  const userButton = document.getElementById('userButton');
+  const adminButton = document.getElementById('adminButton');
+  
+  if (session.userId) {
+    guestButtons.style.display = 'none';
+    userButton.style.display = 'flex';
+    
+    // Admin kontrolü - basit bir yöntem
+    if (session.user === 'admin' || session.userId === '00001') {
+      adminButton.style.display = 'flex';
+    } else {
+      adminButton.style.display = 'none';
+    }
+  } else {
+    guestButtons.style.display = 'flex';
+    userButton.style.display = 'none';
+    adminButton.style.display = 'none';
+  }
+}
+
+// Admin paneli butonu event listener'ı
+document.addEventListener('DOMContentLoaded', function() {
+  // ... diğer event listener'lar ...
+  
+  // Admin paneli butonu
+  if (el('#btnAdminPanel')) {
+    el('#btnAdminPanel').onclick = () => {
+      window.location.href = 'admin.html';
+    };
+  }
+  
+  // İlk yüklemede buton durumunu güncelle
+  // Tarayıcı konsolunda bu kodu çalıştırarak admin kullanıcısı oluşturun
+localStorage.setItem('account', JSON.stringify({
+  mail: 'admin@kantanza.com',
+  user: 'admin',
+  pass: 'admin123',
+  userId: '00001'
+}));
+
+localStorage.setItem('session', JSON.stringify({
+  user: 'admin',
+  userId: '00001'
+}));
+  
+  updateAuthButtons();
+});
     function updateAuthButtons() {
       const session = JSON.parse(localStorage.getItem('session') || '{}');
       const guestButtons = document.getElementById('guestButtons');
@@ -988,7 +1141,18 @@
         };
       });
     }
+// Tüm admin verilerini yükle
+function loadAllAdminData() {
+  loadMovieData();
+  loadOutfitData();
+  loadRecipesData();
+}
 
+// Sayfa yüklendiğinde çağır
+document.addEventListener('DOMContentLoaded', function() {
+  // ... diğer kodlar ...
+  loadAllAdminData();
+});
     function loadProfileData() {
       const prof = JSON.parse(localStorage.getItem('profile') || '{}');
 
