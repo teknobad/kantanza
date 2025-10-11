@@ -1,14 +1,57 @@
 <aside class="card pad">
-  <h3>Günlük Kombin Tavsiyesi</h3>
-  <ul class="outfit">
-    <li><strong>Saç şekli:</strong> Topuz</li>
-    <li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li>
-    <li><strong>Küpe:</strong> Halka küpe</li>
-    <li><strong>Kolye:</strong> Mini taşlı kolye</li>
-    <li><strong>Üst:</strong> Yaka detaylı crop ekru gömlek</li>
-    <li><strong>Pantolon:</strong> Indigo mavisi jean gömlek</li>
-    <li><strong>Ayakkabı:</strong> Lumberjack ROMINA 5FX siyah koşu ayakkabısı</li>
-    <li><strong>Oje:</strong> Pastel oje</li>
-    <li><strong>Yüzük:</strong> Eklem yüzüğü</li>
-  </ul>
+  <h3>3B Kombin Oluştur</h3>
+  <div id="viewer" style="width:100%;height:480px;background:#000;border-radius:12px;"></div>
+
+  <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+    <button class="ghost" data-part="shirt" data-src="models/clothes_shirt.glb">Gömlek</button>
+    <button class="ghost" data-part="pants" data-src="models/clothes_pants.glb">Pantolon</button>
+    <button class="ghost" data-part="shoes" data-src="models/clothes_shoes.glb">Ayakkabı</button>
+    <button class="danger" id="resetClothes">Sıfırla</button>
+  </div>
 </aside>
+
+<script src="https://unpkg.com/three/build/three.min.js"></script>
+<script src="https://unpkg.com/three/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://unpkg.com/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+  let scene = new THREE.Scene();
+  let renderer = new THREE.WebGLRenderer({antialias:true});
+  let camera = new THREE.PerspectiveCamera(45,1,0.1,100);
+  let controls, baseModel;
+  let clothes = {};
+
+  renderer.setSize(window.innerWidth * 0.9, 450);
+  document.getElementById("viewer").appendChild(renderer.domElement);
+  camera.position.set(0,1.5,3);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
+  const loader = new THREE.GLTFLoader();
+
+  loader.load("models/base_character.glb",(gltf)=>{
+    baseModel = gltf.scene;
+    baseModel.position.y = -1;
+    scene.add(baseModel);
+  });
+
+  function addCloth(part,url){
+    if(clothes[part]) scene.remove(clothes[part]);
+    loader.load(url,(gltf)=>{
+      clothes[part] = gltf.scene;
+      clothes[part].position.copy(baseModel.position);
+      scene.add(clothes[part]);
+    });
+  }
+
+  document.querySelectorAll("[data-part]").forEach(btn=>{
+    btn.onclick = ()=> addCloth(btn.dataset.part, btn.dataset.src);
+  });
+
+  document.getElementById("resetClothes").onclick = ()=>{
+    for(let part in clothes) scene.remove(clothes[part]);
+    clothes = {};
+  };
+
+  function animate(){ requestAnimationFrame(animate); renderer.render(scene,camera); }
+  animate();
+</script>
