@@ -1,8 +1,162 @@
+Giriş yaptıktan sonra yada üye olduktan sonra giriş yap üye ol butonları gitsin yerlerine profilim butonu gelsin
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <!-- Mevcut head kısmı aynı kalacak -->
-  <!-- ... -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KANTANZA Forum (Güncel)</title>
+  <style>
+    :root{
+      --bg:#0f1115;
+      --card:#151922;
+      --ink:#e8ebf1;
+      --muted:#a9b0bf;
+      --accent:#69bffc;
+      --line:#2b3240;
+      --danger:#ff6b6b;
+      --ok:#7fdc82;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri, Arial, Helvetica, sans-serif;}
+
+    /* Genel iskelet */
+    .container{max-width:1200px;margin:0 auto;padding:16px;display:grid;grid-template-columns:260px 1fr 260px;gap:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    .pad{padding:16px}
+    .row{display:flex;align-items:center;gap:10px}
+    .between{display:flex;align-items:center;justify-content:space-between}
+    .line{height:1px;background:var(--line);}
+    .thick-line{height:4px;background:var(--line);border-radius:2px}
+    a{color:var(--ink);text-decoration:none}
+    button{background:var(--accent);color:#0b0d12;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+    button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    input, textarea{width:100%;background:#0f131a;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:10px}
+    label{display:block;margin:10px 0 6px}
+
+    /* Başlık alanı */
+    header.card{grid-column:1 / -1;}
+    .brand{font-family:'Arial Black', Arial, Helvetica, sans-serif;font-size:18pt;font-weight:900;letter-spacing:.5px;cursor:pointer}
+    .brand-underline{height:3px;background:var(--ink);width:max(140px, 14ch);border-radius:3px;margin-top:6px}
+    .auth-actions{gap:10px}
+
+    /* Konular listesi */
+    .topics .title{font-family:Calibri, Arial, Helvetica, sans-serif;font-weight:700;font-size:16pt}
+    .topic-item{padding:12px 8px;cursor:pointer}
+    .topic-item:hover{background:rgba(255,255,255,0.05)}
+    .topic-item + .topic-item{border-top:1px solid var(--line)}
+    .topic-id{font-weight:700;color:var(--muted);margin-right:8px}
+    .topic-head{font-weight:700}
+    .topic-desc{color:var(--muted);font-size:14px;margin-top:4px}
+    .topic-user{color:var(--muted);font-size:12px;margin-top:4px}
+
+    /* Sol yan: film & yemek */
+    .sidebar h3{margin:0 0 8px}
+    .badge{display:inline-block;background:var(--line);padding:2px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+    
+    /* Yemek tarifleri */
+    .recipe-item{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+    .recipe-item:last-child{margin-bottom:0;border-bottom:none}
+    .recipe-title{font-weight:bold;margin-bottom:6px}
+    .recipe-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px;color:var(--muted)}
+    .recipe-ingredients{font-size:14px;margin-bottom:10px;color:var(--muted)}
+    .recipe-button{width:100%;margin-top:8px}
+
+    /* Sağ yan: kombin */
+    .outfit li{margin-bottom:6px}
+
+    /* Günün İngilizce Kelimesi */
+    .word-of-the-day {margin-top: 16px;}
+    .english-word {font-size: 24px; font-weight: bold; color: var(--accent); margin: 8px 0;}
+    .word-pronunciation {color: var(--muted); font-style: italic; margin-bottom: 8px;}
+    .word-meaning {margin-bottom: 8px;}
+    .word-example {border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); font-style: italic;}
+
+    /* Modallar */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
+    .modal.show{display:flex}
+    .modal .sheet{width:min(560px, 96vw);background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+    .modal .sheet .head{padding:16px 16px 0}
+    .modal .sheet .body{padding:16px}
+    .modal .sheet .foot{padding:0 16px 16px;display:flex;gap:8px;justify-content:flex-end}
+    .label-12-calibri{font-family:Calibri, Arial, Helvetica, sans-serif;font-weight:700;font-size:12pt}
+    .label-12-calibri-normal{font-family:Calibri, Arial, Helvetica, sans-serif;font-size:12pt}
+    .topic-view-title{font-family:"Comic Sans MS", "Comic Sans", cursive;font-weight:700;font-size:18pt}
+    /* Profil */
+    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .profile-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    /* Yeni yatay profil düzeni: solda pfp, ortada isim, sağda ayarlar */
+    .profile-left{display:flex;flex-direction:column;align-items:center;gap:12px}
+    .pfp{width:120px;height:120px;border-radius:50%;border:2px solid var(--line);object-fit:cover;background:#0c0f14;display:block}
+    .profile-username{font-size:18pt;font-weight:bold;margin:0;text-align:center}
+    .profile-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .profile-actions{display:flex;gap:8px}
+    .loc-box .addr{font-family:monospace;color:var(--muted)}
+    /* Takvim - BÜYÜTÜLMÜŞ ve BEYAZ */
+    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
+    .calendar .day{
+      padding:15px;
+      text-align:center;
+      border:1px solid var(--line);
+      border-radius:8px;
+      cursor:pointer;
+      color:white;
+      font-weight:bold;
+      font-size:14px;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: white;
+      color: #0f1115;
+    }
+    .day.period{background:#3a1f2f; color: white;}
+    .day.predicted{background:#1f2f3a; color: white;}
+    .day.special{background:#2f3a1f; color: white;}
+    .link{color:var(--accent)}
+    /* YouTube Oynatıcı Güncellemesi */
+    .youtube-player-controls{margin-top:10px}
+    .youtube-player-controls label{font-size:14px; color:var(--muted); margin-bottom:4px}
+    .youtube-player-controls button{padding:6px 12px; font-size:14px; border-radius:8px;}
+    .youtube-player-controls input{font-size:14px; padding:8px;}
+    .youtube-player-controls .row{flex-wrap:wrap; gap:8px;}
+    /* Küçük ve görünmez iframe boyutu */
+    #youtubePlayer iframe {
+        width: 100px;
+        height: 1px;
+        border: none;
+        opacity: 0.01;
+        pointer-events: none;
+        position: absolute;
+    }
+    .parking-display{font-size:24pt;font-weight:bold;text-align:center;margin:10px 0;color:var(--accent)}
+    .habit-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+    .habit-day{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .habit-day.checked{background:var(--ok)}
+    .shopping-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+    .shopping-item:last-child{border-bottom:none}
+    .special-day-item{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid var(--line)}
+    .special-day-item:last-child{border-bottom:none}
+    .delete-btn{color:var(--danger);cursor:pointer}
+    .small-button{padding:6px 10px;font-size:12px}
+    .special-day-form{display:flex;flex-direction:column;gap:8px}
+    .profile-info{display:flex;flex-direction:column;align-items:center;justify-content:center}
+    /* Konu detay sayfası */
+    .comment-item{padding:12px 0;border-bottom:1px solid var(--line)}
+    .comment-item:last-child{border-bottom:none}
+    @media (max-width:900px){
+      .container{grid-template-columns:1fr; padding:12px}
+      .profile-top{flex-direction:column; align-items:center}
+      .profile-left{flex-direction:column}
+      .profile-center{width:100%}
+    }
+  </style>
 </head>
 <body>
   <!-- ÜST BÖLÜM: Marka ve Auth -->
@@ -26,10 +180,282 @@
     </div>
     <div class="line" style="margin-top:12px"></div>
   </header>
+  <main class="container">
+    <!-- Sol: Film & Yemek -->
+    <aside class="card pad sidebar">
+      <h3>Bugünkü Film Tavsiyemiz</h3>
+      <div class="line" style="margin:8px 0"></div>
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <span class="badge">IMDb: 8.6</span>
+        <span class="badge">Rotten Tomatoes: 94%</span>
+        <span class="badge">+18 değil</span>
+        <span class="badge">Macera • Korku • Gizem</span>
+      </div>
+      <p><strong>Film:</strong> "Karanlığın Ormanı"</p>
+      <p><strong>Oyuncular:</strong> A. Kaya, B. Demir, C. Öz</p>
+      <p><strong>Kısaca:</strong> Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.</p>
+      <div class="line" style="margin:16px 0"></div>
+      <!-- YEMEK TARİFLERİ BÖLÜMÜ -->
+      <h3>Basit Yemek Tarifleri</h3>
+      <div id="recipesList"></div>
+    </aside>
+    <!-- Orta: Konular -->
+    <section class="card pad topics" id="view-home">
+      <div class="between">
+        <div class="title">KONULAR</div>
+        <button id="btnNewTopic">Konu Aç</button>
+      </div>
+      <div class="line" style="margin-top:8px"></div>
+      <div id="topicsList" style="margin-top:8px"></div>
+    </section>
+    <!-- Sağ: Kombin ve Günün İngilizce Kelimesi -->
+    <div>
+      <aside class="card pad">
+        <h3>Günlük Kombin Tavsiyesi</h3>
+        <ul class="outfit">
+          <li><strong>Saç şekli:</strong> Topuz</li>
+          <li><strong>Toka:</strong> Good Hair Days Magic-grip Saç Topuz Tokası</li>
+          <li><strong>Küpe:</strong> Halka küpe</li>
+          <li><strong>Kolye:</strong> Mini taşlı kolye</li>
+          <li><strong>Üst:</strong> Yaka detaylı crop ekru gömlek</li>
+          <li><strong>Pantolon:</strong> Indigo mavisi jean gömlek</li>
+          <li><strong>Ayakkabı:</strong> Lumberjack ROMINA 5FX siyah koşu ayakkabısı</li>
+          <li><strong>Oje:</strong> Pastel oje</li>
+          <li><strong>Yüzük:</strong> Eklem yüzüğü</li>
+        </ul>
+      </aside>
+      <!-- GÜNÜN İNGİLİZCE KELİMESİ BÖLÜMÜ -->
+      <aside class="card pad word-of-the-day">
+        <h3>Günün İngilizce Kelimesi</h3>
+        <div class="line" style="margin:8px 0"></div>
+        <div class="english-word" id="englishWord">Serendipity</div>
+        <div class="word-pronunciation" id="wordPronunciation">/ˌser.ənˈdɪp.ə.ti/</div>
+        <div class="word-meaning" id="wordMeaning">Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma</div>
+        <div class="word-example" id="wordExample">"Finding this beautiful cafe was a real serendipity." (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)</div>
+      </aside>
+    </div>
+  </main>
+  <!-- Konu Detay Görünümü (SPA) -->
+  <section class="container" id="view-topic" style="display:none">
+    <div class="card pad" style="grid-column:1 / -1">
+      <a class="link" href="#" id="backToHome">← Geri dön</a>
+    </div>
+    <div class="card pad" style="grid-column:1 / -1">
+      <div id="topicDetail"></div>
+    </div>
+  </section>
 
-  <!-- ... Diğer HTML içeriği aynı kalacak ... -->
+  <!-- Profil Sayfası -->
+  <section class="container" id="view-profile" style="display:none">
+    <div class="card pad" style="grid-column:1 / -1">
+      <div class="profile-top">
+        <div class="profile-left">
+          <img id="pfp" class="pfp" alt="Profil resmi" />
+          <div style="margin-top:8px">
+            <input type="file" id="pfpInput" accept="image/*" style="display:none" />
+            <button id="btnAddPfp" class="small-button">Profil resmi ekle</button>
+          </div>
+        </div>
+        <div class="profile-center">
+          <div class="profile-username" id="profileUsername">Kullanıcı Adı</div>
+          <div class="profile-userid" id="profileUserId" style="color:var(--muted);margin-top:4px;"></div>
+        </div>
+        <div class="profile-actions">
+          <button id="btnProfileSettings" class="ghost small-button">Profil ayarları</button>
+        </div>
+      </div>
+    </div>
+    <div class="profile-grid" style="grid-column:1 / -1">
+      <!-- Sol -->
+      <div>
+        <div class="card pad">
+          <h3>Konum</h3>
+          <div class="loc-box">
+            <div class="addr" id="currAddr">Adres/Koordinat okunuyor…</div>
+            <div class="row" style="margin:10px 0;gap:8px">
+              <button id="btnSaveLoc">Konumumu kaydet</button>
+              <button id="btnGoLoc" class="ghost">Konuma git</button>
+            </div>
+          </div>
+        </div>
 
+        <!-- Müzik Bölümü: YouTube arka planda -->
+        <div class="card pad">
+          <h3>Müzik (arka planda)</h3>
+          <div class="youtube-player-controls">
+            <label for="musicLinkInput">YouTube Video Linki (URL)</label>
+            <input type="text" id="musicLinkInput" placeholder="YouTube video linkini yapıştırın" />
+            <div class="row" style="margin-top:10px;justify-content:space-between">
+              <button id="btnPlayMusic">Oynat</button>
+              <button id="btnStopMusic" class="ghost">Durdur</button>
+            </div>
+            <div style="margin-top:8px;color:var(--muted);font-size:12px">
+              Durum: <span id="musicStatus">Hazır</span>
+            </div>
+          </div>
+          <div id="ytContainer" style="margin-top:10px; position:relative; height:10px;">
+            <div id="youtubePlayer"></div>
+          </div>
+        </div>
+        <div class="card pad">
+          <h3>Otopark Numarası</h3>
+          <div class="parking-display" id="parkingDisplay">-</div>
+          <input type="text" id="inpParkingNo" placeholder="Otopark numarası" maxlength="10" />
+          <div class="row" style="margin-top:8px;gap:8px">
+            <button id="btnSaveParking">Kaydet</button>
+            <button id="btnClearParking" class="ghost">Temizle</button>
+          </div>
+        </div>
+      </div>
+      <!-- Sağ -->
+      <div>
+        <div class="card pad">
+          <h3>Regli Takvimi</h3>
+          <div class="row" style="gap:8px;flex-wrap:wrap">
+            <label>
+              Son başlangıç tarihi
+              <input type="date" id="periodStart" />
+            </label>
+            <label>
+              Döngü (gün)
+              <input type="number" id="cycleLen" min="20" max="40" value="28" />
+            </label>
+            <button id="btnBuildCal">Hesapla</button>
+          </div>
+          <div id="calendarMeta" class="muted" style="margin:8px 0;color:var(--muted)"></div>
+          <div id="calendar" class="calendar"></div>
+        </div>
+        <div class="card pad">
+          <h3>Alışveriş Listesi</h3>
+          <div class="row">
+            <input type="text" id="inpShoppingItem" placeholder="Yeni ürün ekle" style="flex:1" />
+            <button id="btnAddShopping">+</button>
+          </div>
+          <div id="shoppingList" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-grid" style="grid-column:1 / -1; margin-top:16px">
+      <div class="card pad">
+        <h3>Alışkanlıklarım (21 Gün Kuralı)</h3>
+        <div class="row">
+          <input type="text" id="inpHabit" placeholder="Yeni alışkanlık" style="flex:1" />
+          <button id="btnAddHabit">+</button>
+        </div>
+        <div id="habitsList" style="margin-top:12px"></div>
+      </div>
+      <div class="card pad">
+        <h3>Özel Günler</h3>
+        <div class="special-day-form">
+          <input type="text" id="inpSpecialDayName" placeholder="Etkinlik adı" />
+          <input type="date" id="inpSpecialDayDate" />
+          <button id="btnAddSpecialDay">+</button>
+        </div>
+        <div id="specialDaysList" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+  <!-- Modals (konu, yorum, login, signup, profil ayar, yemek) -->
+  <div class="modal" id="modalTopic">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">KONU BAŞLIĞI</div></div>
+      <div class="body">
+        <div class="line" style="margin:6px 0 12px"></div>
+        <input id="inpTopicTitle" maxlength="15" placeholder="Başlık (max 15)" />
+        <label class="label-12-calibri-normal" style="margin-top:14px">KONU</label>
+        <textarea id="inpTopicBody" rows="5" maxlength="250" placeholder="Açıklama (max 250)"></textarea>
+        <small style="color:var(--muted)">* Özel karakterlere izin verilmez. Harf ve rakamlar metin olarak kabul edilir.</small>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalTopic">İptal</button>
+        <button id="btnSaveTopic">Konuyu Kaydet</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modalComment">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">yorumum</div></div>
+      <div class="body">
+        <textarea id="inpComment" rows="5" maxlength="250" placeholder="Yorum (max 250)"></textarea>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalComment">İptal</button>
+        <button id="btnSendComment">Gönder</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modalLogin">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">Kullanıcı adı</div></div>
+      <div class="body">
+        <input id="loginUser" placeholder="Kullanıcı adı" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Şifre</label>
+        <input id="loginPass" type="password" placeholder="Şifre" />
+        <div class="line" style="margin:8px 0"></div>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalLogin">Kapat</button>
+        <button id="btnDoLogin">Giriş yap</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modalSignup">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">Üyelik</div></div>
+      <div class="body">
+        <label class="label-12-calibri-normal">Mail</label>
+        <input id="suMail" type="email" placeholder="ornek@site.com" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Kullanıcı adı</label>
+        <input id="suUser" placeholder="Kullanıcı adı" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Şifre</label>
+        <input id="suPass" type="password" placeholder="Şifre (min 5 karakter, 1 büyük harf, 1 sayı)" />
+        <label class="label-12-calibri-normal" style="margin-top:10px">Şifre onay</label>
+        <input id="suPass2" type="password" placeholder="Şifre tekrar" />
+        <div class="line" style="margin:8px 0"></div>
+        <small style="color:var(--muted)">* Şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.</small>
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalSignup">Kapat</button>
+        <button id="btnDoSignup">Üye ol</button>
+      </div>
+    </div>
+  </div>
+  <!-- YEMEK TARİFİ MODALI -->
+  <div class="modal" id="modalRecipe">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri" id="modalRecipeTitle">Yemek Tarifi</div></div>
+      <div class="body" id="modalRecipeBody">
+        <!-- İçerik JavaScript ile doldurulacak -->
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalRecipe">Kapat</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modalProfileSettings">
+    <div class="sheet">
+      <div class="head"><div class="label-12-calibri">Profil Ayarları</div></div>
+      <div class="body">
+        <label class="label-12-calibri-normal">Kullanıcı Adı</label>
+        <input id="settingsUsername" placeholder="Yeni kullanıcı adı" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Yeni Şifre</label>
+        <input id="settingsPassword" type="password" placeholder="Yeni şifre (min 5 karakter, 1 büyük harf, 1 sayı)" />
+        <div class="line" style="margin:8px 0"></div>
+        <label class="label-12-calibri-normal">Şifre Onay</label>
+        <input id="settingsPasswordConfirm" type="password" placeholder="Şifre tekrar" />
+      </div>
+      <div class="foot">
+        <button class="ghost" data-close="#modalProfileSettings">İptal</button>
+        <button id="btnSaveProfileSettings">Kaydet</button>
+      </div>
+    </div>
+  </div>
   <script>
+<script>
     // --- Yardımcı Fonksiyonlar ---
     function updateAuthButtons() {
       const session = JSON.parse(localStorage.getItem('session') || '{}');
@@ -144,6 +570,985 @@
     });
 
     // ... diğer fonksiyonlar aynı kalacak ...
+  </script>
+</body>
+</html>
+
+
+
+
+    
+    // --- Yardımcı seçiciler ---
+    const el = s => document.querySelector(s);
+    const els = s => Array.from(document.querySelectorAll(s));
+    // --- Uygulama durumu ---
+    let topics = JSON.parse(localStorage.getItem('topics') || '[]');
+    let activeTopicForComment = null;
+    let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+    // --- YouTube Oynatıcı Durumu ---
+    let player;
+    let isPlayerReady = false;
+    let currentPlaylist = [];
+    let currentPlaylistIndex = 0;
+    const defaultVideoId = 't_H0qL1z2Jc';
+
+    // --- Günün İngilizce Kelimesi Verisi ---
+    const englishWords = [
+      {
+        word: "Serendipity",
+        pronunciation: "/ˌser.ənˈdɪp.ə.ti/",
+        meaning: "Mutlu tesadüf; beklenmedik ve hoş sürprizlerle karşılaşma",
+        example: "\"Finding this beautiful cafe was a real serendipity.\" (Bu güzel kafeyi bulmak gerçek bir mutlu tesadüftü.)"
+      },
+      {
+        word: "Ephemeral",
+        pronunciation: "/ɪˈfem.ər.əl/",
+        meaning: "Kısa ömürlü, geçici",
+        example: "\"The beauty of cherry blossoms is ephemeral.\" (Kiraz çiçeklerinin güzelliği geçicidir.)"
+      },
+      {
+        word: "Resilience",
+        pronunciation: "/rɪˈzɪl.i.əns/",
+        meaning: "Dayanıklılık, zorluklardan sonra toparlanabilme yeteneği",
+        example: "\"Her resilience helped her overcome many challenges.\" (Dayanıklılığı, birçok zorluğun üstesinden gelmesine yardımcı oldu.)"
+      },
+      {
+        word: "Ubiquitous",
+        pronunciation: "/juːˈbɪk.wɪ.təs/",
+        meaning: "Her yerde bulunan, yaygın",
+        example: "\"Smartphones have become ubiquitous in modern society.\" (Akıllı telefonlar modern toplumda her yerde bulunur hale geldi.)"
+      },
+      {
+        word: "Melancholy",
+        pronunciation: "/ˈmel.ən.kɒl.i/",
+        meaning: "Hüzün, melankoli",
+        example: "\"There's a sense of melancholy in his music.\" (Onun müziğinde bir hüzün duygusu var.)"
+      }
+    ];
+
+    function setEnglishWordOfTheDay() {
+      // Günün kelimesini gün index'ine göre seç (her gün farklı bir kelime)
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+      const wordIndex = dayOfYear % englishWords.length;
+      const wordData = englishWords[wordIndex];
+      
+      el('#englishWord').textContent = wordData.word;
+      el('#wordPronunciation').textContent = wordData.pronunciation;
+      el('#wordMeaning').textContent = wordData.meaning;
+      el('#wordExample').textContent = wordData.example;
+    }
+    // --- Yardımcı Fonksiyonlar ---
+    function openModal(id) { el(id).classList.add('show'); }
+    function closeModal(id) { el(id).classList.remove('show'); }
+    
+    function escapeHTML(s) { 
+      return s.replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); 
+    }
+    // --- Modallar ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Modal kapatma butonları
+      els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
+      // Modal dışına tıklama ile kapatma
+      els('.modal').forEach(m => m.addEventListener('click', (e) => { 
+        if(e.target === m) m.classList.remove('show'); 
+      }));
+    });
+    // --- YEMEK TARİFLERİ ---
+    const recipes = [
+      {
+        id: 1,
+        title: "Fırında Baharatlı Tavuk",
+        ingredientCount: 7,
+        ingredients: "Tavuk baget, zeytinyağı, sarımsak, kekik, kırmızı biber, tuz, karabiber",
+        description: "Tavuk bagetler zeytinyağı ve baharatla harmanlanıp fırında kızartılır.",
+        fullRecipe: "Malzemeleri bir kapta karıştırın. Tavukları marine edip 30 dakika bekletin. 200°C önceden ısıtılmış fırında 35-40 dakika pişirin. 
+      },
+      {
+        id: 2,
+        title: "Mercimek Çorbası",
+        ingredientCount: 8,
+        ingredients: "Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",
+        description: "Klasik Türk mutfağından doyurucu bir çorba.",
+        fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun.
+      }
+    ];
+    function renderRecipes() {
+      const container = el('#recipesList');
+      container.innerHTML = '';
+      recipes.forEach(recipe => {
+       const recipeEl = document.createElement('div');
+        recipeEl.className = 'recipe-item';
+        recipeEl.innerHTML = `
+          <div class="recipe-title">${recipe.title}</div>
+          <div class="recipe-meta">
+            <span>${recipe.ingredientCount} malzeme</span>
+          </div>
+          <div class="recipe-ingredients">${recipe.ingredients}</div>
+          <button class="recipe-button" data-recipe-id="${recipe.id}">Tarif Göster</button>
+        `;
+        container.appendChild(recipeEl);
+      });
+    }
+    function showRecipeModal(recipe) {
+      el('#modalRecipeTitle').textContent = recipe.title;
+      el('#modalRecipeBody').innerHTML = `
+        <p><strong>Malzemeler:</strong> ${recipe.ingredients}</p>
+        <p><strong>Hazırlanışı:</strong> ${recipe.fullRecipe}</p>
+      `;
+      openModal('#modalRecipe');
+    }
+    // --- KONU YÖNETİMİ ---
+    const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
+
+    function saveTopics() { 
+      localStorage.setItem('topics', JSON.stringify(topics)); 
+    }
+
+    function addTopic({title, body, userId, username}) {
+      const id = (topics[0]?.id || 0) + 1;
+      const t = {id, title, body, comments: [], createdAt: Date.now(), userId, username};
+      topics.unshift(t);
+      saveTopics();
+      renderTopics();
+      return t;
+    }
+
+    function renderTopics() {
+      const list = el('#topicsList');
+      list.innerHTML = '';
+      topics.forEach((t, idx) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'topic-item';
+        wrap.setAttribute('data-topic-id', t.id);
+        wrap.innerHTML = `
+          <div>
+            <span class="topic-id">#${t.id}</span>
+            <span class="topic-head">${escapeHTML(t.title)}</span>
+          </div>
+          <div class="topic-desc">${(t.body || '').slice(0,20)}</div>
+          <div class="topic-user">${t.username} (#${t.userId})</div>
+        `;
+        list.appendChild(wrap);
+      });
+    }
+
+    function renderTopicDetail(t) {
+      const box = el('#topicDetail');
+      box.innerHTML = '';
+      const h = document.createElement('div');
+      h.className = 'topic-view-title';
+      h.textContent = t.title;
+      
+      const userInfo = document.createElement('div');
+      userInfo.className = 'topic-user';
+      userInfo.textContent = `${t.username} (#${t.userId})`;
+      userInfo.style.marginBottom = '8px';
+      
+      const thick = document.createElement('div'); 
+      thick.className = 'thick-line'; 
+      thick.style.margin = '8px 0';
+      const p = document.createElement('p'); 
+      p.textContent = t.body;
+      const actions = document.createElement('div'); 
+      actions.className = 'row'; 
+      actions.style.margin = '12px 0';
+      const btn = document.createElement('button'); 
+      btn.textContent = 'bir şeyler yazmak istiyorum';
+      btn.onclick = () => { 
+        openModal('#modalComment'); 
+        activeTopicForComment = t; 
+      };
+      actions.appendChild(btn);
+      const commentsWrap = document.createElement('div');
+      commentsWrap.id = 'commentsWrap';
+      
+      if (t.comments && t.comments.length > 0) {
+        t.comments.forEach(c => {
+          const it = document.createElement('div');
+          it.className = 'comment-item';
+          it.innerHTML = `<div><strong>${c.username} (#${c.userId})</strong>: ${c.text}</div>`;
+          commentsWrap.appendChild(it);
+        });
+      } else {
+        const noComment = document.createElement('div');
+        noComment.textContent = 'Henüz yorum yapılmamış.';
+        noComment.style.color = 'var(--muted)';
+        noComment.style.fontStyle = 'italic';
+        commentsWrap.appendChild(noComment);
+      }
+      
+      box.append(h, userInfo, p, thick, actions, commentsWrap);
+    }
+
+    // --- ROUTER ---
+    function route() {
+      const hash = location.hash || '#home';
+      const mainContainer = document.querySelector('main.container');
+      const topicView = el('#view-topic');
+      const profileView = el('#view-profile');
+      
+      // Varsayılan olarak ana sayfayı göster
+      if(mainContainer) mainContainer.style.display = 'grid';
+      if(topicView) topicView.style.display = 'none';
+      if(profileView) profileView.style.display = 'none';
+
+      if(hash.startsWith('#topic/')) {
+        const id = Number(hash.split('/')[1]);
+        const t = topics.find(x => x.id === id);
+        if(!t) { 
+          alert('Konu bulunamadı'); 
+          location.hash = '#home'; 
+          return; 
+        }
+        if(mainContainer) mainContainer.style.display = 'none';
+        if(topicView) topicView.style.display = 'grid';
+        renderTopicDetail(t);
+      } else if(hash === '#profile') {
+        if(mainContainer) mainContainer.style.display = 'none';
+        if(profileView) profileView.style.display = 'grid';
+        loadProfileData();
+      }
+    }
+
+    // --- VALIDASYON FONKSİYONLARI ---
+    const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
+
+    function validateEmail(email) {
+      const parts = email.split('@');
+      if (parts.length !== 2) return { valid: false, message: "Geçersiz e-posta formatı." };
+      
+      const domain = parts[1].toLowerCase();
+      if (!allowedDomains.includes(domain)) {
+        return { 
+          valid: false, 
+          message: `@ işaretinden sonra sadece ${allowedDomains.join(', ')} kabul edilir.` 
+        };
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return { valid: false, message: "Geçersiz e-posta formatı." };
+      }
+
+      if (userList.some(user => user.mail.toLowerCase() === email.toLowerCase())) {
+        return { valid: false, message: "Bu e-posta adresi zaten kayıtlı." };
+      }
+      
+      return { valid: true, message: "" };
+    }
+
+    function validatePassword(password) {
+      if (password.length < 5) return { valid: false, message: "Şifre en az 5 karakter olmalı." };
+      if (!/[A-Z]/.test(password)) return { valid: false, message: "Şifre en az 1 büyük harf içermeli." };
+      if (!/\d/.test(password)) return { valid: false, message: "Şifre en az 1 sayı içermeli." };
+      return { valid: true, message: "" };
+    }
+
+    function formatUserId(id) {
+      return String(id).padStart(5, '0');
+    }
+
+    // --- PROFİL FONKSİYONLARI ---
+    async function readCurrentLocation() {
+      const label = el('#currAddr');
+      label.textContent = 'Konum okunuyor…';
+      if(!('geolocation' in navigator)) { 
+        label.textContent = 'Tarayıcınız konumu desteklemiyor.'; 
+        return null; 
+      }
+      try {
+        const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+        const {latitude: lat, longitude: lng} = pos.coords;
+        let addr = '';
+        try {
+          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+          if(r.ok) { 
+            const j = await r.json(); 
+            addr = j.display_name || ''; 
+          }
+        } catch(e) {}
+        const text = `Adres: ${addr || 'Bulunamadı'} | Koordinat: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        label.textContent = text;
+        return {lat, lng, addr};
+      } catch(e) { 
+        label.textContent = 'Konum alınamadı.'; 
+        return null; 
+      }
+    }
+
+    function buildCalendar() {
+      const startStr = el('#periodStart').value;
+      const cycle = parseInt(el('#cycleLen').value || '28', 10);
+      const cal = el('#calendar'); 
+      cal.innerHTML = '';
+      if(!startStr) { 
+        el('#calendarMeta').textContent = 'Başlangıç tarihi seçin.'; 
+        return; 
+      }
+      const start = new Date(startStr);
+      const today = new Date();
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+      const days = monthEnd.getDate();
+      const periods = [];
+      for(let i = -6; i <= 6; i++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + i * cycle);
+        periods.push(d);
+      }
+
+      const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+      const specialDays = prof.specialDays || [];
+
+      el('#calendarMeta').textContent = `Gösterilen ay: ${today.toLocaleString('tr-TR',{month:'long'})} ${today.getFullYear()} | Döngü: ${cycle} gün`;
+
+      for(let i = 1; i <= days; i++) {
+        const d = new Date(today.getFullYear(), today.getMonth(), i);
+        const cell = document.createElement('div');
+        cell.className = 'day';
+        cell.textContent = i;
+
+        const isPeriod = periods.some(p => Math.abs((+d - +p)/(1000*3600*24)) <= 1 );
+        const nextStart = periods.find(p => p >= today);
+        if(isPeriod) cell.classList.add('period');
+
+        if(nextStart) {
+          const diff = Math.round((+d - +nextStart)/(1000*3600*24));
+          if(diff >= 0 && diff < 3) cell.classList.add('predicted');
+        }
+
+        const isSpecial = specialDays.some(sd => {
+          const sdDate = new Date(sd.date);
+          return sdDate.getDate() === d.getDate() && sdDate.getMonth() === d.getMonth() && sdDate.getFullYear() === d.getFullYear();
+        });
+        if(isSpecial) cell.classList.add('special');
+
+        cell.addEventListener('click', () => {
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          const val = `${yyyy}-${mm}-${dd}`;
+          el('#periodStart').value = val;
+          buildCalendar();
+        });
+
+        cal.appendChild(cell);
+      }
+    }
+
+    function renderShoppingList(items) {
+      const list = el('#shoppingList'); 
+      list.innerHTML = '';
+      items.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'shopping-item';
+        div.innerHTML = `<span>${item}</span><span class="delete-btn" data-index="${index}">✕</span>`;
+        list.appendChild(div);
+      });
+      
+      els('#shoppingList .delete-btn').forEach(btn => {
+        btn.onclick = () => {
+          const index = parseInt(btn.getAttribute('data-index'));
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+          prof.shoppingList.splice(index, 1);
+          localStorage.setItem('profile', JSON.stringify(prof));
+          renderShoppingList(prof.shoppingList);
+        };
+      });
+    }
+
+    function renderHabits(habits) {
+      const list = el('#habitsList'); 
+      list.innerHTML = '';
+      habits.forEach((habit, habitIndex) => {
+        const habitDiv = document.createElement('div');
+        habitDiv.style.marginBottom = '16px';
+        habitDiv.style.paddingBottom = '12px';
+        habitDiv.style.borderBottom = '1px solid var(--line)';
+        
+        const habitTitle = document.createElement('div');
+        habitTitle.textContent = habit.name;
+        habitTitle.style.fontWeight = 'bold';
+        habitTitle.style.marginBottom = '8px';
+        
+        const grid = document.createElement('div');
+        grid.className = 'habit-grid';
+        for (let i = 0; i < 21; i++) {
+          const day = document.createElement('div');
+          day.className = `habit-day ${habit.days && habit.days[i] ? 'checked' : ''}`;
+          day.textContent = i + 1;
+          day.setAttribute('data-habit', habitIndex);
+          day.setAttribute('data-day', i);
+          grid.appendChild(day);
+        }
+        
+        const deleteBtn = document.createElement('span');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '✕';
+        deleteBtn.style.marginLeft = '10px';
+        deleteBtn.setAttribute('data-habit', habitIndex);
+        
+        habitDiv.appendChild(habitTitle);
+        habitDiv.appendChild(grid);
+        habitDiv.appendChild(deleteBtn);
+        list.appendChild(habitDiv);
+      });
+      
+      els('.habit-day').forEach(day => {
+        day.onclick = () => {
+          const habitIndex = parseInt(day.getAttribute('data-habit'));
+          const dayIndex = parseInt(day.getAttribute('data-day'));
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+          if(!prof.habits[habitIndex].days) prof.habits[habitIndex].days = [];
+          prof.habits[habitIndex].days[dayIndex] = !prof.habits[habitIndex].days[dayIndex];
+          localStorage.setItem('profile', JSON.stringify(prof));
+          day.classList.toggle('checked');
+        };
+      });
+      
+      els('#habitsList .delete-btn').forEach(btn => {
+        btn.onclick = () => {
+          const habitIndex = parseInt(btn.getAttribute('data-habit'));
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+          prof.habits.splice(habitIndex, 1);
+          localStorage.setItem('profile', JSON.stringify(prof));
+          renderHabits(prof.habits);
+        };
+      });
+    }
+
+    function renderSpecialDays(specialDays) {
+      const list = el('#specialDaysList'); 
+      list.innerHTML = '';
+      specialDays.forEach((day, index) => {
+        const div = document.createElement('div');
+        div.className = 'special-day-item';
+        div.innerHTML = `
+          <div>
+            <strong>${day.name}</strong>
+            <div>${new Date(day.date).toLocaleDateString('tr-TR')}</div>
+          </div>
+          <span class="delete-btn" data-index="${index}">✕</span>
+        `;
+        
+        div.querySelector('div').addEventListener('click', () => {
+          el('#periodStart').value = new Date(day.date).toISOString().slice(0,10);
+          buildCalendar();
+        });
+        
+        list.appendChild(div);
+      });
+      
+      els('#specialDaysList .delete-btn').forEach(btn => {
+        btn.onclick = () => {
+          const index = parseInt(btn.getAttribute('data-index'));
+          const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+          prof.specialDays.splice(index, 1);
+          localStorage.setItem('profile', JSON.stringify(prof));
+          renderSpecialDays(prof.specialDays);
+          buildCalendar();
+        };
+      });
+    }
+
+    function loadProfileData() {
+      const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+
+      el('#parkingDisplay').textContent = prof.parkingNo || '-';
+      if(prof.parkingNo) el('#inpParkingNo').value = prof.parkingNo;
+
+      renderShoppingList(prof.shoppingList || []);
+      renderHabits(prof.habits || []);
+      renderSpecialDays(prof.specialDays || []);
+      applyProfile();
+      buildCalendar();
+      
+      readCurrentLocation();
+    }
+
+    function applyProfile() {
+      const prof = JSON.parse(localStorage.getItem('profile') || 'null');
+      const img = el('#pfp');
+      img.src = prof?.pfp || '';
+      img.style.background = prof?.pfp ? 'none' : '#0c0f14';
+      el('#profileUsername').textContent = prof?.user || '';
+      el('#profileUserId').textContent = prof?.userId ? `#${prof.userId}` : '';
+    }
+
+    // --- YOUTUBE PLAYER FONKSİYONLARI ---
+    function loadYouTubeAPI() {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    window.onYouTubeIframeAPIReady = function() {
+      isPlayerReady = true;
+      el('#musicStatus').textContent = 'Oynatıcı Hazır.';
+      
+      player = new YT.Player('youtubePlayer', {
+        height: '100%',
+        width: '100%',
+        videoId: defaultVideoId,
+        playerVars: {
+          'autoplay': 0,
+          'controls': 0,
+          'loop': 1,
+          'playlist': defaultVideoId,
+          'disablekb': 1,
+          'iv_load_policy': 3
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      el('#musicStatus').textContent = 'Oynatıcı Başlatılmaya Hazır.';
+      currentPlaylist = [defaultVideoId];
+      el('#musicStatus').textContent = 'Hazır (Seçili: Dinlendirici Müzik)';
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING) {
+        el('#musicStatus').textContent = 'Oynatılıyor.';
+      } else if (event.data == YT.PlayerState.PAUSED) {
+        el('#musicStatus').textContent = 'Durduruldu.';
+      } else if (event.data == YT.PlayerState.ENDED) {
+        if (currentPlaylist.length > 1) {
+          currentPlaylistIndex = (currentPlaylistIndex + 1) % currentPlaylist.length;
+          player.loadVideoById(currentPlaylist[currentPlaylistIndex]);
+        } else {
+          player.playVideo();
+        }
+      }
+    }
+
+    function extractVideoId(url) {
+      if (!url) return null;
+      let videoId = null;
+      const urlObj = new URL(url);
+      if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
+        if (urlObj.searchParams.get('v')) {
+          videoId = urlObj.searchParams.get('v');
+        } else if (urlObj.pathname.length > 1 && urlObj.hostname.includes('youtu.be')) {
+          videoId = urlObj.pathname.substring(1);
+        }
+      }
+      if (videoId && videoId.length === 11) return videoId;
+      return null;
+    }
+
+    async function handlePlayMusic() {
+      if (!isPlayerReady) {
+        alert('YouTube oynatıcı henüz yüklenmedi. Lütfen bekleyin.');
+        return;
+      }
+
+      const link = el('#musicLinkInput').value.trim();
+
+      currentPlaylist = [];
+      currentPlaylistIndex = 0;
+
+      if (link) {
+        const id = extractVideoId(link);
+        if (id) {
+          currentPlaylist.push(id);
+          el('#musicStatus').textContent = 'Link ile yükleniyor...';
+        } else {
+          alert('Geçersiz YouTube Video Linki.');
+          el('#musicStatus').textContent = 'HATA: Geçersiz link.';
+          return;
+        }
+      } else {
+        currentPlaylist.push(defaultVideoId);
+        el('#musicStatus').textContent = 'Varsayılan müzik yükleniyor.';
+      }
+
+      if (currentPlaylist.length > 0) {
+        player.loadPlaylist(currentPlaylist);
+      }
+    }
+
+    function handleStopMusic() {
+      if (isPlayerReady) {
+        player.pauseVideo();
+        el('#musicStatus').textContent = 'Durduruldu.';
+      }
+    }
+
+    // --- EVENT HANDLERS ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Günün İngilizce Kelimesini Ayarla
+      setEnglishWordOfTheDay();
+
+      // Ana navigasyon
+      el('#brandTitle').onclick = () => {
+        location.hash = '#home';
+        route();
+      };
+
+      el('#backToHome').onclick = (e) => {
+        e.preventDefault();
+        location.hash = '#home';
+        route();
+      };
+
+      // Konu listesi tıklama
+      el('#topicsList').addEventListener('click', (e) => {
+        const topicItem = e.target.closest('.topic-item');
+        if (topicItem) {
+          const topicId = topicItem.getAttribute('data-topic-id');
+          location.hash = `#topic/${topicId}`;
+          route();
+        }
+      });
+
+      // Tarif butonları
+      el('#recipesList').addEventListener('click', (e) => {
+        if (e.target.classList.contains('recipe-button')) {
+          const recipeId = parseInt(e.target.getAttribute('data-recipe-id'));
+          const recipe = recipes.find(r => r.id === recipeId);
+          if (recipe) {
+            showRecipeModal(recipe);
+          }
+        }
+      });
+
+      // Auth modalları
+      el('#btnLogin').onclick = () => openModal('#modalLogin');
+      el('#btnSignup').onclick = () => openModal('#modalSignup');
+
+      // Konu Aç Modalı
+      el('#btnNewTopic').onclick = () => {
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Konu açmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+        openModal('#modalTopic');
+      };
+
+      el('#btnSaveTopic').onclick = () => {
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Konu açmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+
+        const title = el('#inpTopicTitle').value.trim();
+        const body = el('#inpTopicBody').value.trim();
+        if(title.length === 0 || body.length === 0) { 
+          alert('Başlık ve konu metni gerekli.'); 
+          return; 
+        }
+        if(title.length > 15) { 
+          alert('Başlık 15 karakteri aşamaz.'); 
+          return; 
+        }
+        if(body.length > 250) { 
+          alert('Konu 250 karakteri aşamaz.'); 
+          return; 
+        }
+        if(!textRegex.test(title) || !textRegex.test(body)) {
+          alert('Özel karakterlere izin verilmez. Sadece harf, rakam ve boşluk kullanın.');
+          return;
+        }
+        addTopic({
+          title, 
+          body, 
+          userId: session.userId, 
+          username: session.user
+        });
+        closeModal('#modalTopic');
+        el('#inpTopicTitle').value = '';
+        el('#inpTopicBody').value = '';
+      };
+
+      // Yorum gönderme
+      el('#btnSendComment').onclick = () => {
+        const session = JSON.parse(localStorage.getItem('session') || '{}');
+        if (!session.userId) {
+          alert('Yorum yapmak için giriş yapmalısınız!');
+          openModal('#modalLogin');
+          return;
+        }
+
+        const txt = el('#inpComment').value.trim();
+        if(txt.length === 0) { 
+          alert('Yorum boş olamaz'); 
+          return; 
+        }
+        if(txt.length > 250) { 
+          alert('Yorum 250 karakteri geçemez'); 
+          return; 
+        }
+        if (!activeTopicForComment) {
+          alert('Bir konu seçilmedi');
+          return;
+        }
+        
+        const idx = topics.findIndex(x => x.id === activeTopicForComment.id);
+        if(idx > -1) { 
+          if (!topics[idx].comments) topics[idx].comments = [];
+          topics[idx].comments.push({
+            text: txt, 
+            at: Date.now(),
+            userId: session.userId,
+            username: session.user
+          }); 
+          saveTopics(); 
+        }
+        el('#inpComment').value = '';
+        closeModal('#modalComment');
+        renderTopicDetail(topics[idx]);
+      };
+
+      // Login
+      el('#btnDoLogin').onclick = () => {
+        const u = el('#loginUser').value.trim();
+        const p = el('#loginPass').value.trim();
+        if(!u || !p) { 
+          alert('Kullanıcı adı ve şifre gerekli.'); 
+          return; 
+        }
+        const acc = JSON.parse(localStorage.getItem('account') || 'null');
+        if(acc && acc.user === u && acc.pass === p) {
+          localStorage.setItem('session', JSON.stringify({user: u, userId: acc.userId}));
+          closeModal('#modalLogin');
+          alert('Giriş başarılı.');
+          location.hash = '#profile';
+          route();
+        } else {
+          alert('Kullanıcı adı veya şifre hatalı.');
+        }
+      };
+
+      // Signup
+      el('#btnDoSignup').onclick = () => {
+        const mail = el('#suMail').value.trim();
+        const user = el('#suUser').value.trim();
+        const pass = el('#suPass').value.trim();
+        const pass2 = el('#suPass2').value.trim();
+        if(!mail || !user || !pass || !pass2) { 
+          alert('Tüm alanlar gerekli.'); 
+          return; 
+        }
+        
+        const mailValidation = validateEmail(mail);
+        if (!mailValidation.valid) {
+          alert(mailValidation.message);
+          return;
+        }
+        
+        const passValidation = validatePassword(pass);
+        if (!passValidation.valid) {
+          alert(passValidation.message);
+          return;
+        }
+        
+        if(pass !== pass2) { 
+          alert('Şifreler eşleşmiyor.'); 
+          return; 
+        }
+        
+        const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
+        const userId = formatUserId(nextUserId);
+        
+        localStorage.setItem('account', JSON.stringify({mail, user, pass, userId}));
+        localStorage.setItem('nextUserId', (nextUserId + 1).toString());
+        localStorage.setItem('session', JSON.stringify({user, userId}));
+        closeModal('#modalSignup');
+        
+        if(!localStorage.getItem('profile')) {
+          localStorage.setItem('profile', JSON.stringify({
+            user, 
+            userId,
+            pfp: null, 
+            savedLoc: null,
+            parkingNo: null,
+            shoppingList: [],
+            habits: [],
+            specialDays: []
+          }));
+        } else {
+          const prof = JSON.parse(localStorage.getItem('profile'));
+          prof.user = user;
+          prof.userId = userId;
+          localStorage.setItem('profile', JSON.stringify(prof));
+        }
+        
+        location.hash = '#profile';
+        route();
+      };
+
+      // Profil butonları
+      el('#btnAddPfp').onclick = () => el('#pfpInput').click();
+      el('#pfpInput').addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if(!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          const prof = JSON.parse(localStorage.getItem('profile')) || {};
+          prof.pfp = reader.result; 
+          localStorage.setItem('profile', JSON.stringify(prof));
+          applyProfile();
+        };
+        reader.readAsDataURL(f);
+      });
+
+      el('#btnProfileSettings').onclick = () => {
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        el('#settingsUsername').value = prof.user || '';
+        openModal('#modalProfileSettings');
+      };
+
+      el('#btnSaveProfileSettings').onclick = () => {
+        const newUsername = el('#settingsUsername').value.trim();
+        const newPassword = el('#settingsPassword').value;
+        const newPasswordConfirm = el('#settingsPasswordConfirm').value;
+        
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        const acc = JSON.parse(localStorage.getItem('account') || '{}');
+        
+        if (newPassword && !validatePassword(newPassword).valid) {
+          alert('Yeni şifre en az 5 karakter, 1 büyük harf ve 1 sayı içermelidir.');
+          return;
+        }
+        
+        if(newUsername && newUsername !== prof.user) {
+          prof.user = newUsername;
+          acc.user = newUsername;
+          localStorage.setItem('profile', JSON.stringify(prof));
+          localStorage.setItem('account', JSON.stringify(acc));
+          localStorage.setItem('session', JSON.stringify({user: newUsername, userId: prof.userId}));
+          el('#profileUsername').textContent = newUsername;
+        }
+        
+        if(newPassword) {
+          if(newPassword !== newPasswordConfirm) {
+            alert('Şifreler eşleşmiyor.');
+            return;
+          }
+          acc.pass = newPassword;
+          localStorage.setItem('account', JSON.stringify(acc));
+        }
+        
+        closeModal('#modalProfileSettings');
+        el('#settingsUsername').value = '';
+        el('#settingsPassword').value = '';
+        el('#settingsPasswordConfirm').value = '';
+        alert('Profil ayarları kaydedildi.');
+      };
+
+      // Konum butonları
+      el('#btnSaveLoc').onclick = async () => {
+        const p = await readCurrentLocation();
+        if(!p) return;
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        prof.savedLoc = p; 
+        localStorage.setItem('profile', JSON.stringify(prof));
+        alert('Konum kaydedildi.');
+      };
+
+      el('#btnGoLoc').onclick = () => {
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        if(!prof.savedLoc) { 
+          alert('Önce konum kaydedin.'); 
+          return; 
+        }
+        const {lat, lng} = prof.savedLoc;
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+        window.open(url, '_blank');
+      };
+
+      // Müzik butonları
+      el('#btnPlayMusic').addEventListener('click', handlePlayMusic);
+      el('#btnStopMusic').addEventListener('click', handleStopMusic);
+
+      // Otopark butonları
+      el('#btnSaveParking').onclick = () => {
+        const parkingNo = el('#inpParkingNo').value.trim();
+        if(!parkingNo) { 
+          alert('Otopark numarası gerekli.'); 
+          return; 
+        }
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        prof.parkingNo = parkingNo;
+        localStorage.setItem('profile', JSON.stringify(prof));
+        el('#parkingDisplay').textContent = parkingNo;
+        alert('Otopark numarası kaydedildi.');
+      };
+
+      el('#btnClearParking').onclick = () => {
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        prof.parkingNo = null;
+        localStorage.setItem('profile', JSON.stringify(prof));
+        el('#parkingDisplay').textContent = '-';
+        el('#inpParkingNo').value = '';
+      };
+
+      // Takvim butonu
+      el('#btnBuildCal').onclick = buildCalendar;
+
+      // Alışveriş listesi butonu
+      el('#btnAddShopping').onclick = () => {
+        const item = el('#inpShoppingItem').value.trim();
+        if(!item) return;
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        if(!prof.shoppingList) prof.shoppingList = [];
+        prof.shoppingList.push(item);
+        localStorage.setItem('profile', JSON.stringify(prof));
+        el('#inpShoppingItem').value = '';
+        renderShoppingList(prof.shoppingList);
+      };
+
+      // Alışkanlık butonu
+      el('#btnAddHabit').onclick = () => {
+        const habitName = el('#inpHabit').value.trim();
+        if(!habitName) return;
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        if(!prof.habits) prof.habits = [];
+        prof.habits.push({ name: habitName, days: [] });
+        localStorage.setItem('profile', JSON.stringify(prof));
+        el('#inpHabit').value = '';
+        renderHabits(prof.habits);
+      };
+
+      // Özel gün butonu
+      el('#btnAddSpecialDay').onclick = () => {
+        const name = el('#inpSpecialDayName').value.trim();
+        const date = el('#inpSpecialDayDate').value;
+        if(!name || !date) { 
+          alert('Etkinlik adı ve tarihi gerekli.'); 
+          return; 
+        }
+        const prof = JSON.parse(localStorage.getItem('profile') || '{}');
+        if(!prof.specialDays) prof.specialDays = [];
+        prof.specialDays.push({ name, date });
+        localStorage.setItem('profile', JSON.stringify(prof));
+        el('#inpSpecialDayName').value = '';
+        el('#inpSpecialDayDate').value = '';
+        renderSpecialDays(prof.specialDays);
+        buildCalendar();
+      };
+
+      // İlk render
+      renderTopics();
+      renderRecipes();
+      route();
+      loadYouTubeAPI();
+    });
+
+    // Hash değişikliklerini dinle
+    window.addEventListener('hashchange', route);
   </script>
 </body>
 </html>
