@@ -111,71 +111,63 @@
     .word-meaning {margin-bottom: 8px;}
     .word-example {border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); font-style: italic;}
 
-    /* Görsel Yükleme Alanı */
-    .image-upload-area {
+    /* Günlük Kombin Alanı */
+    .daily-outfit {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    .outfit-image-container {
       width: 100%;
       height: 300px;
-      border: 2px dashed var(--line);
+      border: 2px solid var(--line);
       border-radius: 12px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
       margin-bottom: 16px;
-      position: relative;
       overflow: hidden;
+      background: var(--bg);
     }
     
-    .image-upload-area:hover {
-      border-color: var(--accent);
-      background: rgba(105, 191, 252, 0.05);
+    .outfit-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
     }
     
-    .image-upload-area i {
-      font-size: 48px;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-    
-    .image-upload-area .upload-text {
+    .outfit-placeholder {
       color: var(--muted);
       text-align: center;
-      padding: 0 16px;
+      padding: 20px;
     }
     
-    .image-preview {
-      width: 100%;
-      height: 100%;
-      display: none;
-      position: relative;
+    .outfit-placeholder i {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
     }
     
-    .image-preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .outfit-info {
+      background: var(--bg);
+      padding: 12px;
       border-radius: 8px;
+      margin-top: 12px;
     }
     
-    .image-actions {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      display: flex;
-      gap: 8px;
+    .outfit-info h4 {
+      margin: 0 0 8px 0;
+      color: var(--accent);
     }
     
-    .image-action-btn {
-      background: rgba(15, 17, 21, 0.8);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
+    .outfit-info ul {
+      margin: 0;
+      padding-left: 20px;
+      text-align: left;
+    }
+    
+    .outfit-info li {
+      margin-bottom: 6px;
     }
 
     /* Modallar */
@@ -260,35 +252,35 @@
       <div id="topicsList" style="margin-top:8px"></div>
     </section>
     
-    <!-- Sağ: Görsel Yükleme ve Günün İngilizce Kelimesi -->
+    <!-- Sağ: Günlük Kombin ve Günün İngilizce Kelimesi -->
     <div>
-      <!-- GÖRSEL YÜKLEME ALANI -->
-      <aside class="card pad">
-        <h3>Kendi Görselini Yükle</h3>
+      <!-- GÜNLÜK KOMBİN ALANI -->
+      <aside class="card pad daily-outfit">
+        <h3>Günlük Kombin</h3>
         <div class="line" style="margin:8px 0"></div>
         
-        <div class="image-upload-area" id="imageUploadArea">
-          <div class="upload-placeholder" id="uploadPlaceholder">
-            <i>📷</i>
-            <div class="upload-text">Görsel yüklemek için tıklayın veya sürükleyip bırakın</div>
-            <small style="margin-top: 8px; color: var(--muted);">PNG, JPG, GIF - Maks. 5MB</small>
+        <div class="outfit-image-container" id="outfitImageContainer">
+          <div class="outfit-placeholder" id="outfitPlaceholder">
+            <i>👗</i>
+            <div>Admin panelinden kombin görseli yüklenmemiş</div>
+            <small style="margin-top: 8px; display: block;">Görsel yüklemek için admin paneline gidin</small>
           </div>
-          <div class="image-preview" id="imagePreview">
-            <img id="previewImage" src="" alt="Yüklenen görsel">
-            <div class="image-actions">
-              <button class="image-action-btn" id="btnChangeImage">Değiştir</button>
-              <button class="image-action-btn danger" id="btnRemoveImage">Kaldır</button>
-            </div>
-          </div>
-          <input type="file" id="imageInput" accept="image/*" style="display: none;">
+          <img class="outfit-image" id="outfitImage" src="" alt="Günlük Kombin" style="display: none;">
         </div>
         
-        <div class="uploaded-images" id="uploadedImages">
-          <h4>Yüklenen Görseller</h4>
-          <div class="image-gallery" id="imageGallery" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px;">
-            <!-- Yüklenen görseller burada gösterilecek -->
-          </div>
+        <div class="outfit-info">
+          <h4>Bugünkü Kombin Detayları</h4>
+          <ul id="outfitDetails">
+            <li><strong>Üst:</strong> <span id="outfitTop">-</span></li>
+            <li><strong>Alt:</strong> <span id="outfitBottom">-</span></li>
+            <li><strong>Ayakkabı:</strong> <span id="outfitShoes">-</span></li>
+            <li><strong>Aksesuar:</strong> <span id="outfitAccessory">-</span></li>
+          </ul>
         </div>
+        
+        <button id="btnManageOutfits" class="ghost" style="margin-top: 12px; width: 100%;">
+          Kombinleri Yönet (Admin)
+        </button>
       </aside>
       
       <!-- GÜNÜN İNGİLİZCE KELİMESİ BÖLÜMÜ -->
@@ -407,7 +399,6 @@
     let topics = JSON.parse(localStorage.getItem('topics') || '[]');
     let activeTopicForComment = null;
     let userList = JSON.parse(localStorage.getItem('userList') || '[]');
-    let uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
 
     // --- Günün İngilizce Kelimesi Verisi ---
     const englishWords = [
@@ -460,6 +451,34 @@
         ingredients: "Kırmızı mercimek, soğan, havuç, patates, tereyağı, un, limon, tuz",
         description: "Klasik Türk mutfağından doyurucu bir çorba.",
         fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun. Mercimekleri ekleyip su ilave edin. Patatesleri ekleyip pişirin. Blendırdan geçirip servis yapın."
+      }
+    ];
+
+    // --- GÜNLÜK KOMBİN VERİLERİ ---
+    const dailyOutfits = [
+      {
+        date: new Date().toDateString(),
+        top: "Beyaz Oversize Gömlek",
+        bottom: "Siyah Deri Pantolon", 
+        shoes: "Kırmızı Topuklu Ayakkabı",
+        accessory: "İnce Altın Kolye",
+        image: null
+      },
+      {
+        date: new Date(new Date().setDate(new Date().getDate() + 1)).toDateString(),
+        top: "Siyah Basic T-shirt",
+        bottom: "Mavi Kot Pantolon",
+        shoes: "Beyaz Sneaker",
+        accessory: "Gümüş Küpe",
+        image: null
+      },
+      {
+        date: new Date(new Date().setDate(new Date().getDate() + 2)).toDateString(),
+        top: "Pembe Triko Kazak",
+        bottom: "Bej Etek",
+        shoes: "Kahverengi Bot",
+        accessory: "İnci Kolye",
+        image: null
       }
     ];
 
@@ -662,171 +681,53 @@
       box.append(h, userInfo, p, thick, actions, commentsWrap);
     }
 
-    // --- GÖRSEL YÜKLEME FONKSİYONLARI ---
-    function initImageUpload() {
-      const imageUploadArea = el('#imageUploadArea');
-      const imageInput = el('#imageInput');
-      const uploadPlaceholder = el('#uploadPlaceholder');
-      const imagePreview = el('#imagePreview');
-      const previewImage = el('#previewImage');
-      const btnChangeImage = el('#btnChangeImage');
-      const btnRemoveImage = el('#btnRemoveImage');
+    // --- GÜNLÜK KOMBİN FONKSİYONLARI ---
+    function loadDailyOutfit() {
+      // LocalStorage'dan kombin verilerini yükle
+      const savedOutfits = JSON.parse(localStorage.getItem('dailyOutfits') || '[]');
+      const today = new Date().toDateString();
       
-      // Tıklama ile dosya seç
-      imageUploadArea.addEventListener('click', (e) => {
-        if (e.target !== btnChangeImage && e.target !== btnRemoveImage) {
-          imageInput.click();
-        }
-      });
+      let todayOutfit;
       
-      // Dosya seçildiğinde
-      imageInput.addEventListener('change', handleImageUpload);
-      
-      // Sürükle bırak işlevselliği
-      imageUploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        imageUploadArea.style.borderColor = 'var(--accent)';
-        imageUploadArea.style.background = 'rgba(105, 191, 252, 0.1)';
-      });
-      
-      imageUploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        imageUploadArea.style.borderColor = 'var(--line)';
-        imageUploadArea.style.background = 'transparent';
-      });
-      
-      imageUploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        imageUploadArea.style.borderColor = 'var(--line)';
-        imageUploadArea.style.background = 'transparent';
-        
-        if (e.dataTransfer.files.length) {
-          imageInput.files = e.dataTransfer.files;
-          handleImageUpload();
-        }
-      });
-      
-      // Görsel değiştirme butonu
-      btnChangeImage.addEventListener('click', (e) => {
-        e.stopPropagation();
-        imageInput.click();
-      });
-      
-      // Görsel kaldırma butonu
-      btnRemoveImage.addEventListener('click', (e) => {
-        e.stopPropagation();
-        resetImageUpload();
-      });
-      
-      // Yüklenen görselleri render et
-      renderUploadedImages();
-    }
-    
-    function handleImageUpload() {
-      const file = el('#imageInput').files[0];
-      if (!file) return;
-      
-      // Dosya türü kontrolü
-      if (!file.type.match('image.*')) {
-        alert('Sadece resim dosyaları yükleyebilirsiniz!');
-        return;
+      if (savedOutfits.length > 0) {
+        // Bugüne ait kombin varsa onu kullan
+        todayOutfit = savedOutfits.find(outfit => outfit.date === today) || savedOutfits[0];
+      } else {
+        // Yoksa varsayılan kombinleri kullan
+        todayOutfit = dailyOutfits.find(outfit => outfit.date === today) || dailyOutfits[0];
       }
       
-      // Dosya boyutu kontrolü (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Resim boyutu 5MB\'dan küçük olmalıdır!');
-        return;
+      // Kombin bilgilerini göster
+      updateOutfitInfo(todayOutfit);
+      
+      // Kombin görselini göster
+      if (todayOutfit.image) {
+        showOutfitImage(todayOutfit.image);
+      } else {
+        showOutfitPlaceholder();
       }
-      
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const imageData = {
-          id: Date.now(),
-          src: e.target.result,
-          name: file.name,
-          uploadedAt: new Date().toLocaleString()
-        };
-        
-        // Önizleme göster
-        showImagePreview(imageData.src);
-        
-        // Görseller listesine ekle
-        uploadedImages.push(imageData);
-        saveUploadedImages();
-        renderUploadedImages();
-      };
-      reader.readAsDataURL(file);
     }
     
-    function showImagePreview(src) {
-      el('#uploadPlaceholder').style.display = 'none';
-      el('#imagePreview').style.display = 'block';
-      el('#previewImage').src = src;
+    function updateOutfitInfo(outfit) {
+      document.getElementById('outfitTop').textContent = outfit.top;
+      document.getElementById('outfitBottom').textContent = outfit.bottom;
+      document.getElementById('outfitShoes').textContent = outfit.shoes;
+      document.getElementById('outfitAccessory').textContent = outfit.accessory;
     }
     
-    function resetImageUpload() {
-      el('#uploadPlaceholder').style.display = 'flex';
-      el('#imagePreview').style.display = 'none';
-      el('#previewImage').src = '';
-      el('#imageInput').value = '';
+    function showOutfitImage(imageSrc) {
+      el('#outfitPlaceholder').style.display = 'none';
+      el('#outfitImage').style.display = 'block';
+      el('#outfitImage').src = imageSrc;
     }
     
-    function saveUploadedImages() {
-      localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+    function showOutfitPlaceholder() {
+      el('#outfitPlaceholder').style.display = 'block';
+      el('#outfitImage').style.display = 'none';
     }
     
-    function renderUploadedImages() {
-      const gallery = el('#imageGallery');
-      gallery.innerHTML = '';
-      
-      if (uploadedImages.length === 0) {
-        el('#uploadedImages').style.display = 'none';
-        return;
-      }
-      
-      el('#uploadedImages').style.display = 'block';
-      
-      uploadedImages.forEach(image => {
-        const imageItem = document.createElement('div');
-        imageItem.className = 'image-item';
-        imageItem.style.position = 'relative';
-        imageItem.style.cursor = 'pointer';
-        imageItem.innerHTML = `
-          <img src="${image.src}" alt="${image.name}" style="width:100%; height:80px; object-fit:cover; border-radius:8px;">
-          <button class="image-action-btn danger" style="position:absolute; top:4px; right:4px; padding:2px 6px; font-size:10px;" data-image-id="${image.id}">×</button>
-        `;
-        
-        // Görseli büyütmek için tıklama
-        imageItem.addEventListener('click', (e) => {
-          if (e.target.tagName !== 'BUTTON') {
-            showImagePreview(image.src);
-          }
-        });
-        
-        // Silme butonu
-        const deleteBtn = imageItem.querySelector('button');
-        deleteBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          deleteImage(image.id);
-        });
-        
-        gallery.appendChild(imageItem);
-      });
-    }
-    
-    function deleteImage(imageId) {
-      if (confirm('Bu görseli silmek istediğinizden emin misiniz?')) {
-        uploadedImages = uploadedImages.filter(img => img.id !== imageId);
-        saveUploadedImages();
-        renderUploadedImages();
-        
-        // Eğer silinen görsel önizlemede gösteriliyorsa, önizlemeyi sıfırla
-        const currentPreviewSrc = el('#previewImage').src;
-        const deletedImage = uploadedImages.find(img => img.src === currentPreviewSrc);
-        if (!deletedImage) {
-          resetImageUpload();
-        }
-      }
+    function goToAdminPanel() {
+      window.location.href = 'admin.html';
     }
 
     // --- ROUTER ---
@@ -858,8 +759,8 @@
       // Günün İngilizce Kelimesini Ayarla
       setEnglishWordOfTheDay();
 
-      // Görsel yükleme alanını başlat
-      initImageUpload();
+      // Günlük kombin bölümünü yükle
+      loadDailyOutfit();
 
       // Modal kapatma butonları
       els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
@@ -915,6 +816,9 @@
       el('#btnAdminPanel').onclick = () => {
         window.location.href = 'admin.html';
       };
+
+      // Kombin yönetme butonu
+      el('#btnManageOutfits').onclick = goToAdminPanel;
 
       // Çıkış yap butonu
       el('#btnLogout').onclick = logout;
