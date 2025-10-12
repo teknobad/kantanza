@@ -12,7 +12,7 @@ scene.add(light);
 const loader = new THREE.GLTFLoader();
 let baseCharacter, parts = {};
 
-loader.load('https://models.readyplayer.me/base_character.glb', gltf => {
+loader.load('https://models.readyplayer.me/3d-avatar.glb', gltf => {
     baseCharacter = gltf.scene;
     scene.add(baseCharacter);
     animate();
