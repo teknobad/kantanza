@@ -66,6 +66,37 @@
       margin-right: 10px;
     }
 
+    /* Film ve Dizi Görselleri */
+    .media-image-container {
+      width: 100%;
+      margin: 12px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    
+    .media-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .media-placeholder {
+      width: 100%;
+      height: 180px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+    
+    .media-placeholder i {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
     /* Mobil için responsive */
     @media (max-width: 768px) {
       .header-content {
@@ -76,6 +107,10 @@
       .auth-actions {
         width: 100%;
         justify-content: center;
+      }
+      
+      .media-image-container {
+        margin: 8px 0;
       }
     }
 
@@ -92,6 +127,30 @@
     /* Sol yan: film & yemek */
     .sidebar h3{margin:0 0 8px}
     .badge{display:inline-block;background:var(--line);padding:2px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+    
+    /* Dizi önerileri */
+    .series-info {
+      margin-top: 8px;
+    }
+    
+    .series-info p {
+      margin: 6px 0;
+      font-size: 14px;
+    }
+    
+    .series-rating {
+      color: var(--accent);
+      font-weight: bold;
+    }
+    
+    .series-seasons {
+      color: var(--ok);
+    }
+    
+    .series-best-episode {
+      font-style: italic;
+      color: var(--muted);
+    }
     
     /* Yemek tarifleri */
     .recipe-item{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
@@ -189,6 +248,11 @@
     
     @media (max-width:900px){
       .container{grid-template-columns:1fr; padding:12px}
+      
+      .media-image-container {
+        max-width: 100%;
+        margin: 10px auto;
+      }
     }
   </style>
 </head>
@@ -223,10 +287,21 @@
 </header>
 
   <main class="container">
-    <!-- Sol: Film & Yemek -->
+    <!-- Sol: Film & Dizi & Yemek -->
     <aside class="card pad sidebar">
+      <!-- FİLM ÖNERİSİ -->
       <h3>Bugünkü Film Tavsiyemiz</h3>
       <div class="line" style="margin:8px 0"></div>
+      
+      <!-- Film Görseli -->
+      <div class="media-image-container">
+        <div class="media-placeholder">
+          <i>🎬</i>
+          <div>Film Görseli</div>
+        </div>
+        <!-- <img class="media-image" src="film-gorseli.jpg" alt="Karanlığın Ormanı"> -->
+      </div>
+      
       <div class="row" style="flex-wrap:wrap;gap:6px">
         <span class="badge">IMDb: 8.6</span>
         <span class="badge">Rotten Tomatoes: 94%</span>
@@ -236,7 +311,32 @@
       <p><strong>Film:</strong> "Karanlığın Ormanı"</p>
       <p><strong>Oyuncular:</strong> A. Kaya, B. Demir, C. Öz</p>
       <p><strong>Kısaca:</strong> Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.</p>
+      
       <div class="line" style="margin:16px 0"></div>
+      
+      <!-- DİZİ ÖNERİLERİ -->
+      <h3>Dizi Önerileri</h3>
+      <div class="line" style="margin:8px 0"></div>
+      
+      <!-- Dizi Görseli -->
+      <div class="media-image-container">
+        <div class="media-placeholder">
+          <i>📺</i>
+          <div>Dizi Görseli</div>
+        </div>
+        <!-- <img class="media-image" src="dizi-gorseli.jpg" alt="Zamanın Ötesinde"> -->
+      </div>
+      
+      <div class="series-info">
+        <p><strong>Dizi:</strong> "Zamanın Ötesinde"</p>
+        <p><strong class="series-rating">IMDb: 8.8/10</strong></p>
+        <p><strong>Konu:</strong> Gelecekten gelen bir zaman yolcusunun, tarihi olayları değiştirmeye çalışan bir organizasyonla mücadelesi.</p>
+        <p><strong class="series-seasons">Sezon Sayısı:</strong> 3 sezon</p>
+        <p><strong class="series-best-episode">En Sevilen Bölüm:</strong> "Sonsuzluk Yolculuğu" (3. Sezon 8. Bölüm)</p>
+      </div>
+      
+      <div class="line" style="margin:16px 0"></div>
+      
       <!-- YEMEK TARİFLERİ BÖLÜMÜ -->
       <h3>Basit Yemek Tarifleri</h3>
       <div id="recipesList"></div>
