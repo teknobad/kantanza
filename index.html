@@ -4,9 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KANTANZA Forum</title>
-  <!-- Three.js kütüphaneleri -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js"></script>
   <style>
     :root{
       --bg:#0f1115;
@@ -114,6 +111,73 @@
     .word-meaning {margin-bottom: 8px;}
     .word-example {border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); font-style: italic;}
 
+    /* Görsel Yükleme Alanı */
+    .image-upload-area {
+      width: 100%;
+      height: 300px;
+      border: 2px dashed var(--line);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .image-upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(105, 191, 252, 0.05);
+    }
+    
+    .image-upload-area i {
+      font-size: 48px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    
+    .image-upload-area .upload-text {
+      color: var(--muted);
+      text-align: center;
+      padding: 0 16px;
+    }
+    
+    .image-preview {
+      width: 100%;
+      height: 100%;
+      display: none;
+      position: relative;
+    }
+    
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .image-actions {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .image-action-btn {
+      background: rgba(15, 17, 21, 0.8);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
     /* Modallar */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
     .modal.show{display:flex}
@@ -196,10 +260,36 @@
       <div id="topicsList" style="margin-top:8px"></div>
     </section>
     
-    <!-- Sağ: Kombin ve Günün İngilizce Kelimesi -->
+    <!-- Sağ: Görsel Yükleme ve Günün İngilizce Kelimesi -->
     <div>
-      <!-- Kombin bölümü buraya yüklenecek -->
-      <div id="outfit-section"></div>
+      <!-- GÖRSEL YÜKLEME ALANI -->
+      <aside class="card pad">
+        <h3>Kendi Görselini Yükle</h3>
+        <div class="line" style="margin:8px 0"></div>
+        
+        <div class="image-upload-area" id="imageUploadArea">
+          <div class="upload-placeholder" id="uploadPlaceholder">
+            <i>📷</i>
+            <div class="upload-text">Görsel yüklemek için tıklayın veya sürükleyip bırakın</div>
+            <small style="margin-top: 8px; color: var(--muted);">PNG, JPG, GIF - Maks. 5MB</small>
+          </div>
+          <div class="image-preview" id="imagePreview">
+            <img id="previewImage" src="" alt="Yüklenen görsel">
+            <div class="image-actions">
+              <button class="image-action-btn" id="btnChangeImage">Değiştir</button>
+              <button class="image-action-btn danger" id="btnRemoveImage">Kaldır</button>
+            </div>
+          </div>
+          <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        </div>
+        
+        <div class="uploaded-images" id="uploadedImages">
+          <h4>Yüklenen Görseller</h4>
+          <div class="image-gallery" id="imageGallery" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px;">
+            <!-- Yüklenen görseller burada gösterilecek -->
+          </div>
+        </div>
+      </aside>
       
       <!-- GÜNÜN İNGİLİZCE KELİMESİ BÖLÜMÜ -->
       <aside class="card pad word-of-the-day">
@@ -317,6 +407,7 @@
     let topics = JSON.parse(localStorage.getItem('topics') || '[]');
     let activeTopicForComment = null;
     let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+    let uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
 
     // --- Günün İngilizce Kelimesi Verisi ---
     const englishWords = [
@@ -371,49 +462,6 @@
         fullRecipe: "Soğanı ve havucu küp küp doğrayın. Tereyağında kavurun. Mercimekleri ekleyip su ilave edin. Patatesleri ekleyip pişirin. Blendırdan geçirip servis yapın."
       }
     ];
-
-    // --- 3D KOMBİN VERİLERİ ---
-    const dailyOutfits = [
-      {
-        date: new Date().toDateString(),
-        top: "Beyaz Oversize Gömlek",
-        bottom: "Siyah Deri Pantolon", 
-        shoes: "Kırmızı Topuklu Ayakkabı",
-        accessory: "İnce Altın Kolye",
-        colors: {
-          top: "#FFFFFF",
-          bottom: "#1a1a1a", 
-          shoes: "#FF0000"
-        }
-      },
-      {
-        date: new Date(new Date().setDate(new Date().getDate() + 1)).toDateString(),
-        top: "Siyah Basic T-shirt",
-        bottom: "Mavi Kot Pantolon",
-        shoes: "Beyaz Sneaker",
-        accessory: "Gümüş Küpe",
-        colors: {
-          top: "#000000",
-          bottom: "#1e3a8a",
-          shoes: "#F8FAFC"
-        }
-      },
-      {
-        date: new Date(new Date().setDate(new Date().getDate() + 2)).toDateString(),
-        top: "Pembe Triko Kazak",
-        bottom: "Bej Etek",
-        shoes: "Kahverengi Bot",
-        accessory: "İnci Kolye",
-        colors: {
-          top: "#f472b6",
-          bottom: "#fef3c7",
-          shoes: "#78350f"
-        }
-      }
-    ];
-
-    // --- KONU YÖNETİMİ ---
-    const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
 
     // --- VALIDASYON FONKSİYONLARI ---
     const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
@@ -614,6 +662,173 @@
       box.append(h, userInfo, p, thick, actions, commentsWrap);
     }
 
+    // --- GÖRSEL YÜKLEME FONKSİYONLARI ---
+    function initImageUpload() {
+      const imageUploadArea = el('#imageUploadArea');
+      const imageInput = el('#imageInput');
+      const uploadPlaceholder = el('#uploadPlaceholder');
+      const imagePreview = el('#imagePreview');
+      const previewImage = el('#previewImage');
+      const btnChangeImage = el('#btnChangeImage');
+      const btnRemoveImage = el('#btnRemoveImage');
+      
+      // Tıklama ile dosya seç
+      imageUploadArea.addEventListener('click', (e) => {
+        if (e.target !== btnChangeImage && e.target !== btnRemoveImage) {
+          imageInput.click();
+        }
+      });
+      
+      // Dosya seçildiğinde
+      imageInput.addEventListener('change', handleImageUpload);
+      
+      // Sürükle bırak işlevselliği
+      imageUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        imageUploadArea.style.borderColor = 'var(--accent)';
+        imageUploadArea.style.background = 'rgba(105, 191, 252, 0.1)';
+      });
+      
+      imageUploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        imageUploadArea.style.borderColor = 'var(--line)';
+        imageUploadArea.style.background = 'transparent';
+      });
+      
+      imageUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imageUploadArea.style.borderColor = 'var(--line)';
+        imageUploadArea.style.background = 'transparent';
+        
+        if (e.dataTransfer.files.length) {
+          imageInput.files = e.dataTransfer.files;
+          handleImageUpload();
+        }
+      });
+      
+      // Görsel değiştirme butonu
+      btnChangeImage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        imageInput.click();
+      });
+      
+      // Görsel kaldırma butonu
+      btnRemoveImage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetImageUpload();
+      });
+      
+      // Yüklenen görselleri render et
+      renderUploadedImages();
+    }
+    
+    function handleImageUpload() {
+      const file = el('#imageInput').files[0];
+      if (!file) return;
+      
+      // Dosya türü kontrolü
+      if (!file.type.match('image.*')) {
+        alert('Sadece resim dosyaları yükleyebilirsiniz!');
+        return;
+      }
+      
+      // Dosya boyutu kontrolü (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Resim boyutu 5MB\'dan küçük olmalıdır!');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageData = {
+          id: Date.now(),
+          src: e.target.result,
+          name: file.name,
+          uploadedAt: new Date().toLocaleString()
+        };
+        
+        // Önizleme göster
+        showImagePreview(imageData.src);
+        
+        // Görseller listesine ekle
+        uploadedImages.push(imageData);
+        saveUploadedImages();
+        renderUploadedImages();
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function showImagePreview(src) {
+      el('#uploadPlaceholder').style.display = 'none';
+      el('#imagePreview').style.display = 'block';
+      el('#previewImage').src = src;
+    }
+    
+    function resetImageUpload() {
+      el('#uploadPlaceholder').style.display = 'flex';
+      el('#imagePreview').style.display = 'none';
+      el('#previewImage').src = '';
+      el('#imageInput').value = '';
+    }
+    
+    function saveUploadedImages() {
+      localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+    }
+    
+    function renderUploadedImages() {
+      const gallery = el('#imageGallery');
+      gallery.innerHTML = '';
+      
+      if (uploadedImages.length === 0) {
+        el('#uploadedImages').style.display = 'none';
+        return;
+      }
+      
+      el('#uploadedImages').style.display = 'block';
+      
+      uploadedImages.forEach(image => {
+        const imageItem = document.createElement('div');
+        imageItem.className = 'image-item';
+        imageItem.style.position = 'relative';
+        imageItem.style.cursor = 'pointer';
+        imageItem.innerHTML = `
+          <img src="${image.src}" alt="${image.name}" style="width:100%; height:80px; object-fit:cover; border-radius:8px;">
+          <button class="image-action-btn danger" style="position:absolute; top:4px; right:4px; padding:2px 6px; font-size:10px;" data-image-id="${image.id}">×</button>
+        `;
+        
+        // Görseli büyütmek için tıklama
+        imageItem.addEventListener('click', (e) => {
+          if (e.target.tagName !== 'BUTTON') {
+            showImagePreview(image.src);
+          }
+        });
+        
+        // Silme butonu
+        const deleteBtn = imageItem.querySelector('button');
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteImage(image.id);
+        });
+        
+        gallery.appendChild(imageItem);
+      });
+    }
+    
+    function deleteImage(imageId) {
+      if (confirm('Bu görseli silmek istediğinizden emin misiniz?')) {
+        uploadedImages = uploadedImages.filter(img => img.id !== imageId);
+        saveUploadedImages();
+        renderUploadedImages();
+        
+        // Eğer silinen görsel önizlemede gösteriliyorsa, önizlemeyi sıfırla
+        const currentPreviewSrc = el('#previewImage').src;
+        const deletedImage = uploadedImages.find(img => img.src === currentPreviewSrc);
+        if (!deletedImage) {
+          resetImageUpload();
+        }
+      }
+    }
+
     // --- ROUTER ---
     function route() {
       const hash = location.hash || '#home';
@@ -638,304 +853,13 @@
       }
     }
 
-    // --- 3D KOMBİN FONKSİYONLARI ---
-    let scene, camera, renderer, womanModel;
-    let currentOutfit = {};
-
-    function loadOutfitSection() {
-      document.getElementById('outfit-section').innerHTML = `
-        <aside class="card pad">
-          <h3>Günlük Kombin Tavsiyesi</h3>
-          <div id="3dOutfit" style="width:100%; height:500px; background: var(--card); border-radius: 8px; overflow: hidden; position: relative;"></div>
-          <div class="outfit-controls" style="margin-top: 10px; display: flex; gap: 8px; justify-content: center;">
-            <button id="prevOutfit" class="ghost">← Önceki</button>
-            <button id="nextOutfit" class="ghost">Sonraki →</button>
-          </div>
-          <div class="outfit-info" style="margin-top: 16px;">
-            <div class="today-outfit" id="todayOutfit">
-              <h4>Bugünkü Kombin:</h4>
-              <ul>
-                <li><strong>Üst:</strong> <span id="outfitTop">-</span></li>
-                <li><strong>Alt:</strong> <span id="outfitBottom">-</span></li>
-                <li><strong>Ayakkabı:</strong> <span id="outfitShoes">-</span></li>
-                <li><strong>Aksesuar:</strong> <span id="outfitAccessory">-</span></li>
-              </ul>
-            </div>
-          </div>
-        </aside>
-      `;
-      
-      // 3D sahneyi başlat
-      init3DScene();
-      
-      // Kontrol butonlarını ekle
-      document.getElementById('prevOutfit').addEventListener('click', showPreviousOutfit);
-      document.getElementById('nextOutfit').addEventListener('click', showNextOutfit);
-    }
-
-    function init3DScene() {
-      const container = document.getElementById('3dOutfit');
-      if (!container) return;
-      
-      // Sahne
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x151922);
-      
-      // Kamera
-      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.set(0, 1.2, 4);
-      
-      // Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      container.appendChild(renderer.domElement);
-      
-      // Işıklar
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-      scene.add(ambientLight);
-      
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(5, 10, 7);
-      directionalLight.castShadow = true;
-      directionalLight.shadow.mapSize.width = 2048;
-      directionalLight.shadow.mapSize.height = 2048;
-      scene.add(directionalLight);
-      
-      // Yumuşak ışık
-      const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
-      backLight.position.set(-5, 5, -5);
-      scene.add(backLight);
-      
-      // Basit kadın figürü oluştur
-      createWomanFigure();
-      
-      // Zemin
-      const floorGeometry = new THREE.PlaneGeometry(10, 10);
-      const floorMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x2b3240,
-        roughness: 0.8,
-        metalness: 0.2
-      });
-      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-      floor.rotation.x = -Math.PI / 2;
-      floor.receiveShadow = true;
-      scene.add(floor);
-      
-      // Animasyon
-      animate();
-      
-      // Responsive
-      window.addEventListener('resize', onWindowResize);
-      
-      // Günlük kombin yükle
-      loadTodayOutfit();
-    }
-
-    function createWomanFigure() {
-      const bodyGroup = new THREE.Group();
-      
-      // Ten rengi
-      const skinColor = 0xF8C8B0;
-      
-      // Baş - daha gerçekçi
-      const headGeometry = new THREE.SphereGeometry(0.22, 32, 32);
-      const headMaterial = new THREE.MeshStandardMaterial({ 
-        color: skinColor,
-        roughness: 0.7
-      });
-      const head = new THREE.Mesh(headGeometry, headMaterial);
-      head.position.y = 1.65;
-      head.castShadow = true;
-      bodyGroup.add(head);
-      
-      // Boyun
-      const neckGeometry = new THREE.CylinderGeometry(0.08, 0.1, 0.15, 16);
-      const neckMaterial = new THREE.MeshStandardMaterial({ 
-        color: skinColor,
-        roughness: 0.7
-      });
-      const neck = new THREE.Mesh(neckGeometry, neckMaterial);
-      neck.position.y = 1.45;
-      neck.castShadow = true;
-      bodyGroup.add(neck);
-      
-      // Gövde - daha kadınsı form
-      const bodyGeometry = new THREE.CylinderGeometry(0.35, 0.4, 0.8, 16);
-      const bodyMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xFF69B4, // Pembe tişört
-        roughness: 0.8
-      });
-      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-      body.position.y = 0.9;
-      body.castShadow = true;
-      bodyGroup.add(body);
-      
-      // Bacaklar - daha uzun ve ince
-      const legGeometry = new THREE.CylinderGeometry(0.12, 0.1, 0.9, 16);
-      const legMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x1a1a1a, // Siyah pantolon
-        roughness: 0.8
-      });
-      
-      const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
-      leftLeg.position.set(-0.15, 0.35, 0);
-      leftLeg.castShadow = true;
-      bodyGroup.add(leftLeg);
-      
-      const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
-      rightLeg.position.set(0.15, 0.35, 0);
-      rightLeg.castShadow = true;
-      bodyGroup.add(rightLeg);
-      
-      // Ayaklar
-      const footGeometry = new THREE.BoxGeometry(0.2, 0.08, 0.3);
-      const footMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xFF0000, // Kırmızı ayakkabı
-        roughness: 0.7
-      });
-      
-      const leftFoot = new THREE.Mesh(footGeometry, footMaterial);
-      leftFoot.position.set(-0.15, -0.1, 0.1);
-      leftFoot.castShadow = true;
-      bodyGroup.add(leftFoot);
-      
-      const rightFoot = new THREE.Mesh(footGeometry, footMaterial);
-      rightFoot.position.set(0.15, -0.1, 0.1);
-      rightFoot.castShadow = true;
-      bodyGroup.add(rightFoot);
-      
-      // Kollar - daha ince
-      const armGeometry = new THREE.CylinderGeometry(0.07, 0.06, 0.7, 16);
-      const armMaterial = new THREE.MeshStandardMaterial({ 
-        color: skinColor,
-        roughness: 0.7
-      });
-      
-      const leftArm = new THREE.Mesh(armGeometry, armMaterial);
-      leftArm.position.set(-0.45, 1.0, 0);
-      leftArm.rotation.z = Math.PI / 6;
-      leftArm.castShadow = true;
-      bodyGroup.add(leftArm);
-      
-      const rightArm = new THREE.Mesh(armGeometry, armMaterial);
-      rightArm.position.set(0.45, 1.0, 0);
-      rightArm.rotation.z = -Math.PI / 6;
-      rightArm.castShadow = true;
-      bodyGroup.add(rightArm);
-      
-      // Saç
-      const hairGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-      const hairMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x8B4513, // Kahverengi saç
-        roughness: 0.9
-      });
-      const hair = new THREE.Mesh(hairGeometry, hairMaterial);
-      hair.position.y = 1.75;
-      hair.scale.set(1, 0.6, 1.2);
-      bodyGroup.add(hair);
-      
-      // Yüz detayları (basit)
-      const eyeGeometry = new THREE.SphereGeometry(0.03, 8, 8);
-      const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
-      
-      const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-      leftEye.position.set(-0.08, 1.7, 0.2);
-      bodyGroup.add(leftEye);
-      
-      const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-      rightEye.position.set(0.08, 1.7, 0.2);
-      bodyGroup.add(rightEye);
-      
-      scene.add(bodyGroup);
-      womanModel = bodyGroup;
-    }
-
-    function loadTodayOutfit() {
-      const today = new Date().toDateString();
-      const todayOutfit = dailyOutfits.find(outfit => outfit.date === today) || dailyOutfits[0];
-      currentOutfit = todayOutfit;
-      
-      // Kombin bilgilerini göster
-      updateOutfitInfo(todayOutfit);
-      
-      // 3D modeli güncelle
-      updateOutfitColors(todayOutfit.colors);
-    }
-
-    function updateOutfitInfo(outfit) {
-      document.getElementById('outfitTop').textContent = outfit.top;
-      document.getElementById('outfitBottom').textContent = outfit.bottom;
-      document.getElementById('outfitShoes').textContent = outfit.shoes;
-      document.getElementById('outfitAccessory').textContent = outfit.accessory;
-    }
-
-    function updateOutfitColors(colors) {
-      if (!womanModel) return;
-      
-      // Vücut parçalarını renklendir
-      womanModel.children.forEach(child => {
-        if (child.material) {
-          // Üst kıyafet (gövde)
-          if (child.position.y === 0.9 && child.geometry.type === "CylinderGeometry") {
-            child.material.color.set(colors.top);
-          }
-          // Alt kıyafet (bacaklar)
-          else if ((child.position.y === 0.35 && child.geometry.type === "CylinderGeometry") ||
-                  (Math.abs(child.position.x) === 0.15 && child.geometry.type === "CylinderGeometry" && child.position.y < 1)) {
-            child.material.color.set(colors.bottom);
-          }
-          // Ayakkabılar
-          else if (child.geometry.type === "BoxGeometry" && child.position.y === -0.1) {
-            child.material.color.set(colors.shoes);
-          }
-        }
-      });
-    }
-
-    function showPreviousOutfit() {
-      const currentIndex = dailyOutfits.findIndex(outfit => outfit.date === currentOutfit.date);
-      const prevIndex = (currentIndex - 1 + dailyOutfits.length) % dailyOutfits.length;
-      currentOutfit = dailyOutfits[prevIndex];
-      updateOutfitInfo(currentOutfit);
-      updateOutfitColors(currentOutfit.colors);
-    }
-
-    function showNextOutfit() {
-      const currentIndex = dailyOutfits.findIndex(outfit => outfit.date === currentOutfit.date);
-      const nextIndex = (currentIndex + 1) % dailyOutfits.length;
-      currentOutfit = dailyOutfits[nextIndex];
-      updateOutfitInfo(currentOutfit);
-      updateOutfitColors(currentOutfit.colors);
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      
-      if (womanModel) {
-        womanModel.rotation.y += 0.005; // Daha yavaş dönüş
-      }
-      
-      renderer.render(scene, camera);
-    }
-
-    function onWindowResize() {
-      const container = document.getElementById('3dOutfit');
-      if (!container) return;
-      
-      camera.aspect = container.clientWidth / container.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
-    }
-
     // --- EVENT HANDLERS ---
     document.addEventListener('DOMContentLoaded', () => {
       // Günün İngilizce Kelimesini Ayarla
       setEnglishWordOfTheDay();
 
-      // Kombin bölümünü yükle
-      loadOutfitSection();
+      // Görsel yükleme alanını başlat
+      initImageUpload();
 
       // Modal kapatma butonları
       els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
