@@ -337,81 +337,132 @@
               <textarea id="movieDescription" rows="3" placeholder="Film açıklaması"></textarea>
             </div>
             <div class="form-group">
-              <label for="movieBadges">Etiketler (virgülle ayırın)</label>
-              <input type="text" id="movieBadges" placeholder="IMDb: 8.6, Rotten Tomatoes: 94%, +18 değil, Macera">
+              <label for="movieImdb">IMDb Puanı</label>
+              <input type="text" id="movieImdb" placeholder="8.6">
+            </div>
+            <div class="form-group">
+              <label for="movieRottenTomatoes">Rotten Tomatoes</label>
+              <input type="text" id="movieRottenTomatoes" placeholder="94%">
+            </div>
+            <div class="form-group">
+              <label for="movieAgeLimit">Yaş Sınırı</label>
+              <input type="text" id="movieAgeLimit" placeholder="+18 değil">
+            </div>
+            <div class="form-group">
+              <label for="movieGenres">Türler</label>
+              <input type="text" id="movieGenres" placeholder="Macera • Korku • Gizem">
+            </div>
+            <div class="form-group">
+              <label for="movieImage">Görsel URL</label>
+              <input type="url" id="movieImage" placeholder="Film görseli URL">
             </div>
             <div class="form-actions">
-              <button class="ghost" id="btnResetMovie">Sıfırla</button>
-              <button id="btnSaveMovie">Film Bilgisini Kaydet</button>
+              <button type="button" class="ghost" id="btnResetMovie">Sıfırla</button>
+              <button type="button" id="btnSaveMovie">Film Bilgisini Kaydet</button>
             </div>
           </div>
         </div>
 
-        <!-- Kombin Düzenleme -->
+        <!-- Dizi Tavsiyesi Düzenleme -->
         <div class="card pad section">
-          <div class="section-title">Kombin Düzenleme</div>
+          <div class="section-title">Dizi Tavsiyesi Düzenleme</div>
           <div class="admin-form">
-            <!-- Kombin Görsel Yükleme -->
             <div class="form-group">
-              <label>Kombin Görseli</label>
-              <div class="image-upload-area" id="outfitImageUploadArea">
-                <div class="upload-placeholder" id="outfitUploadPlaceholder">
-                  <i>📷</i>
-                  <div class="upload-text">Kombin görseli yüklemek için tıklayın</div>
-                  <small style="margin-top: 8px; color: var(--muted);">PNG, JPG, GIF - Maks. 5MB</small>
-                </div>
-                <div class="image-preview" id="outfitImagePreview">
-                  <img id="outfitPreviewImage" src="" alt="Kombin görseli">
-                  <div class="image-actions">
-                    <button class="image-action-btn" id="btnChangeOutfitImage">Değiştir</button>
-                    <button class="image-action-btn danger" id="btnRemoveOutfitImage">Kaldır</button>
-                  </div>
-                </div>
-                <input type="file" id="outfitImageInput" accept="image/*" style="display: none;">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="outfitHairstyle">Saç Şekli</label>
-              <input type="text" id="outfitHairstyle" placeholder="Saç şekli">
+              <label for="seriesTitle">Dizi Adı</label>
+              <input type="text" id="seriesTitle" placeholder="Dizi adı">
             </div>
             <div class="form-group">
-              <label for="outfitHairclip">Toka</label>
-              <input type="text" id="outfitHairclip" placeholder="Toka modeli">
+              <label for="seriesImdb">IMDb Puanı</label>
+              <input type="text" id="seriesImdb" placeholder="8.8/10">
             </div>
             <div class="form-group">
-              <label for="outfitEarrings">Küpe</label>
-              <input type="text" id="outfitEarrings" placeholder="Küpe modeli">
+              <label for="seriesSubject">Konu</label>
+              <textarea id="seriesSubject" rows="3" placeholder="Dizi konusu"></textarea>
             </div>
             <div class="form-group">
-              <label for="outfitNecklace">Kolye</label>
-              <input type="text" id="outfitNecklace" placeholder="Kolye modeli">
+              <label for="seriesSeasons">Sezon Sayısı</label>
+              <input type="text" id="seriesSeasons" placeholder="3 sezon">
             </div>
             <div class="form-group">
-              <label for="outfitTop">Üst Giyim</label>
-              <input type="text" id="outfitTop" placeholder="Üst giyim">
+              <label for="seriesBestEpisode">En Sevilen Bölüm</label>
+              <input type="text" id="seriesBestEpisode" placeholder="Sonsuzluk Yolculuğu (3. Sezon 8. Bölüm)">
             </div>
             <div class="form-group">
-              <label for="outfitPants">Pantolon</label>
-              <input type="text" id="outfitPants" placeholder="Pantolon modeli">
-            </div>
-            <div class="form-group">
-              <label for="outfitShoes">Ayakkabı</label>
-              <input type="text" id="outfitShoes" placeholder="Ayakkabı modeli">
-            </div>
-            <div class="form-group">
-              <label for="outfitNailPolish">Oje</label>
-              <input type="text" id="outfitNailPolish" placeholder="Oje rengi/tipi">
-            </div>
-            <div class="form-group">
-              <label for="outfitRing">Yüzük</label>
-              <input type="text" id="outfitRing" placeholder="Yüzük modeli">
+              <label for="seriesImage">Görsel URL</label>
+              <input type="url" id="seriesImage" placeholder="Dizi görseli URL">
             </div>
             <div class="form-actions">
-              <button class="ghost" id="btnResetOutfit">Sıfırla</button>
-              <button id="btnSaveOutfit">Kombini Kaydet</button>
+              <button type="button" class="ghost" id="btnResetSeries">Sıfırla</button>
+              <button type="button" id="btnSaveSeries">Dizi Bilgisini Kaydet</button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kombin Düzenleme -->
+    <div class="card pad section">
+      <div class="section-title">Kombin Düzenleme</div>
+      <div class="admin-form">
+        <!-- Kombin Görsel Yükleme -->
+        <div class="form-group">
+          <label>Kombin Görseli</label>
+          <div class="image-upload-area" id="outfitImageUploadArea">
+            <div class="upload-placeholder" id="outfitUploadPlaceholder">
+              <i>📷</i>
+              <div class="upload-text">Kombin görseli yüklemek için tıklayın</div>
+              <small style="margin-top: 8px; color: var(--muted);">PNG, JPG, GIF - Maks. 5MB</small>
+            </div>
+            <div class="image-preview" id="outfitImagePreview">
+              <img id="outfitPreviewImage" src="" alt="Kombin görseli">
+              <div class="image-actions">
+                <button type="button" class="image-action-btn" id="btnChangeOutfitImage">Değiştir</button>
+                <button type="button" class="image-action-btn danger" id="btnRemoveOutfitImage">Kaldır</button>
+              </div>
+            </div>
+            <input type="file" id="outfitImageInput" accept="image/*" style="display: none;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="outfitHairstyle">Saç Şekli</label>
+          <input type="text" id="outfitHairstyle" placeholder="Saç şekli">
+        </div>
+        <div class="form-group">
+          <label for="outfitHairclip">Toka</label>
+          <input type="text" id="outfitHairclip" placeholder="Toka modeli">
+        </div>
+        <div class="form-group">
+          <label for="outfitEarrings">Küpe</label>
+          <input type="text" id="outfitEarrings" placeholder="Küpe modeli">
+        </div>
+        <div class="form-group">
+          <label for="outfitNecklace">Kolye</label>
+          <input type="text" id="outfitNecklace" placeholder="Kolye modeli">
+        </div>
+        <div class="form-group">
+          <label for="outfitTop">Üst Giyim</label>
+          <input type="text" id="outfitTop" placeholder="Üst giyim">
+        </div>
+        <div class="form-group">
+          <label for="outfitPants">Pantolon</label>
+          <input type="text" id="outfitPants" placeholder="Pantolon modeli">
+        </div>
+        <div class="form-group">
+          <label for="outfitShoes">Ayakkabı</label>
+          <input type="text" id="outfitShoes" placeholder="Ayakkabı modeli">
+        </div>
+        <div class="form-group">
+          <label for="outfitNailPolish">Oje</label>
+          <input type="text" id="outfitNailPolish" placeholder="Oje rengi/tipi">
+        </div>
+        <div class="form-group">
+          <label for="outfitRing">Yüzük</label>
+          <input type="text" id="outfitRing" placeholder="Yüzük modeli">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="ghost" id="btnResetOutfit">Sıfırla</button>
+          <button type="button" id="btnSaveOutfit">Kombini Kaydet</button>
         </div>
       </div>
     </div>
@@ -437,9 +488,9 @@
           <textarea id="recipeFull" rows="4" placeholder="Tam tarif"></textarea>
         </div>
         <div class="form-actions">
-          <button class="ghost" id="btnResetRecipe">Temizle</button>
-          <button class="ghost" id="btnNewRecipe">Yeni Tarif</button>
-          <button id="btnSaveRecipe">Tarifi Kaydet</button>
+          <button type="button" class="ghost" id="btnResetRecipe">Temizle</button>
+          <button type="button" class="ghost" id="btnNewRecipe">Yeni Tarif</button>
+          <button type="button" id="btnSaveRecipe">Tarifi Kaydet</button>
         </div>
       </div>
       
@@ -473,12 +524,25 @@
     let currentEditingRecipeId = null;
     let currentOutfitImage = null;
 
-    // Varsayılan film ve kombin verileri
+    // Varsayılan veriler
     const defaultMovieData = {
       title: "Karanlığın Ormanı",
       actors: "A. Kaya, B. Demir, C. Öz",
       description: "Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.",
-      badges: ["IMDb: 8.6", "Rotten Tomatoes: 94%", "+18 değil", "Macera • Korku • Gizem"]
+      imdb: "8.6",
+      rottenTomatoes: "94%",
+      ageLimit: "+18 değil",
+      genres: "Macera • Korku • Gizem",
+      image: ""
+    };
+
+    const defaultSeriesData = {
+      title: "Zamanın Ötesinde",
+      imdb: "8.8/10",
+      subject: "Gelecekten gelen bir zaman yolcusunun, tarihi olayları değiştirmeye çalışan bir organizasyonla mücadelesi.",
+      seasons: "3 sezon",
+      bestEpisode: "Sonsuzluk Yolculuğu (3. Sezon 8. Bölüm)",
+      image: ""
     };
 
     const defaultOutfitData = {
@@ -511,15 +575,13 @@
       // Toplam tarif sayısı
       el('#statRecipes').textContent = recipes.length;
       
-      // Kayıtlı kullanıcı sayısı (basit bir yaklaşım)
-      let userCount = 0;
+      // Kayıtlı kullanıcı sayısı
       const userList = JSON.parse(localStorage.getItem('userList') || '[]');
-      userCount += userList.length;
-      
       const account = JSON.parse(localStorage.getItem('account') || 'null');
-      if (account) userCount += 1;
-      
       const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
+      
+      let userCount = userList.length;
+      if (account) userCount += 1;
       if (nextUserId > 1) {
         userCount = Math.max(userCount, nextUserId - 1);
       }
@@ -703,11 +765,32 @@
         title: el('#movieTitle').value,
         actors: el('#movieActors').value,
         description: el('#movieDescription').value,
-        badges: el('#movieBadges').value.split(',').map(badge => badge.trim())
+        imdb: el('#movieImdb').value,
+        rottenTomatoes: el('#movieRottenTomatoes').value,
+        ageLimit: el('#movieAgeLimit').value,
+        genres: el('#movieGenres').value,
+        image: el('#movieImage').value
       };
       
       localStorage.setItem('movieData', JSON.stringify(movieData));
+      localStorage.setItem('movieRecommendation', JSON.stringify(movieData));
       alert('Film bilgileri başarıyla kaydedildi.');
+    }
+
+    // Dizi bilgilerini kaydet
+    function saveSeriesData() {
+      const seriesData = {
+        title: el('#seriesTitle').value,
+        imdb: el('#seriesImdb').value,
+        subject: el('#seriesSubject').value,
+        seasons: el('#seriesSeasons').value,
+        bestEpisode: el('#seriesBestEpisode').value,
+        image: el('#seriesImage').value
+      };
+      
+      localStorage.setItem('seriesData', JSON.stringify(seriesData));
+      localStorage.setItem('seriesRecommendation', JSON.stringify(seriesData));
+      alert('Dizi bilgileri başarıyla kaydedildi.');
     }
 
     // Kombin görseli yükleme işlevleri
@@ -852,7 +935,21 @@
       el('#movieTitle').value = defaultMovieData.title;
       el('#movieActors').value = defaultMovieData.actors;
       el('#movieDescription').value = defaultMovieData.description;
-      el('#movieBadges').value = defaultMovieData.badges.join(', ');
+      el('#movieImdb').value = defaultMovieData.imdb;
+      el('#movieRottenTomatoes').value = defaultMovieData.rottenTomatoes;
+      el('#movieAgeLimit').value = defaultMovieData.ageLimit;
+      el('#movieGenres').value = defaultMovieData.genres;
+      el('#movieImage').value = defaultMovieData.image;
+    }
+
+    // Dizi formunu sıfırla
+    function resetSeriesForm() {
+      el('#seriesTitle').value = defaultSeriesData.title;
+      el('#seriesImdb').value = defaultSeriesData.imdb;
+      el('#seriesSubject').value = defaultSeriesData.subject;
+      el('#seriesSeasons').value = defaultSeriesData.seasons;
+      el('#seriesBestEpisode').value = defaultSeriesData.bestEpisode;
+      el('#seriesImage').value = defaultSeriesData.image;
     }
 
     // Kombin formunu sıfırla
@@ -886,7 +983,20 @@
       el('#movieTitle').value = movieData.title;
       el('#movieActors').value = movieData.actors;
       el('#movieDescription').value = movieData.description;
-      el('#movieBadges').value = Array.isArray(movieData.badges) ? movieData.badges.join(', ') : movieData.badges;
+      el('#movieImdb').value = movieData.imdb;
+      el('#movieRottenTomatoes').value = movieData.rottenTomatoes;
+      el('#movieAgeLimit').value = movieData.ageLimit;
+      el('#movieGenres').value = movieData.genres;
+      el('#movieImage').value = movieData.image || '';
+      
+      // Dizi verilerini yükle
+      const seriesData = JSON.parse(localStorage.getItem('seriesData') || JSON.stringify(defaultSeriesData));
+      el('#seriesTitle').value = seriesData.title;
+      el('#seriesImdb').value = seriesData.imdb;
+      el('#seriesSubject').value = seriesData.subject;
+      el('#seriesSeasons').value = seriesData.seasons;
+      el('#seriesBestEpisode').value = seriesData.bestEpisode;
+      el('#seriesImage').value = seriesData.image || '';
       
       // Kombin verilerini yükle
       const outfitData = JSON.parse(localStorage.getItem('outfitData') || JSON.stringify(defaultOutfitData));
@@ -910,9 +1020,10 @@
     // Admin kontrolü
     function checkAdminAccess() {
       const session = JSON.parse(localStorage.getItem('session') || '{}');
+      const adminSession = localStorage.getItem('adminSession');
       
       // Basit admin kontrolü - kullanıcı adı "admin" veya userId "00001" ise admin
-      if (session.user === 'admin' || session.userId === '00001') {
+      if (session.user === 'admin' || session.userId === '00001' || adminSession === 'true') {
         return true;
       }
       
@@ -958,6 +1069,10 @@
       // Film butonları
       el('#btnResetMovie').addEventListener('click', resetMovieForm);
       el('#btnSaveMovie').addEventListener('click', saveMovieData);
+      
+      // Dizi butonları
+      el('#btnResetSeries').addEventListener('click', resetSeriesForm);
+      el('#btnSaveSeries').addEventListener('click', saveSeriesData);
       
       // Kombin butonları
       el('#btnResetOutfit').addEventListener('click', resetOutfitForm);
