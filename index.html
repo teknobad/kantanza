@@ -268,9 +268,9 @@
           <img class="outfit-image" id="outfitImage" src="" alt="Günlük Kombin" style="display: none;">
         </div>
         
-        <div class="outfit-info">
+        <div class="outfit-info" id="outfitDetails">
           <h4>Bugünkü Kombin Detayları</h4>
-          <ul id="outfitDetails">
+          <ul>
             <li><strong>Üst:</strong> <span id="outfitTop">-</span></li>
             <li><strong>Alt:</strong> <span id="outfitBottom">-</span></li>
             <li><strong>Ayakkabı:</strong> <span id="outfitShoes">-</span></li>
@@ -454,36 +454,9 @@
       }
     ];
 
-    // --- GÜNLÜK KOMBİN VERİLERİ ---
-    const dailyOutfits = [
-      {
-        date: new Date().toDateString(),
-        top: "Beyaz Oversize Gömlek",
-        bottom: "Siyah Deri Pantolon", 
-        shoes: "Kırmızı Topuklu Ayakkabı",
-        accessory: "İnce Altın Kolye",
-        image: null
-      },
-      {
-        date: new Date(new Date().setDate(new Date().getDate() + 1)).toDateString(),
-        top: "Siyah Basic T-shirt",
-        bottom: "Mavi Kot Pantolon",
-        shoes: "Beyaz Sneaker",
-        accessory: "Gümüş Küpe",
-        image: null
-      },
-      {
-        date: new Date(new Date().setDate(new Date().getDate() + 2)).toDateString(),
-        top: "Pembe Triko Kazak",
-        bottom: "Bej Etek",
-        shoes: "Kahverengi Bot",
-        accessory: "İnci Kolye",
-        image: null
-      }
-    ];
-
     // --- VALIDASYON FONKSİYONLARI ---
     const allowedDomains = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
+    const textRegex = /^[A-Za-zÇĞİÖŞÜçğıöşü0-9 ]+$/;
 
     // --- YARDIMCI FONKSİYONLAR ---
     // Admin butonunu güncelleme
@@ -684,46 +657,70 @@
     // --- GÜNLÜK KOMBİN FONKSİYONLARI ---
     function loadDailyOutfit() {
       // LocalStorage'dan kombin verilerini yükle
-      const savedOutfits = JSON.parse(localStorage.getItem('dailyOutfits') || '[]');
-      const today = new Date().toDateString();
-      
-      let todayOutfit;
-      
-      if (savedOutfits.length > 0) {
-        // Bugüne ait kombin varsa onu kullan
-        todayOutfit = savedOutfits.find(outfit => outfit.date === today) || savedOutfits[0];
-      } else {
-        // Yoksa varsayılan kombinleri kullan
-        todayOutfit = dailyOutfits.find(outfit => outfit.date === today) || dailyOutfits[0];
-      }
+      const outfitData = JSON.parse(localStorage.getItem('outfitData') || '{}');
       
       // Kombin bilgilerini göster
-      updateOutfitInfo(todayOutfit);
+      updateOutfitInfo(outfitData);
       
       // Kombin görselini göster
-      if (todayOutfit.image) {
-        showOutfitImage(todayOutfit.image);
+      if (outfitData.image) {
+        showOutfitImage(outfitData.image);
       } else {
         showOutfitPlaceholder();
       }
     }
     
     function updateOutfitInfo(outfit) {
-      document.getElementById('outfitTop').textContent = outfit.top;
-      document.getElementById('outfitBottom').textContent = outfit.bottom;
-      document.getElementById('outfitShoes').textContent = outfit.shoes;
-      document.getElementById('outfitAccessory').textContent = outfit.accessory;
+      if (outfit.hairstyle) {
+        document.getElementById('outfitTop').textContent = outfit.top || '-';
+        document.getElementById('outfitBottom').textContent = outfit.pants || '-';
+        document.getElementById('outfitShoes').textContent = outfit.shoes || '-';
+        document.getElementById('outfitAccessory').textContent = outfit.necklace || '-';
+        
+        // Detaylı kombin bilgilerini göster
+        const detailsElement = document.getElementById('outfitDetails');
+        if (detailsElement) {
+          detailsElement.innerHTML = `
+            <h4>Bugünkü Kombin Detayları</h4>
+            <ul>
+              <li><strong>Saç:</strong> ${outfit.hairstyle || '-'}</li>
+              <li><strong>Toka:</strong> ${outfit.hairclip || '-'}</li>
+              <li><strong>Küpe:</strong> ${outfit.earrings || '-'}</li>
+              <li><strong>Kolye:</strong> ${outfit.necklace || '-'}</li>
+              <li><strong>Üst:</strong> ${outfit.top || '-'}</li>
+              <li><strong>Alt:</strong> ${outfit.pants || '-'}</li>
+              <li><strong>Ayakkabı:</strong> ${outfit.shoes || '-'}</li>
+              <li><strong>Oje:</strong> ${outfit.nailPolish || '-'}</li>
+              <li><strong>Yüzük:</strong> ${outfit.ring || '-'}</li>
+            </ul>
+          `;
+        }
+      } else {
+        // Varsayılan kombin bilgileri
+        document.getElementById('outfitTop').textContent = "Yaka detaylı crop ekru gömlek";
+        document.getElementById('outfitBottom').textContent = "Indigo mavisi jean gömlek";
+        document.getElementById('outfitShoes').textContent = "Lumberjack ROMINA 5FX siyah koşu ayakkabısı";
+        document.getElementById('outfitAccessory').textContent = "Mini taşlı kolye";
+      }
     }
     
     function showOutfitImage(imageSrc) {
-      el('#outfitPlaceholder').style.display = 'none';
-      el('#outfitImage').style.display = 'block';
-      el('#outfitImage').src = imageSrc;
+      const placeholder = document.getElementById('outfitPlaceholder');
+      const image = document.getElementById('outfitImage');
+      
+      if (placeholder) placeholder.style.display = 'none';
+      if (image) {
+        image.style.display = 'block';
+        image.src = imageSrc;
+      }
     }
     
     function showOutfitPlaceholder() {
-      el('#outfitPlaceholder').style.display = 'block';
-      el('#outfitImage').style.display = 'none';
+      const placeholder = document.getElementById('outfitPlaceholder');
+      const image = document.getElementById('outfitImage');
+      
+      if (placeholder) placeholder.style.display = 'block';
+      if (image) image.style.display = 'none';
     }
     
     function goToAdminPanel() {
