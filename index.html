@@ -640,12 +640,17 @@
 
     // --- 3D KOMBİN FONKSİYONLARI ---
     let scene, camera, renderer, womanModel;
+    let currentOutfit = {};
 
     function loadOutfitSection() {
       document.getElementById('outfit-section').innerHTML = `
         <aside class="card pad">
           <h3>Günlük Kombin Tavsiyesi</h3>
-          <div id="3dOutfit" style="width:100%; height:500px; background: var(--card); border-radius: 8px; overflow: hidden;"></div>
+          <div id="3dOutfit" style="width:100%; height:500px; background: var(--card); border-radius: 8px; overflow: hidden; position: relative;"></div>
+          <div class="outfit-controls" style="margin-top: 10px; display: flex; gap: 8px; justify-content: center;">
+            <button id="prevOutfit" class="ghost">← Önceki</button>
+            <button id="nextOutfit" class="ghost">Sonraki →</button>
+          </div>
           <div class="outfit-info" style="margin-top: 16px;">
             <div class="today-outfit" id="todayOutfit">
               <h4>Bugünkü Kombin:</h4>
@@ -662,6 +667,10 @@
       
       // 3D sahneyi başlat
       init3DScene();
+      
+      // Kontrol butonlarını ekle
+      document.getElementById('prevOutfit').addEventListener('click', showPreviousOutfit);
+      document.getElementById('nextOutfit').addEventListener('click', showNextOutfit);
     }
 
     function init3DScene() {
@@ -674,12 +683,13 @@
       
       // Kamera
       camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.set(0, 1, 3);
+      camera.position.set(0, 1.2, 4);
       
       // Renderer
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
       renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       container.appendChild(renderer.domElement);
       
       // Işıklar
@@ -689,7 +699,14 @@
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
       directionalLight.position.set(5, 10, 7);
       directionalLight.castShadow = true;
+      directionalLight.shadow.mapSize.width = 2048;
+      directionalLight.shadow.mapSize.height = 2048;
       scene.add(directionalLight);
+      
+      // Yumuşak ışık
+      const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
+      backLight.position.set(-5, 5, -5);
+      scene.add(backLight);
       
       // Basit kadın figürü oluştur
       createWomanFigure();
@@ -717,66 +734,119 @@
     }
 
     function createWomanFigure() {
-      // Vücut grupları
       const bodyGroup = new THREE.Group();
       
-      // Gövde
-      const bodyGeometry = new THREE.CylinderGeometry(0.3, 0.4, 1.2, 8);
-      const bodyMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xFFD700,
-        roughness: 0.7
-      });
-      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-      body.position.y = 0.6;
-      body.castShadow = true;
-      bodyGroup.add(body);
+      // Ten rengi
+      const skinColor = 0xF8C8B0;
       
-      // Baş
-      const headGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+      // Baş - daha gerçekçi
+      const headGeometry = new THREE.SphereGeometry(0.22, 32, 32);
       const headMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xFFD700,
+        color: skinColor,
         roughness: 0.7
       });
       const head = new THREE.Mesh(headGeometry, headMaterial);
-      head.position.y = 1.5;
+      head.position.y = 1.65;
       head.castShadow = true;
       bodyGroup.add(head);
       
-      // Bacaklar
-      const legGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.8, 8);
-      const legMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xFFD700,
+      // Boyun
+      const neckGeometry = new THREE.CylinderGeometry(0.08, 0.1, 0.15, 16);
+      const neckMaterial = new THREE.MeshStandardMaterial({ 
+        color: skinColor,
         roughness: 0.7
+      });
+      const neck = new THREE.Mesh(neckGeometry, neckMaterial);
+      neck.position.y = 1.45;
+      neck.castShadow = true;
+      bodyGroup.add(neck);
+      
+      // Gövde - daha kadınsı form
+      const bodyGeometry = new THREE.CylinderGeometry(0.35, 0.4, 0.8, 16);
+      const bodyMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xFF69B4, // Pembe tişört
+        roughness: 0.8
+      });
+      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      body.position.y = 0.9;
+      body.castShadow = true;
+      bodyGroup.add(body);
+      
+      // Bacaklar - daha uzun ve ince
+      const legGeometry = new THREE.CylinderGeometry(0.12, 0.1, 0.9, 16);
+      const legMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x1a1a1a, // Siyah pantolon
+        roughness: 0.8
       });
       
       const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
-      leftLeg.position.set(-0.15, -0.4, 0);
+      leftLeg.position.set(-0.15, 0.35, 0);
       leftLeg.castShadow = true;
       bodyGroup.add(leftLeg);
       
       const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
-      rightLeg.position.set(0.15, -0.4, 0);
+      rightLeg.position.set(0.15, 0.35, 0);
       rightLeg.castShadow = true;
       bodyGroup.add(rightLeg);
       
-      // Kollar
-      const armGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.6, 8);
+      // Ayaklar
+      const footGeometry = new THREE.BoxGeometry(0.2, 0.08, 0.3);
+      const footMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xFF0000, // Kırmızı ayakkabı
+        roughness: 0.7
+      });
+      
+      const leftFoot = new THREE.Mesh(footGeometry, footMaterial);
+      leftFoot.position.set(-0.15, -0.1, 0.1);
+      leftFoot.castShadow = true;
+      bodyGroup.add(leftFoot);
+      
+      const rightFoot = new THREE.Mesh(footGeometry, footMaterial);
+      rightFoot.position.set(0.15, -0.1, 0.1);
+      rightFoot.castShadow = true;
+      bodyGroup.add(rightFoot);
+      
+      // Kollar - daha ince
+      const armGeometry = new THREE.CylinderGeometry(0.07, 0.06, 0.7, 16);
       const armMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xFFD700,
+        color: skinColor,
         roughness: 0.7
       });
       
       const leftArm = new THREE.Mesh(armGeometry, armMaterial);
-      leftArm.position.set(-0.4, 0.8, 0);
-      leftArm.rotation.z = Math.PI / 4;
+      leftArm.position.set(-0.45, 1.0, 0);
+      leftArm.rotation.z = Math.PI / 6;
       leftArm.castShadow = true;
       bodyGroup.add(leftArm);
       
       const rightArm = new THREE.Mesh(armGeometry, armMaterial);
-      rightArm.position.set(0.4, 0.8, 0);
-      rightArm.rotation.z = -Math.PI / 4;
+      rightArm.position.set(0.45, 1.0, 0);
+      rightArm.rotation.z = -Math.PI / 6;
       rightArm.castShadow = true;
       bodyGroup.add(rightArm);
+      
+      // Saç
+      const hairGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+      const hairMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x8B4513, // Kahverengi saç
+        roughness: 0.9
+      });
+      const hair = new THREE.Mesh(hairGeometry, hairMaterial);
+      hair.position.y = 1.75;
+      hair.scale.set(1, 0.6, 1.2);
+      bodyGroup.add(hair);
+      
+      // Yüz detayları (basit)
+      const eyeGeometry = new THREE.SphereGeometry(0.03, 8, 8);
+      const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+      
+      const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+      leftEye.position.set(-0.08, 1.7, 0.2);
+      bodyGroup.add(leftEye);
+      
+      const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+      rightEye.position.set(0.08, 1.7, 0.2);
+      bodyGroup.add(rightEye);
       
       scene.add(bodyGroup);
       womanModel = bodyGroup;
@@ -785,33 +855,66 @@
     function loadTodayOutfit() {
       const today = new Date().toDateString();
       const todayOutfit = dailyOutfits.find(outfit => outfit.date === today) || dailyOutfits[0];
+      currentOutfit = todayOutfit;
       
       // Kombin bilgilerini göster
-      document.getElementById('outfitTop').textContent = todayOutfit.top;
-      document.getElementById('outfitBottom').textContent = todayOutfit.bottom;
-      document.getElementById('outfitShoes').textContent = todayOutfit.shoes;
-      document.getElementById('outfitAccessory').textContent = todayOutfit.accessory;
+      updateOutfitInfo(todayOutfit);
       
       // 3D modeli güncelle
       updateOutfitColors(todayOutfit.colors);
     }
 
+    function updateOutfitInfo(outfit) {
+      document.getElementById('outfitTop').textContent = outfit.top;
+      document.getElementById('outfitBottom').textContent = outfit.bottom;
+      document.getElementById('outfitShoes').textContent = outfit.shoes;
+      document.getElementById('outfitAccessory').textContent = outfit.accessory;
+    }
+
     function updateOutfitColors(colors) {
       if (!womanModel) return;
       
-      // Model renklerini güncelle
+      // Vücut parçalarını renklendir
       womanModel.children.forEach(child => {
         if (child.material) {
-          child.material.color.set(colors.top);
+          // Üst kıyafet (gövde)
+          if (child.position.y === 0.9 && child.geometry.type === "CylinderGeometry") {
+            child.material.color.set(colors.top);
+          }
+          // Alt kıyafet (bacaklar)
+          else if ((child.position.y === 0.35 && child.geometry.type === "CylinderGeometry") ||
+                  (Math.abs(child.position.x) === 0.15 && child.geometry.type === "CylinderGeometry" && child.position.y < 1)) {
+            child.material.color.set(colors.bottom);
+          }
+          // Ayakkabılar
+          else if (child.geometry.type === "BoxGeometry" && child.position.y === -0.1) {
+            child.material.color.set(colors.shoes);
+          }
         }
       });
+    }
+
+    function showPreviousOutfit() {
+      const currentIndex = dailyOutfits.findIndex(outfit => outfit.date === currentOutfit.date);
+      const prevIndex = (currentIndex - 1 + dailyOutfits.length) % dailyOutfits.length;
+      currentOutfit = dailyOutfits[prevIndex];
+      updateOutfitInfo(currentOutfit);
+      updateOutfitColors(currentOutfit.colors);
+    }
+
+    function showNextOutfit() {
+      const currentIndex = dailyOutfits.findIndex(outfit => outfit.date === currentOutfit.date);
+      const nextIndex = (currentIndex + 1) % dailyOutfits.length;
+      currentOutfit = dailyOutfits[nextIndex];
+      updateOutfitInfo(currentOutfit);
+      updateOutfitColors(currentOutfit.colors);
     }
 
     function animate() {
       requestAnimationFrame(animate);
       
       if (womanModel) {
-        womanModel.rotation.y += 0.01;
+        womanModel.rotation.y += 0.005; // Daha yavaş dönüş
       }
       
       renderer.render(scene, camera);
