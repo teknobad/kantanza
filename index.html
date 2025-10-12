@@ -294,23 +294,23 @@
       <div class="line" style="margin:8px 0"></div>
       
       <!-- Film Görseli -->
-      <div class="media-image-container">
-        <div class="media-placeholder">
+      <div class="media-image-container" id="movieImageContainer">
+        <div class="media-placeholder" id="moviePlaceholder">
           <i>🎬</i>
           <div>Film Görseli</div>
         </div>
-        <!-- <img class="media-image" src="film-gorseli.jpg" alt="Karanlığın Ormanı"> -->
+        <img class="media-image" id="movieImage" src="" alt="Film" style="display: none;">
       </div>
       
-      <div class="row" style="flex-wrap:wrap;gap:6px">
+      <div class="row" id="movieBadges" style="flex-wrap:wrap;gap:6px">
         <span class="badge">IMDb: 8.6</span>
         <span class="badge">Rotten Tomatoes: 94%</span>
         <span class="badge">+18 değil</span>
         <span class="badge">Macera • Korku • Gizem</span>
       </div>
-      <p><strong>Film:</strong> "Karanlığın Ormanı"</p>
-      <p><strong>Oyuncular:</strong> A. Kaya, B. Demir, C. Öz</p>
-      <p><strong>Kısaca:</strong> Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.</p>
+      <p><strong>Film:</strong> <span id="movieTitle">"Karanlığın Ormanı"</span></p>
+      <p><strong>Oyuncular:</strong> <span id="movieActors">A. Kaya, B. Demir, C. Öz</span></p>
+      <p><strong>Kısaca:</strong> <span id="movieDescription">Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.</span></p>
       
       <div class="line" style="margin:16px 0"></div>
       
@@ -319,20 +319,20 @@
       <div class="line" style="margin:8px 0"></div>
       
       <!-- Dizi Görseli -->
-      <div class="media-image-container">
-        <div class="media-placeholder">
+      <div class="media-image-container" id="seriesImageContainer">
+        <div class="media-placeholder" id="seriesPlaceholder">
           <i>📺</i>
           <div>Dizi Görseli</div>
         </div>
-        <!-- <img class="media-image" src="dizi-gorseli.jpg" alt="Zamanın Ötesinde"> -->
+        <img class="media-image" id="seriesImage" src="" alt="Dizi" style="display: none;">
       </div>
       
-      <div class="series-info">
-        <p><strong>Dizi:</strong> "Zamanın Ötesinde"</p>
-        <p><strong class="series-rating">IMDb: 8.8/10</strong></p>
-        <p><strong>Konu:</strong> Gelecekten gelen bir zaman yolcusunun, tarihi olayları değiştirmeye çalışan bir organizasyonla mücadelesi.</p>
-        <p><strong class="series-seasons">Sezon Sayısı:</strong> 3 sezon</p>
-        <p><strong class="series-best-episode">En Sevilen Bölüm:</strong> "Sonsuzluk Yolculuğu" (3. Sezon 8. Bölüm)</p>
+      <div class="series-info" id="seriesInfo">
+        <p><strong>Dizi:</strong> <span id="seriesTitle">"Zamanın Ötesinde"</span></p>
+        <p><strong class="series-rating">IMDb: <span id="seriesImdb">8.8/10</span></strong></p>
+        <p><strong>Konu:</strong> <span id="seriesSubject">Gelecekten gelen bir zaman yolcusunun, tarihi olayları değiştirmeye çalışan bir organizasyonla mücadelesi.</span></p>
+        <p><strong class="series-seasons">Sezon Sayısı:</strong> <span id="seriesSeasons">3 sezon</span></p>
+        <p><strong class="series-best-episode">En Sevilen Bölüm:</strong> <span id="seriesBestEpisode">"Sonsuzluk Yolculuğu" (3. Sezon 8. Bölüm)</span></p>
       </div>
       
       <div class="line" style="margin:16px 0"></div>
@@ -499,6 +499,93 @@
     let topics = JSON.parse(localStorage.getItem('topics') || '[]');
     let activeTopicForComment = null;
     let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+
+    // --- Film ve Dizi Önerilerini Yükleme Fonksiyonları ---
+    function loadMediaRecommendations() {
+        // Film verilerini yükle
+        const movieData = JSON.parse(localStorage.getItem('movieData') || '{}');
+        const movieRec = JSON.parse(localStorage.getItem('movieRecommendation') || '{}');
+        
+        // Önce movieRecommendation, sonra movieData kontrol et
+        const movie = Object.keys(movieRec).length ? movieRec : movieData;
+        
+        if (movie.title) {
+            updateMovieSection(movie);
+        }
+        
+        // Dizi verilerini yükle
+        const seriesData = JSON.parse(localStorage.getItem('seriesData') || '{}');
+        const seriesRec = JSON.parse(localStorage.getItem('seriesRecommendation') || '{}');
+        
+        // Önce seriesRecommendation, sonra seriesData kontrol et
+        const series = Object.keys(seriesRec).length ? seriesRec : seriesData;
+        
+        if (series.title) {
+            updateSeriesSection(series);
+        }
+    }
+
+    function updateMovieSection(movie) {
+        // Film görseli
+        const movieImageContainer = document.getElementById('movieImageContainer');
+        const moviePlaceholder = document.getElementById('moviePlaceholder');
+        const movieImage = document.getElementById('movieImage');
+        
+        if (movie.image) {
+            moviePlaceholder.style.display = 'none';
+            movieImage.style.display = 'block';
+            movieImage.src = movie.image;
+        } else {
+            moviePlaceholder.style.display = 'flex';
+            movieImage.style.display = 'none';
+        }
+        
+        // Film badge'leri
+        const movieBadges = document.getElementById('movieBadges');
+        if (movieBadges) {
+            movieBadges.innerHTML = '';
+            if (movie.imdb) {
+                movieBadges.innerHTML += `<span class="badge">IMDb: ${movie.imdb}</span>`;
+            }
+            if (movie.rottenTomatoes) {
+                movieBadges.innerHTML += `<span class="badge">Rotten Tomatoes: ${movie.rottenTomatoes}</span>`;
+            }
+            if (movie.ageLimit) {
+                movieBadges.innerHTML += `<span class="badge">${movie.ageLimit}</span>`;
+            }
+            if (movie.genres) {
+                movieBadges.innerHTML += `<span class="badge">${movie.genres}</span>`;
+            }
+        }
+        
+        // Film bilgilerini güncelle
+        if (movie.title) document.getElementById('movieTitle').textContent = `"${movie.title}"`;
+        if (movie.actors) document.getElementById('movieActors').textContent = movie.actors;
+        if (movie.description) document.getElementById('movieDescription').textContent = movie.description;
+    }
+
+    function updateSeriesSection(series) {
+        // Dizi görseli
+        const seriesImageContainer = document.getElementById('seriesImageContainer');
+        const seriesPlaceholder = document.getElementById('seriesPlaceholder');
+        const seriesImage = document.getElementById('seriesImage');
+        
+        if (series.image) {
+            seriesPlaceholder.style.display = 'none';
+            seriesImage.style.display = 'block';
+            seriesImage.src = series.image;
+        } else {
+            seriesPlaceholder.style.display = 'flex';
+            seriesImage.style.display = 'none';
+        }
+        
+        // Dizi bilgilerini güncelle
+        if (series.title) document.getElementById('seriesTitle').textContent = `"${series.title}"`;
+        if (series.imdb) document.getElementById('seriesImdb').textContent = series.imdb;
+        if (series.subject) document.getElementById('seriesSubject').textContent = series.subject;
+        if (series.seasons) document.getElementById('seriesSeasons').textContent = series.seasons;
+        if (series.bestEpisode) document.getElementById('seriesBestEpisode').textContent = `"${series.bestEpisode}"`;
+    }
 
     // --- Günün İngilizce Kelimesi Verisi ---
     const englishWords = [
@@ -859,6 +946,9 @@
       // Günlük kombin bölümünü yükle
       loadDailyOutfit();
 
+      // Film ve dizi önerilerini yükle
+      loadMediaRecommendations();
+
       // Modal kapatma butonları
       els('[data-close]').forEach(b => b.addEventListener('click', e => closeModal(b.getAttribute('data-close'))));
       
@@ -1090,6 +1180,9 @@
 
     // Hash değişikliklerini dinle
     window.addEventListener('hashchange', route);
+
+    // Sayfa yenilendiğinde film ve dizi verilerini tekrar yükle
+    window.addEventListener('load', loadMediaRecommendations);
   </script>
 </body>
 </html>
