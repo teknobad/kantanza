@@ -1,3 +1,235 @@
+<?php
+// Oturum başlatma
+session_start();
+
+// Admin giriş kontrolü
+if (!isset($_SESSION['user_id']) || !$_SESSION['is_admin']) {
+    header('Location: index.php');
+    exit;
+}
+
+// Veritabanı bağlantısı
+try {
+    $db = new PDO('sqlite:forum.db');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    die("Veritabanı hatası: " . $e->getMessage());
+}
+
+// POST isteklerini işleme
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Film verilerini güncelleme
+    if (isset($_POST['action']) && $_POST['action'] === 'save_movie') {
+        $stmt = $db->prepare("
+            INSERT OR REPLACE INTO media_recommendations 
+            (type, title, image, imdb, rotten_tomatoes, age_limit, genres, actors, description, updated_at) 
+            VALUES ('movie', ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ");
+        $stmt->execute([
+            $_POST['title'],
+            $_POST['image'],
+            $_POST['imdb'],
+            $_POST['rotten_tomatoes'],
+            $_POST['age_limit'],
+            $_POST['genres'],
+            $_POST['actors'],
+            $_POST['description']
+        ]);
+        $message = "Film bilgileri başarıyla kaydedildi.";
+    }
+    
+    // Dizi verilerini güncelleme
+    if (isset($_POST['action']) && $_POST['action'] === 'save_series') {
+        $stmt = $db->prepare("
+            INSERT OR REPLACE INTO media_recommendations 
+            (type, title, image, imdb, subject, seasons, best_episode, updated_at) 
+            VALUES ('series', ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ");
+        $stmt->execute([
+            $_POST['title'],
+            $_POST['image'],
+            $_POST['imdb'],
+            $_POST['subject'],
+            $_POST['seasons'],
+            $_POST['best_episode']
+        ]);
+        $message = "Dizi bilgileri başarıyla kaydedildi.";
+    }
+    
+    // Kombin verilerini güncelleme
+    if (isset($_POST['action']) && $_POST['action'] === 'save_outfit') {
+        // Görsel yükleme işlemi
+        $imagePath = null;
+        if (isset($_FILES['outfit_image']) && $_FILES['outfit_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = 'uploads/outfits/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $fileExtension = pathinfo($_FILES['outfit_image']['name'], PATHINFO_EXTENSION);
+            $fileName = 'outfit_' . time() . '.' . $fileExtension;
+            $imagePath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['outfit_image']['tmp_name'], $imagePath)) {
+                // Başarılı
+            } else {
+                $error = "Görsel yüklenirken hata oluştu.";
+            }
+        }
+        
+        $stmt = $db->prepare("
+            INSERT OR REPLACE INTO daily_outfits 
+            (image, hairstyle, hairclip, earrings, necklace, top, pants, shoes, nail_polish, ring, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ");
+        $stmt->execute([
+            $imagePath,
+            $_POST['hairstyle'],
+            $_POST['hairclip'],
+            $_POST['earrings'],
+            $_POST['necklace'],
+            $_POST['top'],
+            $_POST['pants'],
+            $_POST['shoes'],
+            $_POST['nail_polish'],
+            $_POST['ring']
+        ]);
+        $message = "Kombin bilgileri başarıyla kaydedildi.";
+    }
+    
+    // Tarif ekleme/güncelleme
+    if (isset($_POST['action']) && $_POST['action'] === 'save_recipe') {
+        $recipeId = $_POST['recipe_id'] ?: null;
+        
+        if ($recipeId) {
+            // Güncelleme
+            $stmt = $db->prepare("
+                UPDATE recipes SET 
+                title = ?, ingredients = ?, description = ?, full_recipe = ?, updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ?
+            ");
+            $stmt->execute([
+                $_POST['title'],
+                $_POST['ingredients'],
+                $_POST['description'],
+                $_POST['full_recipe'],
+                $recipeId
+            ]);
+        } else {
+            // Yeni tarif
+            $stmt = $db->prepare("
+                INSERT INTO recipes (title, ingredients, description, full_recipe, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            ");
+            $stmt->execute([
+                $_POST['title'],
+                $_POST['ingredients'],
+                $_POST['description'],
+                $_POST['full_recipe']
+            ]);
+        }
+        $message = "Tarif başarıyla kaydedildi.";
+    }
+    
+    // Tarif silme
+    if (isset($_POST['action']) && $_POST['action'] === 'delete_recipe') {
+        $stmt = $db->prepare("DELETE FROM recipes WHERE id = ?");
+        $stmt->execute([$_POST['recipe_id']]);
+        $message = "Tarif başarıyla silindi.";
+    }
+    
+    // Konu silme
+    if (isset($_POST['action']) && $_POST['action'] === 'delete_topic') {
+        // Önce konuya ait yorumları sil
+        $stmt = $db->prepare("DELETE FROM comments WHERE topic_id = ?");
+        $stmt->execute([$_POST['topic_id']]);
+        
+        // Sonra konuyu sil
+        $stmt = $db->prepare("DELETE FROM topics WHERE id = ?");
+        $stmt->execute([$_POST['topic_id']]);
+        $message = "Konu başarıyla silindi.";
+    }
+    
+    // Yorum silme
+    if (isset($_POST['action']) && $_POST['action'] === 'delete_comment') {
+        $stmt = $db->prepare("DELETE FROM comments WHERE id = ?");
+        $stmt->execute([$_POST['comment_id']]);
+        $message = "Yorum başarıyla silindi.";
+    }
+}
+
+// Verileri veritabanından alma
+
+// İstatistikler
+$stats = [
+    'topics' => $db->query("SELECT COUNT(*) FROM topics")->fetchColumn(),
+    'comments' => $db->query("SELECT COUNT(*) FROM comments")->fetchColumn(),
+    'recipes' => $db->query("SELECT COUNT(*) FROM recipes")->fetchColumn(),
+    'users' => $db->query("SELECT COUNT(*) FROM users")->fetchColumn()
+];
+
+// Konular
+$topics = $db->query("
+    SELECT t.*, u.username 
+    FROM topics t 
+    JOIN users u ON t.user_id = u.id 
+    ORDER BY t.created_at DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// Yorumlar
+$comments = $db->query("
+    SELECT c.*, u.username, t.title as topic_title 
+    FROM comments c 
+    JOIN users u ON c.user_id = u.id 
+    JOIN topics t ON c.topic_id = t.id 
+    ORDER BY c.created_at DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// Tarifler
+$recipes = $db->query("SELECT * FROM recipes ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+// Film verileri
+$movie = $db->query("SELECT * FROM media_recommendations WHERE type = 'movie' ORDER BY updated_at DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+
+// Dizi verileri
+$series = $db->query("SELECT * FROM media_recommendations WHERE type = 'series' ORDER BY updated_at DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+
+// Kombin verileri
+$outfit = $db->query("SELECT * FROM daily_outfits ORDER BY updated_at DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+
+// Varsayılan değerler
+$defaultMovie = [
+    'title' => 'Karanlığın Ormanı',
+    'actors' => 'A. Kaya, B. Demir, C. Öz',
+    'description' => 'Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.',
+    'imdb' => '8.6',
+    'rotten_tomatoes' => '94%',
+    'age_limit' => '+18 değil',
+    'genres' => 'Macera • Korku • Gizem',
+    'image' => ''
+];
+
+$defaultSeries = [
+    'title' => 'Zamanın Ötesinde',
+    'imdb' => '8.8/10',
+    'subject' => 'Gelecekten gelen bir zaman yolcusunun, tarihi olayları değiştirmeye çalışan bir organizasyonla mücadelesi.',
+    'seasons' => '3 sezon',
+    'best_episode' => 'Sonsuzluk Yolculuğu (3. Sezon 8. Bölüm)',
+    'image' => ''
+];
+
+$defaultOutfit = [
+    'hairstyle' => 'Topuz',
+    'hairclip' => 'Good Hair Days Magic-grip Saç Topuz Tokası',
+    'earrings' => 'Halka küpe',
+    'necklace' => 'Mini taşlı kolye',
+    'top' => 'Yaka detaylı crop ekru gömlek',
+    'pants' => 'Indigo mavisi jean gömlek',
+    'shoes' => 'Lumberjack ROMINA 5FX siyah koşu ayakkabısı',
+    'nail_polish' => 'Pastel oje',
+    'ring' => 'Eklem yüzüğü'
+];
+?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -215,6 +447,25 @@
       backdrop-filter: blur(4px);
     }
 
+    /* Mesaj bildirimleri */
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .message.success {
+      background: rgba(127, 220, 130, 0.2);
+      border: 1px solid var(--ok);
+      color: var(--ok);
+    }
+    
+    .message.error {
+      background: rgba(255, 107, 107, 0.2);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
     /* Mobil için responsive */
     @media (max-width: 768px) {
       .header-content {
@@ -242,34 +493,46 @@
   <header class="card pad">
     <div class="header-content">
       <div class="brand-container">
-        <div class="brand" id="brandTitle">KANTANZA - Admin Paneli</div>
+        <div class="brand">KANTANZA - Admin Paneli</div>
         <div class="brand-underline"></div>
       </div>
       <div class="auth-actions">
-        <button id="btnGoBack" class="ghost">Foruma Dön</button>
-        <button id="btnLogout" class="danger">Çıkış</button>
+        <a href="index.php" class="ghost button">Foruma Dön</a>
+        <form method="post" style="display: inline;">
+          <input type="hidden" name="action" value="logout">
+          <button type="submit" class="danger">Çıkış</button>
+        </form>
       </div>
     </div>
     <div class="line" style="margin-top:12px"></div>
   </header>
 
   <main class="container">
+    <!-- Mesaj Bildirimleri -->
+    <?php if (isset($message)): ?>
+      <div class="message success"><?php echo htmlspecialchars($message); ?></div>
+    <?php endif; ?>
+    
+    <?php if (isset($error)): ?>
+      <div class="message error"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+
     <!-- İstatistikler -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-number" id="statTopics">0</div>
+        <div class="stat-number"><?php echo $stats['topics']; ?></div>
         <div class="stat-label">Toplam Konu</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number" id="statComments">0</div>
+        <div class="stat-number"><?php echo $stats['comments']; ?></div>
         <div class="stat-label">Toplam Yorum</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number" id="statRecipes">0</div>
+        <div class="stat-number"><?php echo $stats['recipes']; ?></div>
         <div class="stat-label">Yemek Tarifi</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number" id="statUsers">0</div>
+        <div class="stat-number"><?php echo $stats['users']; ?></div>
         <div class="stat-label">Kayıtlı Kullanıcı</div>
       </div>
     </div>
@@ -287,11 +550,32 @@
                   <th>ID</th>
                   <th>Başlık</th>
                   <th>Yazar</th>
+                  <th>Tarih</th>
                   <th>İşlem</th>
                 </tr>
               </thead>
               <tbody id="topicsTable">
-                <!-- Konular buraya eklenecek -->
+                <?php if (empty($topics)): ?>
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--muted);">Henüz konu bulunmuyor</td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($topics as $topic): ?>
+                    <tr>
+                      <td>#<?php echo $topic['id']; ?></td>
+                      <td><?php echo htmlspecialchars($topic['title']); ?></td>
+                      <td><?php echo htmlspecialchars($topic['username']); ?></td>
+                      <td><?php echo date('d.m.Y', strtotime($topic['created_at'])); ?></td>
+                      <td>
+                        <form method="post" style="display: inline;">
+                          <input type="hidden" name="action" value="delete_topic">
+                          <input type="hidden" name="topic_id" value="<?php echo $topic['id']; ?>">
+                          <button type="submit" class="danger small-button" onclick="return confirm('Bu konuyu silmek istediğinizden emin misiniz?')">Sil</button>
+                        </form>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
@@ -307,11 +591,32 @@
                   <th>Konu</th>
                   <th>Yorum</th>
                   <th>Yazar</th>
+                  <th>Tarih</th>
                   <th>İşlem</th>
                 </tr>
               </thead>
               <tbody id="commentsTable">
-                <!-- Yorumlar buraya eklenecek -->
+                <?php if (empty($comments)): ?>
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--muted);">Henüz yorum bulunmuyor</td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($comments as $comment): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($comment['topic_title']); ?></td>
+                      <td><?php echo htmlspecialchars(mb_substr($comment['text'], 0, 50)); ?><?php echo mb_strlen($comment['text']) > 50 ? '...' : ''; ?></td>
+                      <td><?php echo htmlspecialchars($comment['username']); ?></td>
+                      <td><?php echo date('d.m.Y', strtotime($comment['created_at'])); ?></td>
+                      <td>
+                        <form method="post" style="display: inline;">
+                          <input type="hidden" name="action" value="delete_comment">
+                          <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
+                          <button type="submit" class="danger small-button" onclick="return confirm('Bu yorumu silmek istediğinizden emin misiniz?')">Sil</button>
+                        </form>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
@@ -323,79 +628,93 @@
         <!-- Film Tavsiyesi Düzenleme -->
         <div class="card pad section">
           <div class="section-title">Film Tavsiyesi Düzenleme</div>
-          <div class="admin-form">
+          <form method="post" class="admin-form">
+            <input type="hidden" name="action" value="save_movie">
             <div class="form-group">
               <label for="movieTitle">Film Adı</label>
-              <input type="text" id="movieTitle" placeholder="Film adı">
+              <input type="text" id="movieTitle" name="title" placeholder="Film adı" 
+                     value="<?php echo htmlspecialchars($movie ? $movie['title'] : $defaultMovie['title']); ?>">
             </div>
             <div class="form-group">
               <label for="movieActors">Oyuncular</label>
-              <input type="text" id="movieActors" placeholder="Oyuncu isimleri">
+              <input type="text" id="movieActors" name="actors" placeholder="Oyuncu isimleri"
+                     value="<?php echo htmlspecialchars($movie ? $movie['actors'] : $defaultMovie['actors']); ?>">
             </div>
             <div class="form-group">
               <label for="movieDescription">Açıklama</label>
-              <textarea id="movieDescription" rows="3" placeholder="Film açıklaması"></textarea>
+              <textarea id="movieDescription" name="description" rows="3" placeholder="Film açıklaması"><?php echo htmlspecialchars($movie ? $movie['description'] : $defaultMovie['description']); ?></textarea>
             </div>
             <div class="form-group">
               <label for="movieImdb">IMDb Puanı</label>
-              <input type="text" id="movieImdb" placeholder="8.6">
+              <input type="text" id="movieImdb" name="imdb" placeholder="8.6"
+                     value="<?php echo htmlspecialchars($movie ? $movie['imdb'] : $defaultMovie['imdb']); ?>">
             </div>
             <div class="form-group">
               <label for="movieRottenTomatoes">Rotten Tomatoes</label>
-              <input type="text" id="movieRottenTomatoes" placeholder="94%">
+              <input type="text" id="movieRottenTomatoes" name="rotten_tomatoes" placeholder="94%"
+                     value="<?php echo htmlspecialchars($movie ? $movie['rotten_tomatoes'] : $defaultMovie['rotten_tomatoes']); ?>">
             </div>
             <div class="form-group">
               <label for="movieAgeLimit">Yaş Sınırı</label>
-              <input type="text" id="movieAgeLimit" placeholder="+18 değil">
+              <input type="text" id="movieAgeLimit" name="age_limit" placeholder="+18 değil"
+                     value="<?php echo htmlspecialchars($movie ? $movie['age_limit'] : $defaultMovie['age_limit']); ?>">
             </div>
             <div class="form-group">
               <label for="movieGenres">Türler</label>
-              <input type="text" id="movieGenres" placeholder="Macera • Korku • Gizem">
+              <input type="text" id="movieGenres" name="genres" placeholder="Macera • Korku • Gizem"
+                     value="<?php echo htmlspecialchars($movie ? $movie['genres'] : $defaultMovie['genres']); ?>">
             </div>
             <div class="form-group">
               <label for="movieImage">Görsel URL</label>
-              <input type="url" id="movieImage" placeholder="Film görseli URL">
+              <input type="url" id="movieImage" name="image" placeholder="Film görseli URL"
+                     value="<?php echo htmlspecialchars($movie ? $movie['image'] : $defaultMovie['image']); ?>">
             </div>
             <div class="form-actions">
-              <button type="button" class="ghost" id="btnResetMovie">Sıfırla</button>
-              <button type="button" id="btnSaveMovie">Film Bilgisini Kaydet</button>
+              <button type="button" class="ghost" onclick="resetMovieForm()">Sıfırla</button>
+              <button type="submit">Film Bilgisini Kaydet</button>
             </div>
-          </div>
+          </form>
         </div>
 
         <!-- Dizi Tavsiyesi Düzenleme -->
         <div class="card pad section">
           <div class="section-title">Dizi Tavsiyesi Düzenleme</div>
-          <div class="admin-form">
+          <form method="post" class="admin-form">
+            <input type="hidden" name="action" value="save_series">
             <div class="form-group">
               <label for="seriesTitle">Dizi Adı</label>
-              <input type="text" id="seriesTitle" placeholder="Dizi adı">
+              <input type="text" id="seriesTitle" name="title" placeholder="Dizi adı"
+                     value="<?php echo htmlspecialchars($series ? $series['title'] : $defaultSeries['title']); ?>">
             </div>
             <div class="form-group">
               <label for="seriesImdb">IMDb Puanı</label>
-              <input type="text" id="seriesImdb" placeholder="8.8/10">
+              <input type="text" id="seriesImdb" name="imdb" placeholder="8.8/10"
+                     value="<?php echo htmlspecialchars($series ? $series['imdb'] : $defaultSeries['imdb']); ?>">
             </div>
             <div class="form-group">
               <label for="seriesSubject">Konu</label>
-              <textarea id="seriesSubject" rows="3" placeholder="Dizi konusu"></textarea>
+              <textarea id="seriesSubject" name="subject" rows="3" placeholder="Dizi konusu"><?php echo htmlspecialchars($series ? $series['subject'] : $defaultSeries['subject']); ?></textarea>
             </div>
             <div class="form-group">
               <label for="seriesSeasons">Sezon Sayısı</label>
-              <input type="text" id="seriesSeasons" placeholder="3 sezon">
+              <input type="text" id="seriesSeasons" name="seasons" placeholder="3 sezon"
+                     value="<?php echo htmlspecialchars($series ? $series['seasons'] : $defaultSeries['seasons']); ?>">
             </div>
             <div class="form-group">
               <label for="seriesBestEpisode">En Sevilen Bölüm</label>
-              <input type="text" id="seriesBestEpisode" placeholder="Sonsuzluk Yolculuğu (3. Sezon 8. Bölüm)">
+              <input type="text" id="seriesBestEpisode" name="best_episode" placeholder="Sonsuzluk Yolculuğu (3. Sezon 8. Bölüm)"
+                     value="<?php echo htmlspecialchars($series ? $series['best_episode'] : $defaultSeries['best_episode']); ?>">
             </div>
             <div class="form-group">
               <label for="seriesImage">Görsel URL</label>
-              <input type="url" id="seriesImage" placeholder="Dizi görseli URL">
+              <input type="url" id="seriesImage" name="image" placeholder="Dizi görseli URL"
+                     value="<?php echo htmlspecialchars($series ? $series['image'] : $defaultSeries['image']); ?>">
             </div>
             <div class="form-actions">
-              <button type="button" class="ghost" id="btnResetSeries">Sıfırla</button>
-              <button type="button" id="btnSaveSeries">Dizi Bilgisini Kaydet</button>
+              <button type="button" class="ghost" onclick="resetSeriesForm()">Sıfırla</button>
+              <button type="submit">Dizi Bilgisini Kaydet</button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -403,96 +722,126 @@
     <!-- Kombin Düzenleme -->
     <div class="card pad section">
       <div class="section-title">Kombin Düzenleme</div>
-      <div class="admin-form">
+      <form method="post" class="admin-form" enctype="multipart/form-data">
+        <input type="hidden" name="action" value="save_outfit">
+        
         <!-- Kombin Görsel Yükleme -->
         <div class="form-group">
           <label>Kombin Görseli</label>
-          <div class="image-upload-area" id="outfitImageUploadArea">
-            <div class="upload-placeholder" id="outfitUploadPlaceholder">
-              <i>📷</i>
-              <div class="upload-text">Kombin görseli yüklemek için tıklayın</div>
-              <small style="margin-top: 8px; color: var(--muted);">PNG, JPG, GIF - Maks. 5MB</small>
-            </div>
-            <div class="image-preview" id="outfitImagePreview">
-              <img id="outfitPreviewImage" src="" alt="Kombin görseli">
-              <div class="image-actions">
-                <button type="button" class="image-action-btn" id="btnChangeOutfitImage">Değiştir</button>
-                <button type="button" class="image-action-btn danger" id="btnRemoveOutfitImage">Kaldır</button>
+          <div class="image-upload-area" id="outfitImageUploadArea" onclick="document.getElementById('outfitImageInput').click()">
+            <?php if ($outfit && !empty($outfit['image'])): ?>
+              <div class="image-preview" id="outfitImagePreview" style="display: block;">
+                <img id="outfitPreviewImage" src="<?php echo htmlspecialchars($outfit['image']); ?>" alt="Kombin görseli">
+                <div class="image-actions">
+                  <button type="button" class="image-action-btn" onclick="event.stopPropagation(); document.getElementById('outfitImageInput').click()">Değiştir</button>
+                  <button type="button" class="image-action-btn danger" onclick="event.stopPropagation(); resetOutfitImage()">Kaldır</button>
+                </div>
               </div>
-            </div>
-            <input type="file" id="outfitImageInput" accept="image/*" style="display: none;">
+              <div class="upload-placeholder" id="outfitUploadPlaceholder" style="display: none;">
+                <i>📷</i>
+                <div class="upload-text">Kombin görseli yüklemek için tıklayın</div>
+                <small style="margin-top: 8px; color: var(--muted);">PNG, JPG, GIF - Maks. 5MB</small>
+              </div>
+            <?php else: ?>
+              <div class="upload-placeholder" id="outfitUploadPlaceholder">
+                <i>📷</i>
+                <div class="upload-text">Kombin görseli yüklemek için tıklayın</div>
+                <small style="margin-top: 8px; color: var(--muted);">PNG, JPG, GIF - Maks. 5MB</small>
+              </div>
+              <div class="image-preview" id="outfitImagePreview">
+                <img id="outfitPreviewImage" src="" alt="Kombin görseli">
+                <div class="image-actions">
+                  <button type="button" class="image-action-btn" onclick="event.stopPropagation(); document.getElementById('outfitImageInput').click()">Değiştir</button>
+                  <button type="button" class="image-action-btn danger" onclick="event.stopPropagation(); resetOutfitImage()">Kaldır</button>
+                </div>
+              </div>
+            <?php endif; ?>
+            <input type="file" id="outfitImageInput" name="outfit_image" accept="image/*" style="display: none;" onchange="handleOutfitImageUpload(this)">
           </div>
         </div>
 
         <div class="form-group">
           <label for="outfitHairstyle">Saç Şekli</label>
-          <input type="text" id="outfitHairstyle" placeholder="Saç şekli">
+          <input type="text" id="outfitHairstyle" name="hairstyle" placeholder="Saç şekli"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['hairstyle'] : $defaultOutfit['hairstyle']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitHairclip">Toka</label>
-          <input type="text" id="outfitHairclip" placeholder="Toka modeli">
+          <input type="text" id="outfitHairclip" name="hairclip" placeholder="Toka modeli"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['hairclip'] : $defaultOutfit['hairclip']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitEarrings">Küpe</label>
-          <input type="text" id="outfitEarrings" placeholder="Küpe modeli">
+          <input type="text" id="outfitEarrings" name="earrings" placeholder="Küpe modeli"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['earrings'] : $defaultOutfit['earrings']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitNecklace">Kolye</label>
-          <input type="text" id="outfitNecklace" placeholder="Kolye modeli">
+          <input type="text" id="outfitNecklace" name="necklace" placeholder="Kolye modeli"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['necklace'] : $defaultOutfit['necklace']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitTop">Üst Giyim</label>
-          <input type="text" id="outfitTop" placeholder="Üst giyim">
+          <input type="text" id="outfitTop" name="top" placeholder="Üst giyim"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['top'] : $defaultOutfit['top']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitPants">Pantolon</label>
-          <input type="text" id="outfitPants" placeholder="Pantolon modeli">
+          <input type="text" id="outfitPants" name="pants" placeholder="Pantolon modeli"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['pants'] : $defaultOutfit['pants']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitShoes">Ayakkabı</label>
-          <input type="text" id="outfitShoes" placeholder="Ayakkabı modeli">
+          <input type="text" id="outfitShoes" name="shoes" placeholder="Ayakkabı modeli"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['shoes'] : $defaultOutfit['shoes']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitNailPolish">Oje</label>
-          <input type="text" id="outfitNailPolish" placeholder="Oje rengi/tipi">
+          <input type="text" id="outfitNailPolish" name="nail_polish" placeholder="Oje rengi/tipi"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['nail_polish'] : $defaultOutfit['nail_polish']); ?>">
         </div>
         <div class="form-group">
           <label for="outfitRing">Yüzük</label>
-          <input type="text" id="outfitRing" placeholder="Yüzük modeli">
+          <input type="text" id="outfitRing" name="ring" placeholder="Yüzük modeli"
+                 value="<?php echo htmlspecialchars($outfit ? $outfit['ring'] : $defaultOutfit['ring']); ?>">
         </div>
         <div class="form-actions">
-          <button type="button" class="ghost" id="btnResetOutfit">Sıfırla</button>
-          <button type="button" id="btnSaveOutfit">Kombini Kaydet</button>
+          <button type="button" class="ghost" onclick="resetOutfitForm()">Sıfırla</button>
+          <button type="submit">Kombini Kaydet</button>
         </div>
-      </div>
+      </form>
     </div>
 
     <!-- Yemek Tarifleri Yönetimi -->
     <div class="card pad section">
       <div class="section-title">Yemek Tarifleri Yönetimi</div>
-      <div class="admin-form">
+      
+      <!-- Tarif Formu -->
+      <form method="post" class="admin-form" id="recipeForm">
+        <input type="hidden" name="action" value="save_recipe">
+        <input type="hidden" name="recipe_id" id="recipeId" value="">
+        
         <div class="form-group">
           <label for="recipeTitle">Tarif Adı</label>
-          <input type="text" id="recipeTitle" placeholder="Tarif adı">
+          <input type="text" id="recipeTitle" name="title" placeholder="Tarif adı">
         </div>
         <div class="form-group">
           <label for="recipeIngredients">Malzemeler (virgülle ayırın)</label>
-          <textarea id="recipeIngredients" rows="3" placeholder="Malzemeler"></textarea>
+          <textarea id="recipeIngredients" name="ingredients" rows="3" placeholder="Malzemeler"></textarea>
         </div>
         <div class="form-group">
           <label for="recipeDescription">Kısa Açıklama</label>
-          <input type="text" id="recipeDescription" placeholder="Kısa açıklama">
+          <input type="text" id="recipeDescription" name="description" placeholder="Kısa açıklama">
         </div>
         <div class="form-group">
           <label for="recipeFull">Tam Tarif</label>
-          <textarea id="recipeFull" rows="4" placeholder="Tam tarif"></textarea>
+          <textarea id="recipeFull" name="full_recipe" rows="4" placeholder="Tam tarif"></textarea>
         </div>
         <div class="form-actions">
-          <button type="button" class="ghost" id="btnResetRecipe">Temizle</button>
-          <button type="button" class="ghost" id="btnNewRecipe">Yeni Tarif</button>
-          <button type="button" id="btnSaveRecipe">Tarifi Kaydet</button>
+          <button type="button" class="ghost" onclick="resetRecipeForm()">Temizle</button>
+          <button type="submit" id="btnSaveRecipe">Tarifi Kaydet</button>
         </div>
-      </div>
+      </form>
       
       <div class="section-title" style="margin-top: 24px;">Mevcut Tarifler</div>
       <div class="admin-table-container">
@@ -502,11 +851,33 @@
               <th>ID</th>
               <th>Tarif Adı</th>
               <th>Malzeme Sayısı</th>
+              <th>Tarih</th>
               <th>İşlem</th>
             </tr>
           </thead>
           <tbody id="recipesTable">
-            <!-- Tarifler buraya eklenecek -->
+            <?php if (empty($recipes)): ?>
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--muted);">Henüz tarif bulunmuyor</td>
+              </tr>
+            <?php else: ?>
+              <?php foreach ($recipes as $recipe): ?>
+                <tr>
+                  <td>#<?php echo $recipe['id']; ?></td>
+                  <td><?php echo htmlspecialchars($recipe['title']); ?></td>
+                  <td><?php echo $recipe['ingredients'] ? count(explode(',', $recipe['ingredients'])) : 0; ?></td>
+                  <td><?php echo date('d.m.Y', strtotime($recipe['created_at'])); ?></td>
+                  <td>
+                    <button type="button" class="ghost small-button" onclick="editRecipe(<?php echo $recipe['id']; ?>, '<?php echo htmlspecialchars($recipe['title']); ?>', '<?php echo htmlspecialchars($recipe['ingredients']); ?>', '<?php echo htmlspecialchars($recipe['description']); ?>', '<?php echo htmlspecialchars($recipe['full_recipe']); ?>')">Düzenle</button>
+                    <form method="post" style="display: inline;">
+                      <input type="hidden" name="action" value="delete_recipe">
+                      <input type="hidden" name="recipe_id" value="<?php echo $recipe['id']; ?>">
+                      <button type="submit" class="danger small-button" onclick="return confirm('Bu tarifi silmek istediğinizden emin misiniz?')">Sil</button>
+                    </form>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            <?php endif; ?>
           </tbody>
         </table>
       </div>
@@ -514,320 +885,52 @@
   </main>
 
   <script>
-    // Yardımcı seçiciler
-    const el = s => document.querySelector(s);
-    const els = s => Array.from(document.querySelectorAll(s));
-
-    // Uygulama durumu
-    let topics = JSON.parse(localStorage.getItem('topics') || '[]');
-    let recipes = JSON.parse(localStorage.getItem('recipes') || '[]');
-    let currentEditingRecipeId = null;
-    let currentOutfitImage = null;
-
-    // Varsayılan veriler
-    const defaultMovieData = {
-      title: "Karanlığın Ormanı",
-      actors: "A. Kaya, B. Demir, C. Öz",
-      description: "Issız bir dağ kasabasında kaybolan kampçılar, eski bir efsanenin peşinden sürüklenir.",
-      imdb: "8.6",
-      rottenTomatoes: "94%",
-      ageLimit: "+18 değil",
-      genres: "Macera • Korku • Gizem",
-      image: ""
-    };
-
-    const defaultSeriesData = {
-      title: "Zamanın Ötesinde",
-      imdb: "8.8/10",
-      subject: "Gelecekten gelen bir zaman yolcusunun, tarihi olayları değiştirmeye çalışan bir organizasyonla mücadelesi.",
-      seasons: "3 sezon",
-      bestEpisode: "Sonsuzluk Yolculuğu (3. Sezon 8. Bölüm)",
-      image: ""
-    };
-
-    const defaultOutfitData = {
-      hairstyle: "Topuz",
-      hairclip: "Good Hair Days Magic-grip Saç Topuz Tokası",
-      earrings: "Halka küpe",
-      necklace: "Mini taşlı kolye",
-      top: "Yaka detaylı crop ekru gömlek",
-      pants: "Indigo mavisi jean gömlek",
-      shoes: "Lumberjack ROMINA 5FX siyah koşu ayakkabısı",
-      nailPolish: "Pastel oje",
-      ring: "Eklem yüzüğü",
-      image: null
-    };
-
-    // İstatistikleri güncelle
-    function updateStats() {
-      // Toplam konu sayısı
-      el('#statTopics').textContent = topics.length;
-      
-      // Toplam yorum sayısı
-      let totalComments = 0;
-      topics.forEach(topic => {
-        if (topic.comments) {
-          totalComments += topic.comments.length;
-        }
-      });
-      el('#statComments').textContent = totalComments;
-      
-      // Toplam tarif sayısı
-      el('#statRecipes').textContent = recipes.length;
-      
-      // Kayıtlı kullanıcı sayısı
-      const userList = JSON.parse(localStorage.getItem('userList') || '[]');
-      const account = JSON.parse(localStorage.getItem('account') || 'null');
-      const nextUserId = parseInt(localStorage.getItem('nextUserId') || '1', 10);
-      
-      let userCount = userList.length;
-      if (account) userCount += 1;
-      if (nextUserId > 1) {
-        userCount = Math.max(userCount, nextUserId - 1);
-      }
-      
-      el('#statUsers').textContent = userCount;
+    // Film formunu sıfırla
+    function resetMovieForm() {
+      document.getElementById('movieTitle').value = '<?php echo $defaultMovie['title']; ?>';
+      document.getElementById('movieActors').value = '<?php echo $defaultMovie['actors']; ?>';
+      document.getElementById('movieDescription').value = '<?php echo $defaultMovie['description']; ?>';
+      document.getElementById('movieImdb').value = '<?php echo $defaultMovie['imdb']; ?>';
+      document.getElementById('movieRottenTomatoes').value = '<?php echo $defaultMovie['rotten_tomatoes']; ?>';
+      document.getElementById('movieAgeLimit').value = '<?php echo $defaultMovie['age_limit']; ?>';
+      document.getElementById('movieGenres').value = '<?php echo $defaultMovie['genres']; ?>';
+      document.getElementById('movieImage').value = '<?php echo $defaultMovie['image']; ?>';
     }
 
-    // Konuları tabloya yükle
-    function loadTopicsTable() {
-      const tableBody = el('#topicsTable');
-      tableBody.innerHTML = '';
-      
-      if (topics.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="4" style="text-align: center; color: var(--muted);">Henüz konu bulunmuyor</td>`;
-        tableBody.appendChild(row);
-        return;
-      }
-      
-      topics.forEach(topic => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>#${topic.id}</td>
-          <td>${topic.title}</td>
-          <td>${topic.username || 'Anonim'} (#${topic.userId || '?'})</td>
-          <td>
-            <button class="danger small-button delete-topic" data-id="${topic.id}">Sil</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-      
-      // Silme butonlarına event listener ekle
-      els('.delete-topic').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const topicId = parseInt(this.getAttribute('data-id'));
-          deleteTopic(topicId);
-        });
-      });
+    // Dizi formunu sıfırla
+    function resetSeriesForm() {
+      document.getElementById('seriesTitle').value = '<?php echo $defaultSeries['title']; ?>';
+      document.getElementById('seriesImdb').value = '<?php echo $defaultSeries['imdb']; ?>';
+      document.getElementById('seriesSubject').value = '<?php echo $defaultSeries['subject']; ?>';
+      document.getElementById('seriesSeasons').value = '<?php echo $defaultSeries['seasons']; ?>';
+      document.getElementById('seriesBestEpisode').value = '<?php echo $defaultSeries['best_episode']; ?>';
+      document.getElementById('seriesImage').value = '<?php echo $defaultSeries['image']; ?>';
     }
 
-    // Yorumları tabloya yükle
-    function loadCommentsTable() {
-      const tableBody = el('#commentsTable');
-      tableBody.innerHTML = '';
-      
-      let hasComments = false;
-      
-      topics.forEach(topic => {
-        if (topic.comments && topic.comments.length > 0) {
-          hasComments = true;
-          topic.comments.forEach(comment => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${topic.title}</td>
-              <td>${comment.text.length > 50 ? comment.text.substring(0, 50) + '...' : comment.text}</td>
-              <td>${comment.username || 'Anonim'} (#${comment.userId || '?'})</td>
-              <td>
-                <button class="danger small-button delete-comment" data-topic-id="${topic.id}" data-comment-index="${topic.comments.indexOf(comment)}">Sil</button>
-              </td>
-            `;
-            tableBody.appendChild(row);
-          });
-        }
-      });
-      
-      if (!hasComments) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="4" style="text-align: center; color: var(--muted);">Henüz yorum bulunmuyor</td>`;
-        tableBody.appendChild(row);
-      }
-      
-      // Silme butonlarına event listener ekle
-      els('.delete-comment').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const topicId = parseInt(this.getAttribute('data-topic-id'));
-          const commentIndex = parseInt(this.getAttribute('data-comment-index'));
-          deleteComment(topicId, commentIndex);
-        });
-      });
+    // Kombin formunu sıfırla
+    function resetOutfitForm() {
+      document.getElementById('outfitHairstyle').value = '<?php echo $defaultOutfit['hairstyle']; ?>';
+      document.getElementById('outfitHairclip').value = '<?php echo $defaultOutfit['hairclip']; ?>';
+      document.getElementById('outfitEarrings').value = '<?php echo $defaultOutfit['earrings']; ?>';
+      document.getElementById('outfitNecklace').value = '<?php echo $defaultOutfit['necklace']; ?>';
+      document.getElementById('outfitTop').value = '<?php echo $defaultOutfit['top']; ?>';
+      document.getElementById('outfitPants').value = '<?php echo $defaultOutfit['pants']; ?>';
+      document.getElementById('outfitShoes').value = '<?php echo $defaultOutfit['shoes']; ?>';
+      document.getElementById('outfitNailPolish').value = '<?php echo $defaultOutfit['nail_polish']; ?>';
+      document.getElementById('outfitRing').value = '<?php echo $defaultOutfit['ring']; ?>';
+      resetOutfitImage();
     }
 
-    // Tarifleri tabloya yükle
-    function loadRecipesTable() {
-      const tableBody = el('#recipesTable');
-      tableBody.innerHTML = '';
-      
-      if (recipes.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="4" style="text-align: center; color: var(--muted);">Henüz tarif bulunmuyor</td>`;
-        tableBody.appendChild(row);
-        return;
-      }
-      
-      recipes.forEach(recipe => {
-        const ingredientCount = recipe.ingredientCount || (recipe.ingredients ? recipe.ingredients.split(',').length : 0);
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${recipe.id}</td>
-          <td>${recipe.title}</td>
-          <td>${ingredientCount}</td>
-          <td>
-            <button class="ghost small-button edit-recipe" data-id="${recipe.id}">Düzenle</button>
-            <button class="danger small-button delete-recipe" data-id="${recipe.id}">Sil</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-      
-      // Düzenle butonlarına event listener ekle
-      els('.edit-recipe').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const recipeId = parseInt(this.getAttribute('data-id'));
-          editRecipe(recipeId);
-        });
-      });
-      
-      // Silme butonlarına event listener ekle
-      els('.delete-recipe').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const recipeId = parseInt(this.getAttribute('data-id'));
-          deleteRecipe(recipeId);
-        });
-      });
+    // Kombin görselini sıfırla
+    function resetOutfitImage() {
+      document.getElementById('outfitUploadPlaceholder').style.display = 'flex';
+      document.getElementById('outfitImagePreview').style.display = 'none';
+      document.getElementById('outfitImageInput').value = '';
     }
 
-    // Konuyu sil
-    function deleteTopic(id) {
-      if (confirm('Bu konuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
-        topics = topics.filter(topic => topic.id !== id);
-        localStorage.setItem('topics', JSON.stringify(topics));
-        loadTopicsTable();
-        loadCommentsTable();
-        updateStats();
-        alert('Konu başarıyla silindi.');
-      }
-    }
-
-    // Yorumu sil
-    function deleteComment(topicId, commentIndex) {
-      if (confirm('Bu yorumu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
-        const topicIndex = topics.findIndex(topic => topic.id === topicId);
-        if (topicIndex !== -1 && topics[topicIndex].comments) {
-          topics[topicIndex].comments.splice(commentIndex, 1);
-          localStorage.setItem('topics', JSON.stringify(topics));
-          loadCommentsTable();
-          updateStats();
-          alert('Yorum başarıyla silindi.');
-        }
-      }
-    }
-
-    // Tarifi düzenle
-    function editRecipe(id) {
-      const recipe = recipes.find(r => r.id === id);
-      if (recipe) {
-        currentEditingRecipeId = id;
-        el('#recipeTitle').value = recipe.title || '';
-        el('#recipeIngredients').value = recipe.ingredients || '';
-        el('#recipeDescription').value = recipe.description || '';
-        el('#recipeFull').value = recipe.fullRecipe || '';
-        
-        el('#btnSaveRecipe').textContent = 'Tarifi Güncelle';
-      }
-    }
-
-    // Tarifi sil
-    function deleteRecipe(id) {
-      if (confirm('Bu tarifi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
-        recipes = recipes.filter(recipe => recipe.id !== id);
-        localStorage.setItem('recipes', JSON.stringify(recipes));
-        loadRecipesTable();
-        updateStats();
-        alert('Tarif başarıyla silindi.');
-      }
-    }
-
-    // Film bilgilerini kaydet
-    function saveMovieData() {
-      const movieData = {
-        title: el('#movieTitle').value,
-        actors: el('#movieActors').value,
-        description: el('#movieDescription').value,
-        imdb: el('#movieImdb').value,
-        rottenTomatoes: el('#movieRottenTomatoes').value,
-        ageLimit: el('#movieAgeLimit').value,
-        genres: el('#movieGenres').value,
-        image: el('#movieImage').value
-      };
-      
-      localStorage.setItem('movieData', JSON.stringify(movieData));
-      localStorage.setItem('movieRecommendation', JSON.stringify(movieData));
-      alert('Film bilgileri başarıyla kaydedildi.');
-    }
-
-    // Dizi bilgilerini kaydet
-    function saveSeriesData() {
-      const seriesData = {
-        title: el('#seriesTitle').value,
-        imdb: el('#seriesImdb').value,
-        subject: el('#seriesSubject').value,
-        seasons: el('#seriesSeasons').value,
-        bestEpisode: el('#seriesBestEpisode').value,
-        image: el('#seriesImage').value
-      };
-      
-      localStorage.setItem('seriesData', JSON.stringify(seriesData));
-      localStorage.setItem('seriesRecommendation', JSON.stringify(seriesData));
-      alert('Dizi bilgileri başarıyla kaydedildi.');
-    }
-
-    // Kombin görseli yükleme işlevleri
-    function initOutfitImageUpload() {
-      const imageUploadArea = el('#outfitImageUploadArea');
-      const imageInput = el('#outfitImageInput');
-      const uploadPlaceholder = el('#outfitUploadPlaceholder');
-      const imagePreview = el('#outfitImagePreview');
-      const previewImage = el('#outfitPreviewImage');
-      const btnChangeImage = el('#btnChangeOutfitImage');
-      const btnRemoveImage = el('#btnRemoveOutfitImage');
-      
-      // Tıklama ile dosya seç
-      imageUploadArea.addEventListener('click', (e) => {
-        if (e.target !== btnChangeImage && e.target !== btnRemoveImage) {
-          imageInput.click();
-        }
-      });
-      
-      // Dosya seçildiğinde
-      imageInput.addEventListener('change', handleOutfitImageUpload);
-      
-      // Görsel değiştirme butonu
-      btnChangeImage.addEventListener('click', (e) => {
-        e.stopPropagation();
-        imageInput.click();
-      });
-      
-      // Görsel kaldırma butonu
-      btnRemoveImage.addEventListener('click', (e) => {
-        e.stopPropagation();
-        resetOutfitImage();
-      });
-    }
-    
-    function handleOutfitImageUpload() {
-      const file = el('#outfitImageInput').files[0];
+    // Kombin görseli yükleme
+    function handleOutfitImageUpload(input) {
+      const file = input.files[0];
       if (!file) return;
       
       // Dosya türü kontrolü
@@ -844,245 +947,32 @@
       
       const reader = new FileReader();
       reader.onload = function(e) {
-        currentOutfitImage = e.target.result;
-        showOutfitImagePreview(currentOutfitImage);
+        document.getElementById('outfitUploadPlaceholder').style.display = 'none';
+        document.getElementById('outfitImagePreview').style.display = 'block';
+        document.getElementById('outfitPreviewImage').src = e.target.result;
       };
       reader.readAsDataURL(file);
-    }
-    
-    function showOutfitImagePreview(src) {
-      el('#outfitUploadPlaceholder').style.display = 'none';
-      el('#outfitImagePreview').style.display = 'block';
-      el('#outfitPreviewImage').src = src;
-    }
-    
-    function resetOutfitImage() {
-      el('#outfitUploadPlaceholder').style.display = 'flex';
-      el('#outfitImagePreview').style.display = 'none';
-      el('#outfitPreviewImage').src = '';
-      el('#outfitImageInput').value = '';
-      currentOutfitImage = null;
-    }
-
-    // Kombin bilgilerini kaydet
-    function saveOutfitData() {
-      const outfitData = {
-        hairstyle: el('#outfitHairstyle').value,
-        hairclip: el('#outfitHairclip').value,
-        earrings: el('#outfitEarrings').value,
-        necklace: el('#outfitNecklace').value,
-        top: el('#outfitTop').value,
-        pants: el('#outfitPants').value,
-        shoes: el('#outfitShoes').value,
-        nailPolish: el('#outfitNailPolish').value,
-        ring: el('#outfitRing').value,
-        image: currentOutfitImage
-      };
-      
-      localStorage.setItem('outfitData', JSON.stringify(outfitData));
-      alert('Kombin bilgileri başarıyla kaydedildi.');
-    }
-
-    // Tarif kaydet
-    function saveRecipe() {
-      const title = el('#recipeTitle').value.trim();
-      const ingredients = el('#recipeIngredients').value.trim();
-      const description = el('#recipeDescription').value.trim();
-      const fullRecipe = el('#recipeFull').value.trim();
-      
-      if (!title || !ingredients || !description || !fullRecipe) {
-        alert('Lütfen tüm alanları doldurun.');
-        return;
-      }
-      
-      if (currentEditingRecipeId) {
-        // Mevcut tarifi güncelle
-        const recipeIndex = recipes.findIndex(r => r.id === currentEditingRecipeId);
-        if (recipeIndex !== -1) {
-          recipes[recipeIndex] = {
-            ...recipes[recipeIndex],
-            title,
-            ingredients,
-            description,
-            fullRecipe,
-            ingredientCount: ingredients.split(',').length
-          };
-        }
-        currentEditingRecipeId = null;
-        el('#btnSaveRecipe').textContent = 'Tarifi Kaydet';
-      } else {
-        // Yeni tarif ekle
-        const newId = recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) + 1 : 1;
-        recipes.push({
-          id: newId,
-          title,
-          ingredients,
-          description,
-          fullRecipe,
-          ingredientCount: ingredients.split(',').length
-        });
-      }
-      
-      localStorage.setItem('recipes', JSON.stringify(recipes));
-      loadRecipesTable();
-      updateStats();
-      resetRecipeForm();
-      alert('Tarif başarıyla kaydedildi.');
-    }
-
-    // Film formunu sıfırla
-    function resetMovieForm() {
-      el('#movieTitle').value = defaultMovieData.title;
-      el('#movieActors').value = defaultMovieData.actors;
-      el('#movieDescription').value = defaultMovieData.description;
-      el('#movieImdb').value = defaultMovieData.imdb;
-      el('#movieRottenTomatoes').value = defaultMovieData.rottenTomatoes;
-      el('#movieAgeLimit').value = defaultMovieData.ageLimit;
-      el('#movieGenres').value = defaultMovieData.genres;
-      el('#movieImage').value = defaultMovieData.image;
-    }
-
-    // Dizi formunu sıfırla
-    function resetSeriesForm() {
-      el('#seriesTitle').value = defaultSeriesData.title;
-      el('#seriesImdb').value = defaultSeriesData.imdb;
-      el('#seriesSubject').value = defaultSeriesData.subject;
-      el('#seriesSeasons').value = defaultSeriesData.seasons;
-      el('#seriesBestEpisode').value = defaultSeriesData.bestEpisode;
-      el('#seriesImage').value = defaultSeriesData.image;
-    }
-
-    // Kombin formunu sıfırla
-    function resetOutfitForm() {
-      el('#outfitHairstyle').value = defaultOutfitData.hairstyle;
-      el('#outfitHairclip').value = defaultOutfitData.hairclip;
-      el('#outfitEarrings').value = defaultOutfitData.earrings;
-      el('#outfitNecklace').value = defaultOutfitData.necklace;
-      el('#outfitTop').value = defaultOutfitData.top;
-      el('#outfitPants').value = defaultOutfitData.pants;
-      el('#outfitShoes').value = defaultOutfitData.shoes;
-      el('#outfitNailPolish').value = defaultOutfitData.nailPolish;
-      el('#outfitRing').value = defaultOutfitData.ring;
-      resetOutfitImage();
     }
 
     // Tarif formunu sıfırla
     function resetRecipeForm() {
-      el('#recipeTitle').value = '';
-      el('#recipeIngredients').value = '';
-      el('#recipeDescription').value = '';
-      el('#recipeFull').value = '';
-      currentEditingRecipeId = null;
-      el('#btnSaveRecipe').textContent = 'Tarifi Kaydet';
+      document.getElementById('recipeForm').reset();
+      document.getElementById('recipeId').value = '';
+      document.getElementById('btnSaveRecipe').textContent = 'Tarifi Kaydet';
     }
 
-    // Formları localStorage'dan verilerle doldur
-    function loadFormData() {
-      // Film verilerini yükle
-      const movieData = JSON.parse(localStorage.getItem('movieData') || JSON.stringify(defaultMovieData));
-      el('#movieTitle').value = movieData.title;
-      el('#movieActors').value = movieData.actors;
-      el('#movieDescription').value = movieData.description;
-      el('#movieImdb').value = movieData.imdb;
-      el('#movieRottenTomatoes').value = movieData.rottenTomatoes;
-      el('#movieAgeLimit').value = movieData.ageLimit;
-      el('#movieGenres').value = movieData.genres;
-      el('#movieImage').value = movieData.image || '';
+    // Tarif düzenle
+    function editRecipe(id, title, ingredients, description, fullRecipe) {
+      document.getElementById('recipeId').value = id;
+      document.getElementById('recipeTitle').value = title;
+      document.getElementById('recipeIngredients').value = ingredients;
+      document.getElementById('recipeDescription').value = description;
+      document.getElementById('recipeFull').value = fullRecipe;
+      document.getElementById('btnSaveRecipe').textContent = 'Tarifi Güncelle';
       
-      // Dizi verilerini yükle
-      const seriesData = JSON.parse(localStorage.getItem('seriesData') || JSON.stringify(defaultSeriesData));
-      el('#seriesTitle').value = seriesData.title;
-      el('#seriesImdb').value = seriesData.imdb;
-      el('#seriesSubject').value = seriesData.subject;
-      el('#seriesSeasons').value = seriesData.seasons;
-      el('#seriesBestEpisode').value = seriesData.bestEpisode;
-      el('#seriesImage').value = seriesData.image || '';
-      
-      // Kombin verilerini yükle
-      const outfitData = JSON.parse(localStorage.getItem('outfitData') || JSON.stringify(defaultOutfitData));
-      el('#outfitHairstyle').value = outfitData.hairstyle;
-      el('#outfitHairclip').value = outfitData.hairclip;
-      el('#outfitEarrings').value = outfitData.earrings;
-      el('#outfitNecklace').value = outfitData.necklace;
-      el('#outfitTop').value = outfitData.top;
-      el('#outfitPants').value = outfitData.pants;
-      el('#outfitShoes').value = outfitData.shoes;
-      el('#outfitNailPolish').value = outfitData.nailPolish;
-      el('#outfitRing').value = outfitData.ring;
-      
-      // Kombin görselini yükle
-      if (outfitData.image) {
-        currentOutfitImage = outfitData.image;
-        showOutfitImagePreview(outfitData.image);
-      }
+      // Forma scroll yap
+      document.getElementById('recipeForm').scrollIntoView({ behavior: 'smooth' });
     }
-
-    // Admin kontrolü
-    function checkAdminAccess() {
-      const session = JSON.parse(localStorage.getItem('session') || '{}');
-      const adminSession = localStorage.getItem('adminSession');
-      
-      // Basit admin kontrolü - kullanıcı adı "admin" veya userId "00001" ise admin
-      if (session.user === 'admin' || session.userId === '00001' || adminSession === 'true') {
-        return true;
-      }
-      
-      // Alternatif olarak şifre kontrolü
-      const password = prompt('Admin şifresini girin:');
-      if (password === 'admin123') {
-        localStorage.setItem('adminSession', 'true');
-        return true;
-      }
-      
-      alert('Yetkiniz yok!');
-      window.location.href = 'index.html';
-      return false;
-    }
-
-    // Event Listeners
-    document.addEventListener('DOMContentLoaded', function() {
-      // Önce admin kontrolü yap
-      if (!checkAdminAccess()) {
-        return;
-      }
-      
-      // İstatistikleri ve tabloları yükle
-      updateStats();
-      loadTopicsTable();
-      loadCommentsTable();
-      loadRecipesTable();
-      loadFormData();
-      
-      // Görsel yükleme alanını başlat
-      initOutfitImageUpload();
-      
-      // Buton event listener'ları
-      el('#btnGoBack').addEventListener('click', function() {
-        window.location.href = 'index.html';
-      });
-      
-      el('#btnLogout').addEventListener('click', function() {
-        localStorage.removeItem('adminSession');
-        window.location.href = 'index.html';
-      });
-      
-      // Film butonları
-      el('#btnResetMovie').addEventListener('click', resetMovieForm);
-      el('#btnSaveMovie').addEventListener('click', saveMovieData);
-      
-      // Dizi butonları
-      el('#btnResetSeries').addEventListener('click', resetSeriesForm);
-      el('#btnSaveSeries').addEventListener('click', saveSeriesData);
-      
-      // Kombin butonları
-      el('#btnResetOutfit').addEventListener('click', resetOutfitForm);
-      el('#btnSaveOutfit').addEventListener('click', saveOutfitData);
-      
-      // Tarif butonları
-      el('#btnResetRecipe').addEventListener('click', resetRecipeForm);
-      el('#btnNewRecipe').addEventListener('click', resetRecipeForm);
-      el('#btnSaveRecipe').addEventListener('click', saveRecipe);
-    });
   </script>
 </body>
 </html>
