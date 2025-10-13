@@ -1,0 +1,347 @@
+<style>
+/* TEMEL CSS STİLLERİ */
+:root {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --text: #333333;
+    --muted: #666666;
+    --primary: #007bff;
+    --danger: #dc3545;
+    --border: #dee2e6;
+    --success: #28a745;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.card {
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+}
+
+.pad {
+    padding: 20px;
+}
+
+/* HEADER STİLLERİ */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.brand-underline {
+    height: 3px;
+    background: var(--primary);
+    width: 100px;
+    margin-top: 5px;
+}
+
+.auth-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.ghost {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.ghost:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.danger {
+    background: var(--danger);
+}
+
+.danger:hover {
+    background: #c82333;
+}
+
+/* GÖRSEL STİLLERİ */
+.media-image-container, .outfit-image-container {
+    width: 100%;
+    height: 250px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.media-image, .outfit-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-placeholder, .outfit-placeholder {
+    text-align: center;
+    color: var(--muted);
+    padding: 20px;
+}
+
+.media-placeholder i, .outfit-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* GRID VE LAYOUT */
+.line {
+    height: 1px;
+    background: var(--border);
+    width: 100%;
+}
+
+.thick-line {
+    height: 2px;
+    background: var(--border);
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* BADGE STİLLERİ */
+.badge {
+    background: var(--primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* TOPIC STİLLERİ */
+.topic-item {
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.topic-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.topic-id {
+    background: var(--muted);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.topic-head {
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.topic-desc {
+    color: var(--muted);
+    margin: 5px 0;
+}
+
+.topic-user {
+    font-size: 12px;
+    color: var(--primary);
+}
+
+/* MODAL STİLLERİ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.sheet {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.sheet .head {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    font-weight: bold;
+}
+
+.sheet .body {
+    padding: 20px;
+}
+
+.sheet .foot {
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* YEMEK TARİFİ STİLLERİ */
+.recipe-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.recipe-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.recipe-meta {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.recipe-ingredients {
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
+.recipe-button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* İNGİLİZCE KELİME STİLLERİ */
+.english-word {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary);
+    text-align: center;
+    margin: 10px 0;
+}
+
+.word-pronunciation {
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.word-meaning {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.word-example {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 3px solid var(--primary);
+    padding-left: 10px;
+}
+
+/* YAN MENÜ */
+.sidebar {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .auth-actions {
+        display: flex;
+        gap: 10px;
+    }
+}
+</style>
