@@ -208,125 +208,238 @@
     <header class="banner">
         <div class="logo-area">
             <div class="logo">
-                <?php
-                $logoPath = "logo.png";
-                if (file_exists($logoPath)) {
-                    echo "<img src='$logoPath' alt='Pikort Logo'>";
-                } else {
-                    echo "<span style='color: #f57c00; font-weight: bold;'>P</span>";
-                }
-                ?>
+                <!-- Logo dosyası buraya yüklenecek -->
+                <span style="color: #f57c00; font-weight: bold;">P</span>
             </div>
             <h1 class="site-title">Pikort</h1>
-            <button class="forum-btn" onclick="window.location.href='forum.php'">Bu Konuyu Tartışalım</button>
+            <button class="forum-btn">Bu Konuyu Tartışalım</button>
         </div>
     </header>
     
     <main class="news-container">
-        <?php
-        $haberler = array(
-            array(
-                "boyut" => "large",
-                "kategori" => "Teknoloji",
-                "baslik" => "Yapay Zeka Destekli Yazılım Geliştirme Araçları Piyasayı Nasıl Değiştiriyor?",
-                "ozet" => "Yapay zeka destekli kodlama araçları, yazılım geliştiricilerin iş yükünü hafifletiyor ve proje tamamlama sürelerini kısaltıyor.",
-                "resim" => "https://picsum.photos/600/300?random=1",
-                "zaman" => "2 saat önce",
-                "okunma" => "345 okunma"
-            ),
-            array(
-                "boyut" => "medium",
-                "kategori" => "Ekonomi",
-                "baslik" => "Merkez Bankası Faiz Kararını Açıkladı",
-                "ozet" => "Merkez Bankası'nın beklenen faiz kararı bugün açıklandı. Piyasa uzmanları kararın ekonomideki etkilerini değerlendiriyor.",
-                "resim" => "https://picsum.photos/400/250?random=2",
-                "zaman" => "4 saat önce",
-                "okunma" => "521 okunma"
-            ),
-            array(
-                "boyut" => "medium",
-                "kategori" => "Spor",
-                "baslik" => "Şampiyonlar Ligi'nde Kritik Maçlar Başlıyor",
-                "ozet" => "Şampiyonlar Ligi çeyrek final eşleşmeleri belli oldu. Taraftarlar heyecanla maçları bekliyor.",
-                "resim" => "https://picsum.photos/400/250?random=3",
-                "zaman" => "6 saat önce",
-                "okunma" => "278 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Sağlık",
-                "baslik" => "Yeni Nesil Aşı Çalışmaları Hız Kazandı",
-                "ozet" => "Bilim insanları, gelecekteki salgınlara karşı koruma sağlayacak yeni nesil aşılar üzerinde çalışıyor.",
-                "resim" => "https://picsum.photos/300/200?random=4",
-                "zaman" => "8 saat önce",
-                "okunma" => "412 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Kültür-Sanat",
-                "baslik" => "Uluslararası Film Festivali Başlıyor",
-                "ozet" => "Bu yıl 25.'si düzenlenecek olan uluslararası film festivalinde 50'den fazla ülkeden film gösterilecek.",
-                "resim" => "https://picsum.photos/300/200?random=5",
-                "zaman" => "10 saat önce",
-                "okunma" => "189 okunma"
-            ),
-            array(
-                "boyut" => "medium",
-                "kategori" => "Eğitim",
-                "baslik" => "Üniversite Sınav Sistemi Değişiyor mu?",
-                "ozet" => "Eğitim uzmanları, üniversiteye giriş sisteminde yapılması planlanan değişiklikleri tartışıyor.",
-                "resim" => "https://picsum.photos/400/250?random=6",
-                "zaman" => "12 saat önce",
-                "okunma" => "654 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Teknoloji",
-                "baslik" => "5G Teknolojisi Yaygınlaşıyor",
-                "ozet" => "5G teknolojisinin kullanım alanları genişliyor. İnternet hızında devrim yaşanıyor.",
-                "resim" => "https://picsum.photos/300/200?random=7",
-                "zaman" => "14 saat önce",
-                "okunma" => "332 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Ekonomi",
-                "baslik" => "Dijital Para Birimleri Yükselişte",
-                "ozet" => "Kripto para piyasası son haftalarda önemli bir yükseliş kaydetti. Uzmanlar yatırımcıları uyarıyor.",
-                "resim" => "https://picsum.photos/300/200?random=8",
-                "zaman" => "16 saat önce",
-                "okunma" => "478 okunma"
-            )
-        );
-        
-        foreach ($haberler as $haber) {
-            echo '
-            <article class="news-box ' . $haber['boyut'] . '">
-                <div class="news-image" style="background-image: url(\'' . $haber['resim'] . '\')"></div>
-                <div class="news-content">
-                    <span class="news-category">' . $haber['kategori'] . '</span>
-                    <h2 class="news-title">' . $haber['baslik'] . '</h2>
-                    <p class="news-summary">' . $haber['ozet'] . '</p>
-                    <div class="news-meta">
-                        <span>' . $haber['zaman'] . '</span>
-                        <span>' . $haber['okunma'] . '</span>
-                    </div>
+        <!-- Haber 1 -->
+        <article class="news-box large">
+            <div class="news-image" style="background-image: url('https://picsum.photos/600/300?random=1')"></div>
+            <div class="news-content">
+                <span class="news-category">Teknoloji</span>
+                <h2 class="news-title">Yapay Zeka Destekli Yazılım Geliştirme Araçları Piyasayı Nasıl Değiştiriyor?</h2>
+                <p class="news-summary">Yapay zeka destekli kodlama araçları, yazılım geliştiricilerin iş yükünü hafifletiyor ve proje tamamlama sürelerini kısaltıyor.</p>
+                <div class="news-meta">
+                    <span>2 saat önce</span>
+                    <span>345 okunma</span>
                 </div>
-            </article>
-            ';
-        }
-        ?>
+            </div>
+        </article>
+        
+        <!-- Haber 2 -->
+        <article class="news-box medium">
+            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=2')"></div>
+            <div class="news-content">
+                <span class="news-category">Ekonomi</span>
+                <h2 class="news-title">Merkez Bankası Faiz Kararını Açıkladı</h2>
+                <p class="news-summary">Merkez Bankası'nın beklenen faiz kararı bugün açıklandı. Piyasa uzmanları kararın ekonomideki etkilerini değerlendiriyor.</p>
+                <div class="news-meta">
+                    <span>4 saat önce</span>
+                    <span>521 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 3 -->
+        <article class="news-box medium">
+            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=3')"></div>
+            <div class="news-content">
+                <span class="news-category">Spor</span>
+                <h2 class="news-title">Şampiyonlar Ligi'nde Kritik Maçlar Başlıyor</h2>
+                <p class="news-summary">Şampiyonlar Ligi çeyrek final eşleşmeleri belli oldu. Taraftarlar heyecanla maçları bekliyor.</p>
+                <div class="news-meta">
+                    <span>6 saat önce</span>
+                    <span>278 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 4 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=4')"></div>
+            <div class="news-content">
+                <span class="news-category">Sağlık</span>
+                <h2 class="news-title">Yeni Nesil Aşı Çalışmaları Hız Kazandı</h2>
+                <p class="news-summary">Bilim insanları, gelecekteki salgınlara karşı koruma sağlayacak yeni nesil aşılar üzerinde çalışıyor.</p>
+                <div class="news-meta">
+                    <span>8 saat önce</span>
+                    <span>412 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 5 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=5')"></div>
+            <div class="news-content">
+                <span class="news-category">Kültür-Sanat</span>
+                <h2 class="news-title">Uluslararası Film Festivali Başlıyor</h2>
+                <p class="news-summary">Bu yıl 25.'si düzenlenecek olan uluslararası film festivalinde 50'den fazla ülkeden film gösterilecek.</p>
+                <div class="news-meta">
+                    <span>10 saat önce</span>
+                    <span>189 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 6 -->
+        <article class="news-box medium">
+            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=6')"></div>
+            <div class="news-content">
+                <span class="news-category">Eğitim</span>
+                <h2 class="news-title">Üniversite Sınav Sistemi Değişiyor mu?</h2>
+                <p class="news-summary">Eğitim uzmanları, üniversiteye giriş sisteminde yapılması planlanan değişiklikleri tartışıyor.</p>
+                <div class="news-meta">
+                    <span>12 saat önce</span>
+                    <span>654 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 7 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=7')"></div>
+            <div class="news-content">
+                <span class="news-category">Teknoloji</span>
+                <h2 class="news-title">5G Teknolojisi Yaygınlaşıyor</h2>
+                <p class="news-summary">5G teknolojisinin kullanım alanları genişliyor. İnternet hızında devrim yaşanıyor.</p>
+                <div class="news-meta">
+                    <span>14 saat önce</span>
+                    <span>332 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 8 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=8')"></div>
+            <div class="news-content">
+                <span class="news-category">Ekonomi</span>
+                <h2 class="news-title">Dijital Para Birimleri Yükselişte</h2>
+                <p class="news-summary">Kripto para piyasası son haftalarda önemli bir yükseliş kaydetti. Uzmanlar yatırımcıları uyarıyor.</p>
+                <div class="news-meta">
+                    <span>16 saat önce</span>
+                    <span>478 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 9 -->
+        <article class="news-box large">
+            <div class="news-image" style="background-image: url('https://picsum.photos/600/300?random=9')"></div>
+            <div class="news-content">
+                <span class="news-category">Çevre</span>
+                <h2 class="news-title">İklim Değişikliğiyle Mücadele İçin Yeni Stratejiler</h2>
+                <p class="news-summary">Dünya liderleri, iklim değişikliğiyle mücadele için yeni stratejiler belirlemek üzere bir araya geldi. Yeşil enerji yatırımları artıyor.</p>
+                <div class="news-meta">
+                    <span>18 saat önce</span>
+                    <span>567 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 10 -->
+        <article class="news-box medium">
+            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=10')"></div>
+            <div class="news-content">
+                <span class="news-category">Spor</span>
+                <h2 class="news-title">Olimpiyat Hazırlıkları Tüm Hızıyla Sürüyor</h2>
+                <p class="news-summary">Bir sonraki olimpiyat oyunları için hazırlıklar devam ediyor. Sporcular yoğun antrenman programlarına devam ediyor.</p>
+                <div class="news-meta">
+                    <span>20 saat önce</span>
+                    <span>234 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 11 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=11')"></div>
+            <div class="news-content">
+                <span class="news-category">Teknoloji</span>
+                <h2 class="news-title">Yeni Akıllı Telefon Modelleri Tanıtıldı</h2>
+                <p class="news-summary">Teknoloji devleri, yeni akıllı telefon modellerini tanıttı. Yenilikçi özellikler dikkat çekiyor.</p>
+                <div class="news-meta">
+                    <span>22 saat önce</span>
+                    <span>398 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 12 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=12')"></div>
+            <div class="news-content">
+                <span class="news-category">Sağlık</span>
+                <h2 class="news-title">Düzenli Egzersizin Faydaları</h2>
+                <p class="news-summary">Uzmanlar, düzenli egzersizin fiziksel ve zihinsel sağlık üzerindeki olumlu etkilerini açıklıyor.</p>
+                <div class="news-meta">
+                    <span>1 gün önce</span>
+                    <span>287 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 13 -->
+        <article class="news-box medium">
+            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=13')"></div>
+            <div class="news-content">
+                <span class="news-category">Kültür-Sanat</span>
+                <h2 class="news-title">Yerli Sinema Festivali Sonuçlandı</h2>
+                <p class="news-summary">Yerli sinema festivalinde ödüller sahiplerini buldu. Jüri özel ödülü genç yönetmene verildi.</p>
+                <div class="news-meta">
+                    <span>1 gün önce</span>
+                    <span>176 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 14 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=14')"></div>
+            <div class="news-content">
+                <span class="news-category">Eğitim</span>
+                <h2 class="news-title">Uzaktan Eğitimde Kalite Nasıl Artırılır?</h2>
+                <p class="news-summary">Eğitimciler, uzaktan eğitimde kaliteyi artırmak için yöntemler paylaşıyor. Teknoloji entegrasyonu öne çıkıyor.</p>
+                <div class="news-meta">
+                    <span>1 gün önce</span>
+                    <span>321 okunma</span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Haber 15 -->
+        <article class="news-box small">
+            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=15')"></div>
+            <div class="news-content">
+                <span class="news-category">Ekonomi</span>
+                <h2 class="news-title">İhracat Rakamları Açıklandı</h2>
+                <p class="news-summary">Son çeyrekte ihracat rakamları beklentileri aştı. Ekonomistler büyüme tahminlerini revize etti.</p>
+                <div class="news-meta">
+                    <span>1 gün önce</span>
+                    <span>443 okunma</span>
+                </div>
+            </div>
+        </article>
     </main>
 
     <script>
+        // "Bu Konuyu Tartışalım" butonuna tıklanınca forum.php'ye yönlendir
         document.querySelector('.forum-btn').addEventListener('click', function() {
             window.location.href = 'forum.php';
         });
         
+        // Haber kutularına tıklanabilirlik ekleme
         document.querySelectorAll('.news-box').forEach(box => {
             box.style.cursor = 'pointer';
             box.addEventListener('click', function() {
                 alert('Haber detay sayfasına yönlendiriliyorsunuz!');
+                // Gerçek uygulamada: window.location.href = 'haber-detay.php?id=' + haberId;
             });
         });
     </script>
