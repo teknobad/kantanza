@@ -13,7 +13,7 @@
         }
         
         body {
-            background-color: #fff9c4; /* Açık sarı arka plan */
+            background-color: #f8f9fa; /* Daha soft arka plan */
             padding-top: 100px; /* Banner için boşluk */
             padding-bottom: 40px;
         }
@@ -25,43 +25,82 @@
             left: 0;
             width: 100%;
             height: 80px;
-            background: linear-gradient(135deg, #1a237e, #283593);
-            color: white;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Daha soft gradient */
+            color: #37474f; /* Daha soft metin rengi */
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center; /* Ortalamak için */
             padding: 0 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Daha hafif gölge */
             z-index: 1000;
         }
         
         .logo-area {
             display: flex;
             align-items: center;
+            position: relative;
         }
         
         .logo {
             width: 50px;
             height: 50px;
-            background-color: #ffc107;
-            border-radius: 50%;
+            margin-right: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-weight: bold;
-            color: #1a237e;
+        }
+        
+        /* Çizgisel balık logosu */
+        .fish-logo {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .fish-body {
+            position: absolute;
+            width: 80%;
+            height: 40%;
+            top: 30%;
+            left: 10%;
+            background-color: transparent;
+            border: 2px solid #5d99c6; /* Yumuşak mavi */
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        
+        .fish-tail {
+            position: absolute;
+            width: 20%;
+            height: 30%;
+            top: 35%;
+            right: 5%;
+            background-color: transparent;
+            border-right: 2px solid #5d99c6;
+            border-top: 2px solid #5d99c6;
+            border-bottom: 2px solid #5d99c6;
+            transform: rotate(45deg);
+        }
+        
+        .fish-eye {
+            position: absolute;
+            width: 8%;
+            height: 8%;
+            top: 40%;
+            left: 20%;
+            background-color: #5d99c6;
+            border-radius: 50%;
         }
         
         .site-title {
             font-size: 28px;
             font-weight: 700;
             letter-spacing: 1px;
+            color: #455a64; /* Daha soft renk */
         }
         
         .forum-btn {
-            background-color: #ffc107;
-            color: #1a237e;
+            background-color: #bbdefb; /* Daha soft buton rengi */
+            color: #37474f; /* Daha soft metin rengi */
             border: none;
             padding: 12px 24px;
             border-radius: 30px;
@@ -69,13 +108,15 @@
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* Daha hafif gölge */
+            position: absolute;
+            right: 30px;
         }
         
         .forum-btn:hover {
-            background-color: #ffd54f;
+            background-color: #90caf9;
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
         }
         
         /* Haberler Konteyneri */
@@ -93,7 +134,7 @@
             background-color: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06); /* Daha hafif gölge */
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -101,7 +142,7 @@
         
         .news-box:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         }
         
         .news-image {
@@ -120,7 +161,7 @@
         .news-category {
             display: inline-block;
             background-color: #e3f2fd;
-            color: #1565c0;
+            color: #1976d2; /* Daha soft mavi */
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -133,12 +174,12 @@
             font-weight: 700;
             margin-bottom: 10px;
             line-height: 1.4;
-            color: #1a237e;
+            color: #37474f; /* Daha soft renk */
         }
         
         .news-summary {
             font-size: 14px;
-            color: #555;
+            color: #546e7a; /* Daha soft gri */
             line-height: 1.5;
             margin-bottom: 15px;
             flex-grow: 1;
@@ -148,8 +189,8 @@
             display: flex;
             justify-content: space-between;
             font-size: 12px;
-            color: #888;
-            border-top: 1px solid #eee;
+            color: #78909c; /* Daha soft gri */
+            border-top: 1px solid #eceff1; /* Daha soft çizgi */
             padding-top: 12px;
         }
         
@@ -180,6 +221,7 @@
             .forum-btn {
                 padding: 10px 18px;
                 font-size: 14px;
+                right: 15px;
             }
             
             .news-container {
@@ -200,7 +242,13 @@
     <!-- Sabit Banner -->
     <header class="banner">
         <div class="logo-area">
-            <div class="logo">P</div>
+            <div class="logo">
+                <div class="fish-logo">
+                    <div class="fish-body"></div>
+                    <div class="fish-tail"></div>
+                    <div class="fish-eye"></div>
+                </div>
+            </div>
             <h1 class="site-title">Pikort</h1>
         </div>
         <button class="forum-btn" onclick="window.location.href='forum.php'">Bu Konuyu Tartışalım</button>
