@@ -13,25 +13,24 @@
         }
         
         body {
-            background-color: #fffdf0; /* Sarı tonlu arka plan */
-            padding-top: 100px; /* Banner için boşluk */
+            background-color: #fffdf0;
+            padding-top: 100px;
             padding-bottom: 40px;
         }
         
-        /* Sabit Banner */
         .banner {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 80px;
-            background: linear-gradient(135deg, #fff9c4, #ffecb3); /* Sarı tonlu gradient */
-            color: #5d4037; /* Kahverengi tonlu metin rengi */
+            background: linear-gradient(135deg, #fff9c4, #ffecb3);
+            color: #5d4037;
             display: flex;
             align-items: center;
-            justify-content: center; /* Ortalamak için */
+            justify-content: center;
             padding: 0 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Daha hafif gölge */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             z-index: 1000;
         }
         
@@ -39,16 +38,18 @@
             display: flex;
             align-items: center;
             position: relative;
+            width: 100%;
+            justify-content: center;
         }
         
         .logo {
             width: 50px;
             height: 50px;
             margin-right: 15px;
-            border-radius: 50%; /* Yuvarlak logo alanı */
+            border-radius: 50%;
             overflow: hidden;
-            border: 2px solid #ffd54f; /* Sarı çerçeve */
-            background-color: #fff9c4; /* Açık sarı arka plan */
+            border: 2px solid #ffd54f;
+            background-color: #fff9c4;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -64,12 +65,12 @@
             font-size: 28px;
             font-weight: 700;
             letter-spacing: 1px;
-            color: #5d4037; /* Kahverengi tonlu renk */
+            color: #5d4037;
         }
         
         .forum-btn {
-            background-color: #ffd54f; /* Sarı buton rengi */
-            color: #5d4037; /* Kahverengi tonlu metin rengi */
+            background-color: #ffd54f;
+            color: #5d4037;
             border: none;
             padding: 12px 24px;
             border-radius: 30px;
@@ -77,7 +78,7 @@
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* Daha hafif gölge */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             position: absolute;
             right: 30px;
         }
@@ -88,7 +89,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
         }
         
-        /* Haberler Konteyneri */
         .news-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -98,12 +98,11 @@
             gap: 25px;
         }
         
-        /* Haber Kutuları */
         .news-box {
             background-color: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06); /* Daha hafif gölge */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -129,8 +128,8 @@
         
         .news-category {
             display: inline-block;
-            background-color: #fff9c4; /* Sarı tonlu kategori arka plan */
-            color: #f57c00; /* Turuncu kategori metin rengi */
+            background-color: #fff9c4;
+            color: #f57c00;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -143,12 +142,12 @@
             font-weight: 700;
             margin-bottom: 10px;
             line-height: 1.4;
-            color: #5d4037; /* Kahverengi tonlu renk */
+            color: #5d4037;
         }
         
         .news-summary {
             font-size: 14px;
-            color: #6d4c41; /* Daha soft kahverengi */
+            color: #6d4c41;
             line-height: 1.5;
             margin-bottom: 15px;
             flex-grow: 1;
@@ -158,12 +157,11 @@
             display: flex;
             justify-content: space-between;
             font-size: 12px;
-            color: #8d6e63; /* Daha soft kahverengi */
-            border-top: 1px solid #ffecb3; /* Sarı tonlu çizgi */
+            color: #8d6e63;
+            border-top: 1px solid #ffecb3;
             padding-top: 12px;
         }
         
-        /* Farklı boyutlar için sınıflar */
         .large {
             grid-column: span 2;
         }
@@ -176,7 +174,6 @@
             grid-column: span 1;
         }
         
-        /* Responsive tasarım */
         @media (max-width: 768px) {
             .banner {
                 padding: 0 15px;
@@ -208,36 +205,31 @@
     </style>
 </head>
 <body>
-    <!-- Sabit Banner -->
     <header class="banner">
         <div class="logo-area">
             <div class="logo">
                 <?php
-                // Logo dosyasını kontrol et ve göster
-                $logoPath = "logo.png"; // Logo dosyasının yolu
+                $logoPath = "logo.png";
                 if (file_exists($logoPath)) {
                     echo "<img src='$logoPath' alt='Pikort Logo'>";
                 } else {
-                    // Logo yoksa alternatif metin göster
                     echo "<span style='color: #f57c00; font-weight: bold;'>P</span>";
                 }
                 ?>
             </div>
             <h1 class="site-title">Pikort</h1>
+            <button class="forum-btn" onclick="window.location.href='forum.php'">Bu Konuyu Tartışalım</button>
         </div>
-        <button class="forum-btn" onclick="window.location.href='forum.php'">Bu Konuyu Tartışalım</button>
     </header>
     
-    <!-- Haberler Konteyneri -->
     <main class="news-container">
         <?php
-        // Haber verilerini bir dizi olarak tanımlayalım
         $haberler = array(
             array(
                 "boyut" => "large",
                 "kategori" => "Teknoloji",
                 "baslik" => "Yapay Zeka Destekli Yazılım Geliştirme Araçları Piyasayı Nasıl Değiştiriyor?",
-                "ozet" => "Yapay zeka destekli kodlama araçları, yazılım geliştiricilerin iş yükünü hafifletiyor ve proje tamamlama sürelerini kısaltıyor. Bu araçların gelecekte yazılım sektörünü nasıl şekillendireceği merak konusu.",
+                "ozet" => "Yapay zeka destekli kodlama araçları, yazılım geliştiricilerin iş yükünü hafifletiyor ve proje tamamlama sürelerini kısaltıyor.",
                 "resim" => "https://picsum.photos/600/300?random=1",
                 "zaman" => "2 saat önce",
                 "okunma" => "345 okunma"
@@ -304,104 +296,37 @@
                 "resim" => "https://picsum.photos/300/200?random=8",
                 "zaman" => "16 saat önce",
                 "okunma" => "478 okunma"
-            ),
-            array(
-                "boyut" => "large",
-                "kategori" => "Çevre",
-                "baslik" => "İklim Değişikliğiyle Mücadele İçin Yeni Stratejiler",
-                "ozet" => "Dünya liderleri, iklim değişikliğiyle mücadele için yeni stratejiler belirlemek üzere bir araya geldi. Yeşil enerji yatırımları artıyor.",
-                "resim" => "https://picsum.photos/600/300?random=9",
-                "zaman" => "18 saat önce",
-                "okunma" => "567 okunma"
-            ),
-            array(
-                "boyut" => "medium",
-                "kategori" => "Spor",
-                "baslik" => "Olimpiyat Hazırlıkları Tüm Hızıyla Sürüyor",
-                "ozet" => "Bir sonraki olimpiyat oyunları için hazırlıklar devam ediyor. Sporcular yoğun antrenman programlarına devam ediyor.",
-                "resim" => "https://picsum.photos/400/250?random=10",
-                "zaman" => "20 saat önce",
-                "okunma" => "234 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Teknoloji",
-                "baslik" => "Yeni Akıllı Telefon Modelleri Tanıtıldı",
-                "ozet" => "Teknoloji devleri, yeni akıllı telefon modellerini tanıttı. Yenilikçi özellikler dikkat çekiyor.",
-                "resim" => "https://picsum.photos/300/200?random=11",
-                "zaman" => "22 saat önce",
-                "okunma" => "398 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Sağlık",
-                "baslik" => "Düzenli Egzersizin Faydaları",
-                "ozet" => "Uzmanlar, düzenli egzersizin fiziksel ve zihinsel sağlık üzerindeki olumlu etkilerini açıklıyor.",
-                "resim" => "https://picsum.photos/300/200?random=12",
-                "zaman" => "1 gün önce",
-                "okunma" => "287 okunma"
-            ),
-            array(
-                "boyut" => "medium",
-                "kategori" => "Kültür-Sanat",
-                "baslik" => "Yerli Sinema Festivali Sonuçlandı",
-                "ozet" => "Yerli sinema festivalinde ödüller sahiplerini buldu. Jüri özel ödülü genç yönetmene verildi.",
-                "resim" => "https://picsum.photos/400/250?random=13",
-                "zaman" => "1 gün önce",
-                "okunma" => "176 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Eğitim",
-                "baslik" => "Uzaktan Eğitimde Kalite Nasıl Artırılır?",
-                "ozet" => "Eğitimciler, uzaktan eğitimde kaliteyi artırmak için yöntemler paylaşıyor. Teknoloji entegrasyonu öne çıkıyor.",
-                "resim" => "https://picsum.photos/300/200?random=14",
-                "zaman" => "1 gün önce",
-                "okunma" => "321 okunma"
-            ),
-            array(
-                "boyut" => "small",
-                "kategori" => "Ekonomi",
-                "baslik" => "İhracat Rakamları Açıklandı",
-                "ozet" => "Son çeyrekte ihracat rakamları beklentileri aştı. Ekonomistler büyüme tahminlerini revize etti.",
-                "resim" => "https://picsum.photos/300/200?random=15",
-                "zaman" => "1 gün önce",
-                "okunma" => "443 okunma"
             )
         );
         
-        // Haberleri döngü ile ekrana yazdır
         foreach ($haberler as $haber) {
-            echo "
-            <article class='news-box {$haber['boyut']}'>
-                <div class='news-image' style='background-image: url(\"{$haber['resim']}\")'></div>
-                <div class='news-content'>
-                    <span class='news-category'>{$haber['kategori']}</span>
-                    <h2 class='news-title'>{$haber['baslik']}</h2>
-                    <p class='news-summary'>{$haber['ozet']}</p>
-                    <div class='news-meta'>
-                        <span>{$haber['zaman']}</span>
-                        <span>{$haber['okunma']}</span>
+            echo '
+            <article class="news-box ' . $haber['boyut'] . '">
+                <div class="news-image" style="background-image: url(\'' . $haber['resim'] . '\')"></div>
+                <div class="news-content">
+                    <span class="news-category">' . $haber['kategori'] . '</span>
+                    <h2 class="news-title">' . $haber['baslik'] . '</h2>
+                    <p class="news-summary">' . $haber['ozet'] . '</p>
+                    <div class="news-meta">
+                        <span>' . $haber['zaman'] . '</span>
+                        <span>' . $haber['okunma'] . '</span>
                     </div>
                 </div>
             </article>
-            ";
+            ';
         }
         ?>
     </main>
 
     <script>
-        // "Bu Konuyu Tartışalım" butonuna tıklanınca forum.php'ye yönlendir
         document.querySelector('.forum-btn').addEventListener('click', function() {
             window.location.href = 'forum.php';
         });
         
-        // Haber kutularına tıklanabilirlik ekleme (isteğe bağlı)
         document.querySelectorAll('.news-box').forEach(box => {
             box.style.cursor = 'pointer';
             box.addEventListener('click', function() {
                 alert('Haber detay sayfasına yönlendiriliyorsunuz!');
-                // Gerçek uygulamada: window.location.href = 'haber-detay.php?id=' + haberId;
             });
         });
     </script>
