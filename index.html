@@ -81,12 +81,16 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             position: absolute;
             right: 30px;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .forum-btn:hover {
             background-color: #ffca28;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+            text-decoration: none;
+            color: #5d4037;
         }
         
         .news-container {
@@ -208,14 +212,12 @@
     <header class="banner">
         <div class="logo-area">
             <div class="logo">
-               
-    <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR8L2-VDymLiei90xuO7w4INXoCj928ZuLaNYMp_Pf-ORPShS7vvZO0HVcG8y7NA7gxD0VA0IvZ3cjrS4J6x5o2lb8_GwYLTpRwvF_cAD58" alt="Pikort Logo">
-</div>
-            
+                <!-- Balık logosu -->
+                <img src="https://st2.depositphotos.com/16171448/43606/v/1600/depositphotos_436062540-stock-illustration-fish-icon-simple-flat-design.jpg" alt="Pikort Logo">
             </div>
             <h1 class="site-title">Pikort</h1>
-            
-        <a href="https://pikort.com" class="forum-btn">Bu Konuyu Tartışalım</a>
+            <!-- Linkli buton -->
+            <a href="https://www.pikort.com" class="forum-btn">Bu Konuyu Tartışalım</a>
         </div>
     </header>
     
@@ -432,11 +434,6 @@
     </main>
 
     <script>
-        // "Bu Konuyu Tartışalım" butonuna tıklanınca forum.php'ye yönlendir
-        document.querySelector('.forum-btn').addEventListener('click', function() {
-            window.location.href = 'forum.php';
-        });
-        
         // Haber kutularına tıklanabilirlik ekleme
         document.querySelectorAll('.news-box').forEach(box => {
             box.style.cursor = 'pointer';
