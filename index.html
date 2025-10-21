@@ -3,444 +3,468 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pikort - Güncel Haberler</title>
+    <title>Ustaeller - Ana Sayfa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
         }
         
         body {
-            background-color: #fffdf0;
-            padding-top: 100px;
-            padding-bottom: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
         }
         
-        .banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            background: linear-gradient(135deg, #fff9c4, #ffecb3);
-            color: #5d4037;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            z-index: 1000;
+        .navbar {
+            background-color: var(--secondary-color);
         }
         
-        .logo-area {
-            display: flex;
-            align-items: center;
-            position: relative;
-            width: 100%;
-            justify-content: center;
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--light-color) !important;
         }
         
-        .logo {
-            width: 50px;
-            height: 50px;
-            margin-right: 15px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px solid #ffd54f;
-            background-color: #fff9c4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .site-title {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #5d4037;
-        }
-        
-        .forum-btn {
-            background-color: #ffd54f;
-            color: #5d4037;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            position: absolute;
-            right: 30px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .forum-btn:hover {
-            background-color: #ffca28;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-            text-decoration: none;
-            color: #5d4037;
-        }
-        
-        .news-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .news-box {
-            background-color: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .news-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .news-image {
-            height: 180px;
+        .hero-section {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-position: center;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
         }
         
-        .news-content {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+            cursor: pointer;
         }
         
-        .news-category {
-            display: inline-block;
-            background-color: #fff9c4;
-            color: #f57c00;
-            padding: 4px 12px;
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+            border: none;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
         
-        .news-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            line-height: 1.4;
-            color: #5d4037;
+        .status-new {
+            background-color: #f39c12;
+            color: white;
         }
         
-        .news-summary {
-            font-size: 14px;
-            color: #6d4c41;
-            line-height: 1.5;
+        .status-in-progress {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .status-completed {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 30px 0;
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
             margin-bottom: 15px;
-            flex-grow: 1;
         }
         
-        .news-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #8d6e63;
-            border-top: 1px solid #ffecb3;
-            padding-top: 12px;
+        .modal-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
         
-        .large {
-            grid-column: span 2;
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
         }
         
-        .medium {
-            grid-column: span 1;
+        .message {
+            padding: 8px 12px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            max-width: 80%;
         }
         
-        .small {
-            grid-column: span 1;
+        .message-sent {
+            background-color: #3498db;
+            color: white;
+            margin-left: auto;
         }
         
-        @media (max-width: 768px) {
-            .banner {
-                padding: 0 15px;
-                height: 70px;
-            }
-            
-            .site-title {
-                font-size: 22px;
-            }
-            
-            .forum-btn {
-                padding: 10px 18px;
-                font-size: 14px;
-                right: 15px;
-            }
-            
-            .news-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .large, .medium, .small {
-                grid-column: span 1;
-            }
-            
-            body {
-                padding-top: 70px;
-            }
+        .message-received {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        
+        .chat-tab {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+        }
+        
+        .chat-body {
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        
+        .active-chat {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <header class="banner">
-        <div class="logo-area">
-            <div class="logo">
-                <!-- Balık logosu -->
-                <img src="https://st2.depositphotos.com/16171448/43606/v/1600/depositphotos_436062540-stock-illustration-fish-icon-simple-flat-design.jpg" alt="Pikort Logo">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-tools me-2"></i>Ustaeller
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Ana Sayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="musteri.html">Müşteri Paneli</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="usta.html">Usta Paneli</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="#" class="btn btn-outline-light me-2">Giriş Yap</a>
+                    <a href="#" class="btn btn-primary">Üye Ol</a>
+                </div>
             </div>
-            <h1 class="site-title">Pikort</h1>
-            <!-- Linkli buton -->
-            <a href="https://www.pikort.com" class="forum-btn">Bu Konuyu Tartışalım</a>
         </div>
-    </header>
-    
-    <main class="news-container">
-        <!-- Haber 1 -->
-        <article class="news-box large">
-            <div class="news-image" style="background-image: url('https://picsum.photos/600/300?random=1')"></div>
-            <div class="news-content">
-                <span class="news-category">Teknoloji</span>
-                <h2 class="news-title">Yapay Zeka Destekli Yazılım Geliştirme Araçları Piyasayı Nasıl Değiştiriyor?</h2>
-                <p class="news-summary">Yapay zeka destekli kodlama araçları, yazılım geliştiricilerin iş yükünü hafifletiyor ve proje tamamlama sürelerini kısaltıyor.</p>
-                <div class="news-meta">
-                    <span>2 saat önce</span>
-                    <span>345 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 2 -->
-        <article class="news-box medium">
-            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=2')"></div>
-            <div class="news-content">
-                <span class="news-category">Ekonomi</span>
-                <h2 class="news-title">Merkez Bankası Faiz Kararını Açıkladı</h2>
-                <p class="news-summary">Merkez Bankası'nın beklenen faiz kararı bugün açıklandı. Piyasa uzmanları kararın ekonomideki etkilerini değerlendiriyor.</p>
-                <div class="news-meta">
-                    <span>4 saat önce</span>
-                    <span>521 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 3 -->
-        <article class="news-box medium">
-            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=3')"></div>
-            <div class="news-content">
-                <span class="news-category">Spor</span>
-                <h2 class="news-title">Şampiyonlar Ligi'nde Kritik Maçlar Başlıyor</h2>
-                <p class="news-summary">Şampiyonlar Ligi çeyrek final eşleşmeleri belli oldu. Taraftarlar heyecanla maçları bekliyor.</p>
-                <div class="news-meta">
-                    <span>6 saat önce</span>
-                    <span>278 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 4 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=4')"></div>
-            <div class="news-content">
-                <span class="news-category">Sağlık</span>
-                <h2 class="news-title">Yeni Nesil Aşı Çalışmaları Hız Kazandı</h2>
-                <p class="news-summary">Bilim insanları, gelecekteki salgınlara karşı koruma sağlayacak yeni nesil aşılar üzerinde çalışıyor.</p>
-                <div class="news-meta">
-                    <span>8 saat önce</span>
-                    <span>412 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 5 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=5')"></div>
-            <div class="news-content">
-                <span class="news-category">Kültür-Sanat</span>
-                <h2 class="news-title">Uluslararası Film Festivali Başlıyor</h2>
-                <p class="news-summary">Bu yıl 25.'si düzenlenecek olan uluslararası film festivalinde 50'den fazla ülkeden film gösterilecek.</p>
-                <div class="news-meta">
-                    <span>10 saat önce</span>
-                    <span>189 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 6 -->
-        <article class="news-box medium">
-            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=6')"></div>
-            <div class="news-content">
-                <span class="news-category">Eğitim</span>
-                <h2 class="news-title">Üniversite Sınav Sistemi Değişiyor mu?</h2>
-                <p class="news-summary">Eğitim uzmanları, üniversiteye giriş sisteminde yapılması planlanan değişiklikleri tartışıyor.</p>
-                <div class="news-meta">
-                    <span>12 saat önce</span>
-                    <span>654 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 7 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=7')"></div>
-            <div class="news-content">
-                <span class="news-category">Teknoloji</span>
-                <h2 class="news-title">5G Teknolojisi Yaygınlaşıyor</h2>
-                <p class="news-summary">5G teknolojisinin kullanım alanları genişliyor. İnternet hızında devrim yaşanıyor.</p>
-                <div class="news-meta">
-                    <span>14 saat önce</span>
-                    <span>332 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 8 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=8')"></div>
-            <div class="news-content">
-                <span class="news-category">Ekonomi</span>
-                <h2 class="news-title">Dijital Para Birimleri Yükselişte</h2>
-                <p class="news-summary">Kripto para piyasası son haftalarda önemli bir yükseliş kaydetti. Uzmanlar yatırımcıları uyarıyor.</p>
-                <div class="news-meta">
-                    <span>16 saat önce</span>
-                    <span>478 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 9 -->
-        <article class="news-box large">
-            <div class="news-image" style="background-image: url('https://picsum.photos/600/300?random=9')"></div>
-            <div class="news-content">
-                <span class="news-category">Çevre</span>
-                <h2 class="news-title">İklim Değişikliğiyle Mücadele İçin Yeni Stratejiler</h2>
-                <p class="news-summary">Dünya liderleri, iklim değişikliğiyle mücadele için yeni stratejiler belirlemek üzere bir araya geldi. Yeşil enerji yatırımları artıyor.</p>
-                <div class="news-meta">
-                    <span>18 saat önce</span>
-                    <span>567 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 10 -->
-        <article class="news-box medium">
-            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=10')"></div>
-            <div class="news-content">
-                <span class="news-category">Spor</span>
-                <h2 class="news-title">Olimpiyat Hazırlıkları Tüm Hızıyla Sürüyor</h2>
-                <p class="news-summary">Bir sonraki olimpiyat oyunları için hazırlıklar devam ediyor. Sporcular yoğun antrenman programlarına devam ediyor.</p>
-                <div class="news-meta">
-                    <span>20 saat önce</span>
-                    <span>234 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 11 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=11')"></div>
-            <div class="news-content">
-                <span class="news-category">Teknoloji</span>
-                <h2 class="news-title">Yeni Akıllı Telefon Modelleri Tanıtıldı</h2>
-                <p class="news-summary">Teknoloji devleri, yeni akıllı telefon modellerini tanıttı. Yenilikçi özellikler dikkat çekiyor.</p>
-                <div class="news-meta">
-                    <span>22 saat önce</span>
-                    <span>398 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 12 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=12')"></div>
-            <div class="news-content">
-                <span class="news-category">Sağlık</span>
-                <h2 class="news-title">Düzenli Egzersizin Faydaları</h2>
-                <p class="news-summary">Uzmanlar, düzenli egzersizin fiziksel ve zihinsel sağlık üzerindeki olumlu etkilerini açıklıyor.</p>
-                <div class="news-meta">
-                    <span>1 gün önce</span>
-                    <span>287 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 13 -->
-        <article class="news-box medium">
-            <div class="news-image" style="background-image: url('https://picsum.photos/400/250?random=13')"></div>
-            <div class="news-content">
-                <span class="news-category">Kültür-Sanat</span>
-                <h2 class="news-title">Yerli Sinema Festivali Sonuçlandı</h2>
-                <p class="news-summary">Yerli sinema festivalinde ödüller sahiplerini buldu. Jüri özel ödülü genç yönetmene verildi.</p>
-                <div class="news-meta">
-                    <span>1 gün önce</span>
-                    <span>176 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 14 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=14')"></div>
-            <div class="news-content">
-                <span class="news-category">Eğitim</span>
-                <h2 class="news-title">Uzaktan Eğitimde Kalite Nasıl Artırılır?</h2>
-                <p class="news-summary">Eğitimciler, uzaktan eğitimde kaliteyi artırmak için yöntemler paylaşıyor. Teknoloji entegrasyonu öne çıkıyor.</p>
-                <div class="news-meta">
-                    <span>1 gün önce</span>
-                    <span>321 okunma</span>
-                </div>
-            </div>
-        </article>
-        
-        <!-- Haber 15 -->
-        <article class="news-box small">
-            <div class="news-image" style="background-image: url('https://picsum.photos/300/200?random=15')"></div>
-            <div class="news-content">
-                <span class="news-category">Ekonomi</span>
-                <h2 class="news-title">İhracat Rakamları Açıklandı</h2>
-                <p class="news-summary">Son çeyrekte ihracat rakamları beklentileri aştı. Ekonomistler büyüme tahminlerini revize etti.</p>
-                <div class="news-meta">
-                    <span>1 gün önce</span>
-                    <span>443 okunma</span>
-                </div>
-            </div>
-        </article>
-    </main>
+    </nav>
 
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Tamir İhtiyaçlarınız İçin Doğru Usta Burada</h1>
+            <p class="lead mb-4">Ev, ofis veya araç tamiri için ihtiyacınız olan tüm hizmetler tek platformda</p>
+            <a href="musteri.html" class="btn btn-primary btn-lg me-2">Hemen İlan Aç</a>
+            <a href="usta.html" class="btn btn-outline-light btn-lg">Usta Olarak Kaydol</a>
+        </div>
+    </section>
+
+    <!-- Hizmetler -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Popüler Tamir Hizmetleri</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 text-center mb-4">
+                    <div class="service-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <h5>Ev Tamiratları</h5>
+                    <p class="text-muted">Boyama, tesisat, elektrik ve daha fazlası</p>
+                </div>
+                <div class="col-md-3 col-sm-6 text-center mb-4">
+                    <div class="service-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h5>Elektronik Tamir</h5>
+                    <p class="text-muted">Bilgisayar, telefon, tablet tamiri</p>
+                </div>
+                <div class="col-md-3 col-sm-6 text-center mb-4">
+                    <div class="service-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h5>Araç Tamiri</h5>
+                    <p class="text-muted">Oto tamir, bakım ve servis hizmetleri</p>
+                </div>
+                <div class="col-md-3 col-sm-6 text-center mb-4">
+                    <div class="service-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h5>Mobilya Tamiri</h5>
+                    <p class="text-muted">Mobilya montajı ve tamir hizmetleri</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- İlanlar -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Açık İlanlar</h2>
+                <a href="musteri.html" class="btn btn-primary">Tüm İlanları Gör</a>
+            </div>
+            
+            <div class="row">
+                <!-- İlan 1 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card" data-bs-toggle="modal" data-bs-target="#ilanModal1">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="status-badge status-new">Yeni İlan</span>
+                            <small>2 saat önce</small>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Banyo musluğu tamiri</h5>
+                            <p class="card-text">Banyo musluğundan sürekli su damlatıyor, değiştirilmesi gerekiyor.</p>
+                            <p><i class="fas fa-map-marker-alt me-2"></i>Kadıköy, İstanbul</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary">300 TL</span>
+                                <button class="btn btn-success">Ben Yaparım</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- İlan 2 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card" data-bs-toggle="modal" data-bs-target="#ilanModal2">
+                        <div class="card-header d-flex justifycontent-between align-items-center">
+                            <span class="status-badge status-in-progress">İşlemde</span>
+                            <small>1 gün önce</small>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Bilgisayar ekran değişimi</h5>
+                            <p class="card-text">Dizüstü bilgisayar ekranı kırıldı, değiştirilmesi gerekiyor.</p>
+                            <p><i class="fas fa-map-marker-alt me-2"></i>Beşiktaş, İstanbul</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary">750 TL</span>
+                                <button class="btn btn-success">Ben Yaparım</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- İlan 3 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card" data-bs-toggle="modal" data-bs-target="#ilanModal3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="status-badge status-completed">Tamire Alındı</span>
+                            <small>3 gün önce</small>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Klima bakımı</h5>
+                            <p class="card-text">Split klima bakımı ve temizliği yapılacak.</p>
+                            <p><i class="fas fa-map-marker-alt me-2"></i>Üsküdar, İstanbul</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary">400 TL</span>
+                                <button class="btn btn-success" disabled>Tamire Alındı</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- İlan Detay Modal 1 -->
+    <div class="modal fade" id="ilanModal1" tabindex="-1" aria-labelledby="ilanModal1Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ilanModal1Label">Banyo musluğu tamiri</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="modal-image" alt="Musluk tamiri">
+                        </div>
+                        <div class="col-md-6">
+                            <img src="https://images.unsplash.com/photo-1584622650117-1d2f8c5516f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="modal-image" alt="Banyo">
+                        </div>
+                    </div>
+                    
+                    <h6>Açıklama:</h6>
+                    <p>Banyo musluğundan sürekli su damlatıyor, değiştirilmesi gerekiyor. Musluk contası eskimiş olabilir veya musluğun tamamen değişmesi gerekebilir.</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Konum:</h6>
+                            <p><i class="fas fa-map-marker-alt me-2"></i>Kadıköy, İstanbul</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Fiyat:</h6>
+                            <p class="fw-bold text-primary">300 TL</p>
+                        </div>
+                    </div>
+                    
+                    <h6>İlan Detayları:</h6>
+                    <ul>
+                        <li>İlan Tarihi: 2 saat önce</li>
+                        <li>Kategori: Ev Tamiratları</li>
+                        <li>Durum: Yeni İlan</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-success" id="openChat1">Müşteri ile İletişime Geç</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Sekmesi -->
+    <div class="chat-tab" id="chatTab">
+        <div class="chat-header d-flex justify-content-between">
+            <span>Ahmet Y. - Banyo Musluğu Tamiri</span>
+            <span class="close-chat"><i class="fas fa-times"></i></span>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message message-received">
+                Merhaba, musluk tamiri için teklifiniz var mı?
+            </div>
+            <div class="message message-sent">
+                Evet, 300 TL'ye musluğunuzu tamir edebilirim.
+            </div>
+            <div class="message message-received">
+                Ne zaman gelebilirsiniz?
+            </div>
+        </div>
+        <div class="chat-footer p-2 border-top">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Mesajınızı yazın...">
+                <button class="btn btn-primary" type="button"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-tools me-2"></i>Ustaeller</h5>
+                    <p>Tamir ihtiyaçlarınız için en doğru ustalarla buluşmanızı sağlayan platform.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Bağlantılar</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light">Ana Sayfa</a></li>
+                        <li><a href="musteri.html" class="text-light">Müşteri Paneli</a></li>
+                        <li><a href="usta.html" class="text-light">Usta Paneli</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>İletişim</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i>info@ustaeller.com</li>
+                        <li><i class="fas fa-phone me-2"></i>0 (212) 123 45 67</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i>İstanbul, Türkiye</li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Bizi Takip Edin</h5>
+                    <div class="d-flex">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter fa-2x"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p>&copy; 2023 Ustaeller - Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        // Haber kutularına tıklanabilirlik ekleme
-        document.querySelectorAll('.news-box').forEach(box => {
-            box.style.cursor = 'pointer';
-            box.addEventListener('click', function() {
-                alert('Haber detay sayfasına yönlendiriliyorsunuz!');
-                // Gerçek uygulamada: window.location.href = 'haber-detay.php?id=' + haberId;
-            });
+        // Chat açma/kapama işlevi
+        document.getElementById('openChat1').addEventListener('click', function() {
+            document.getElementById('chatTab').classList.add('active-chat');
+        });
+        
+        document.querySelector('.close-chat').addEventListener('click', function() {
+            document.getElementById('chatTab').classList.remove('active-chat');
+        });
+        
+        // Mesaj gönderme işlevi
+        document.querySelector('.chat-footer button').addEventListener('click', function() {
+            const input = document.querySelector('.chat-footer input');
+            const message = input.value.trim();
+            
+            if (message) {
+                const chatBody = document.getElementById('chatBody');
+                const newMessage = document.createElement('div');
+                newMessage.className = 'message message-sent';
+                newMessage.textContent = message;
+                chatBody.appendChild(newMessage);
+                
+                input.value = '';
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        });
+        
+        // Enter tuşu ile mesaj gönderme
+        document.querySelector('.chat-footer input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.chat-footer button').click();
+            }
         });
     </script>
 </body>
