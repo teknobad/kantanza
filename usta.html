@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ustaeller - Usta Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: var(--secondary-color);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--light-color) !important;
+        }
+        
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 30px 0;
+        }
+        
+        .profile-header {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 20px;
+            overflow: hidden;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .rating {
+            color: #f39c12;
+            font-size: 1.2rem;
+        }
+        
+        .certificate-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .certificate-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+        
+        .review-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        
+        .review-item:last-child {
+            border-bottom: none;
+        }
+        
+        .progress {
+            height: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-tools me-2"></i>Ustaeller
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Ana Sayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="musteri.html">Müşteri Paneli</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="usta.html">Usta Paneli</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <span class="navbar-text me-3">Hoş geldiniz, Mehmet Usta</span>
+                    <a href="#" class="btn btn-outline-light">Çıkış Yap</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profil Başlığı -->
+    <section class="profile-header">
+        <div class="container">
+            <div class="profile-avatar">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Mehmet Usta">
+            </div>
+            <h1 class="display-5 fw-bold">Mehmet Usta</h1>
+            <p class="lead">Elektrik ve Tesisat Uzmanı</p>
+            <div class="rating mb-3">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span class="ms-2">4.5 (128 değerlendirme)</span>
+            </div>
+            <p><i class="fas fa-map-marker-alt me-2"></i>Kadıköy, İstanbul</p>
+        </div>
+    </section>
+
+    <!-- Usta İstatistikleri -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card">
+                        <div class="stats-number">247</div>
+                        <p>Tamamlanan İş</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card">
+                        <div class="stats-number">5</div>
+                        <p>Yıl Deneyim</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card">
+                        <div class="stats-number">%98</div>
+                        <p>Memnuniyet Oranı</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card">
+                        <div class="stats-number">24s</div>
+                        <p>Ort. Yanıt Süresi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usta Bilgileri -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Hakkımda</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>15 yıllık deneyimimle elektrik ve tesisat işlerinde uzmanlaştım. Müşteri memnuniyetini her zaman ön planda tutar, işimi titizlikle ve zamanında teslim ederim. Acil durumlarda hızlı müdahale edebilirim.</p>
+                            
+                            <h5 class="mt-4">Hizmet Verdiğim Bölgeler</h5>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <span class="badge bg-primary">Kadıköy</span>
+                                <span class="badge bg-primary">Üsküdar</span>
+                                <span class="badge bg-primary">Beşiktaş</span>
+                                <span class="badge bg-primary">Maltepe</span>
+                                <span class="badge bg-primary">Ataşehir</span>
+                            </div>
+                            
+                            <h5 class="mt-4">Uzmanlık Alanlarım</h5>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li>Elektrik tesisatı tamiri</li>
+                                        <li>Aydınlatma sistemleri</li>
+                                        <li>Priz ve anahtar değişimi</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li>Su tesisatı tamiri</li>
+                                        <li>Musluk ve batarya değişimi</li>
+                                        <li>Küçük ev aletleri tamiri</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Müşteri Yorumları</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6>Ayşe K.</h6>
+                                    <small>2 hafta önce</small>
+                                </div>
+                                <div class="rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p>Musluk tamirini çok hızlı ve temiz bir şekilde yaptı. Fiyatı da çok uygundu. Kesinlikle tavsiye ederim.</p>
+                            </div>
+                            
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6>Mehmet T.</h6>
+                                    <small>1 ay önce</small>
+                                </div>
+                                <div class="rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <p>Elektrik sorunumu çok kısa sürede çözdü. İşinin ehli bir usta. Tekrar ihtiyaç duyarsam kesinlikle yine ararım.</p>
+                            </div>
+                            
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6>Zeynep A.</h6>
+                                    <small>2 ay önce</small>
+                                </div>
+                                <div class="rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p>Çok nazik ve işini titizlikle yapan bir usta. Tesisat sorunumu kalıcı olarak çözdü. Teşekkürler Mehmet Usta!</p>
+                            </div>
+                            
+                            <button class="btn btn-outline-primary w-100">Tüm Yorumları Gör</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Sertifikalar ve Belgeler</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="certificate-item">
+                                <div class="certificate-icon">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                                <div>
+                                    <h6>Elektrik Tesisatçılığı Belgesi</h6>
+                                    <small class="text-muted">TESK - 2018</small>
+                                </div>
+                            </div>
+                            
+                            <div class="certificate-item">
+                                <div class="certificate-icon">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                                <div>
+                                    <h6>Tesisat Teknisyenliği Sertifikası</h6>
+                                    <small class="text-muted">İSMEK - 2016</small>
+                                </div>
+                            </div>
+                            
+                            <div class="certificate-item">
+                                <div class="certificate-icon">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                                <div>
+                                    <h6>İş Güvenliği Eğitimi</h6>
+                                    <small class="text-muted">ÇASGEM - 2019</small>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#belgeEkleModal">Yeni Belge Ekle</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">İş Değerlendirmeleri</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>İş Kalitesi</span>
+                                    <span>4.8/5</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 96%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>Zamanında Teslim</span>
+                                    <span>4.7/5</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 94%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>İletişim</span>
+                                    <span>4.9/5</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 98%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>Fiyat Performans</span>
+                                    <span>4.6/5</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 92%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">İletişim Bilgileri</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><i class="fas fa-phone me-2"></i>0 (555) 123 45 67</p>
+                            <p><i class="fas fa-envelope me-2"></i>mehmet.usta@ustaeller.com</p>
+                            <p><i class="fas fa-map-marker-alt me-2"></i>Kadıköy, İstanbul</p>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary">Mesaj Gönder</button>
+                                <button class="btn btn-outline-primary">Profilimi Düzenle</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Belge Ekleme Modal -->
+    <div class="modal fade" id="belgeEkleModal" tabindex="-1" aria-labelledby="belgeEkleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="belgeEkleModalLabel">Yeni Belge Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="belgeAdi" class="form-label">Belge Adı</label>
+                            <input type="text" class="form-control" id="belgeAdi" placeholder="Örn: Elektrik Tesisatçılığı Belgesi">
+                        </div>
+                        <div class="mb-3">
+                            <label for="kurum" class="form-label">Kurum</label>
+                            <input type="text" class="form-control" id="kurum" placeholder="Örn: TESK">
+                        </div>
+                        <div class="mb-3">
+                            <label for="yil" class="form-label">Yıl</label>
+                            <input type="number" class="form-control" id="yil" placeholder="2023">
+                        </div>
+                        <div class="mb-3">
+                            <label for="belgeDosya" class="form-label">Belge Dosyası</label>
+                            <input type="file" class="form-control" id="belgeDosya">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary">Belgeyi Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-tools me-2"></i>Ustaeller</h5>
+                    <p>Tamir ihtiyaçlarınız için en doğru ustalarla buluşmanızı sağlayan platform.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Bağlantılar</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light">Ana Sayfa</a></li>
+                        <li><a href="musteri.html" class="text-light">Müşteri Paneli</a></li>
+                        <li><a href="usta.html" class="text-light">Usta Paneli</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>İletişim</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i>info@ustaeller.com</li>
+                        <li><i class="fas fa-phone me-2"></i>0 (212) 123 45 67</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i>İstanbul, Türkiye</li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Bizi Takip Edin</h5>
+                    <div class="d-flex">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter fa-2x"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p>&copy; 2023 Ustaeller - Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
